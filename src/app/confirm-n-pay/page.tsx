@@ -4,8 +4,9 @@ import Container from '@/components/ui/container';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/button';
 import { ToggleGroup, ToggleGroupItem } from '@radix-ui/react-toggle-group';
+import OpenModalButton from '@/components/ui/button/open-modal-button';
 
 function ConfirmNPay() {
   return (
@@ -57,14 +58,16 @@ function ConfirmNPay() {
               <h4 className="font-semibold text-sm">Dates</h4>
               <p className="text-xs font-normal text-foreground/50">August 17 2024</p>
             </div>
-            <Button variant="link" className="p-0 h-auto font-medium">Edit</Button>
+            {/* <Button variant="link" className="p-0 h-auto font-medium">Edit</Button> */}
+            <OpenModalButton variant='link' view='dates-select-view'>Edit</OpenModalButton>
           </div>
           <div className="flex items-start justify-between w-full">
             <div className="text-foreground/75">
               <h4 className="font-semibold text-sm">Riders</h4>
               <p className="text-xs font-normal text-foreground/50">3 Riders</p>
             </div>
-            <Button variant="link" className="p-0 h-auto font-medium">Edit</Button>
+            {/* <Button variant="link" className="p-0 h-auto font-medium">Edit</Button> */}
+            <OpenModalButton variant='link' view='rider-select-view'>Edit</OpenModalButton>
           </div>
           <div className="flex flex-wrap items-start justify-between w-full">
             <div className="text-foreground/75 w-full flex-grow">
@@ -101,27 +104,39 @@ function ConfirmNPay() {
               <h4 className="font-semibold text-sm">Pramanda Tirta Mulya</h4>
               <p className="text-xs font-normal text-foreground/50">ID Card - 33803028038082304</p>
             </div>
-            <Button variant="outline" className="p-0 h-auto font-medium border-none">
+            <OpenModalButton
+              view='rider-detail-view'
+              variant='link'
+              className='border-none'
+            >
               <SquarePen className="w-5 h-5" />
-            </Button>
+            </OpenModalButton>
           </div>
           <div className="flex items-start justify-between w-full">
             <div className="text-foreground/75">
               <h4 className="font-semibold text-sm">Dimas Amrullah</h4>
               <p className="text-xs font-normal text-foreground/50">ID Card - 33803028038082304</p>
             </div>
-            <Button variant="outline" className="p-0 h-auto font-medium border-none">
+            <OpenModalButton
+              view='rider-detail-view'
+              variant='link'
+              className='border-none'
+            >
               <SquarePen className="w-5 h-5" />
-            </Button>
+            </OpenModalButton>
           </div>
           <div className="flex items-start justify-between w-full">
             <div className="text-foreground/75">
               <h4 className="font-semibold text-sm">Arsyad Zufaery</h4>
               <p className="text-xs font-normal text-foreground/50">ID Card - 33803028038082304</p>
             </div>
-            <Button variant="outline" className="p-0 h-auto font-medium border-none">
+            <OpenModalButton
+              view='rider-detail-view'
+              variant='link'
+              className='border-none'
+            >
               <SquarePen className="w-5 h-5" />
-            </Button>
+            </OpenModalButton>
           </div>
         </div>
       </Container>
@@ -235,7 +250,7 @@ function ConfirmNPay() {
         <div className="text-foreground/50 text-xs font-normal space-y-4">
           <p>By selecting the button below, I agree to Seadoo Safari rules.</p>
           <p>I also agree to the updated Terms of Service, Payments Terms
-          Of Service, and I acknowledge the Privacy Policy.</p>
+            Of Service, and I acknowledge the Privacy Policy.</p>
         </div>
         <div className="flex items-center justify-center">
           <Button

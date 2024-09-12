@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button/button"
 import Link from "next/link";
 import Logo from "@/components/ui/logo";
 

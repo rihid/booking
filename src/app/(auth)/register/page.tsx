@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/button';
 import Link from 'next/link';
 import HeaderImageStatic from '@/components/partial/header/header-image-static';
 

@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/button';
 import Link from 'next/link';
 import HeaderImageStatic from '@/components/partial/header/header-image-static';
 

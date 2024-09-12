@@ -4,7 +4,8 @@ import Container from '@/components/ui/container';
 import { ChevronLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
 import { Star, Clock, MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/button';
+import OpenModalButton from '@/components/ui/button/open-modal-button';
 
 export const metadata: Metadata = {
   title: 'Trips',
@@ -91,7 +92,13 @@ function Trips() {
           </CardContent>
           <CardFooter className="grid grid-cols-2 w-full gap-3">
             <Button variant="secondary" className="text-xs h-auto">Re-Book</Button>
-            <Button className="bg-brand text-xs h-auto hover:bg-brand/90">Write Reviews</Button>
+            {/* <Button className="bg-brand text-xs h-auto hover:bg-brand/90">Write Reviews</Button> */}
+            <OpenModalButton
+              view='rider-detail-view'
+              variant='default'
+            >
+              Write Reviews
+            </OpenModalButton>
           </CardFooter>
         </Card>
         <Card className="shadow-md">
@@ -124,7 +131,13 @@ function Trips() {
           </CardContent>
           <CardFooter className="grid grid-cols-2 w-full gap-3">
             <Button variant="secondary" className="text-xs h-auto">Re-Book</Button>
-            <Button className="bg-brand text-xs h-auto hover:bg-brand/90">Write Reviews</Button>
+            {/* <Button className="bg-brand text-xs h-auto hover:bg-brand/90">Write Reviews</Button> */}
+            <OpenModalButton
+              view='rider-detail-view'
+              variant='default'
+            >
+              Write Reviews
+            </OpenModalButton>
           </CardFooter>
         </Card>
       </Container>

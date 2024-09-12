@@ -19,7 +19,7 @@ function Modal({
       <Dialog
         as='div'
         onClose={onClose}
-        className="fixed inset-0 z-50 overflow-x-hidden overflow-y-auto"
+        className="fixed inset-0 z-40 overflow-x-hidden"
       >
         <Transition.Child
           as={React.Fragment}
@@ -30,7 +30,7 @@ function Modal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/25" />
+          <div className="wrapper fixed inset-0 bg-black/25" />
         </Transition.Child>
         {variant === 'center' &&
           <Transition.Child
@@ -42,7 +42,7 @@ function Modal({
             leaveFrom="translate-x-0"
             leaveTo="translate-x-[100%]"
           >
-            <Dialog.Panel className="fixed bottom-0 right-0 top-0 h-full w-full max-w-lg bg-background">
+            <Dialog.Panel className="wrapper fixed bottom-0 right-0 top-0 h-full w-full max-w-lg bg-background">
               {children}
             </Dialog.Panel>
           </Transition.Child>
@@ -57,8 +57,10 @@ function Modal({
             leaveFrom="translate-y-0"
             leaveTo="translate-y-[100%]"
           >
-            <Dialog.Panel className="fixed bottom-0 h-auto w-full bg-background">
-              {children}
+            <Dialog.Panel className="fixed bottom-0 h-auto w-full">
+              <div className="wrapper bg-background h-auto min-h-[640px] rounded-t-3xl">
+                {children}
+              </div>
             </Dialog.Panel>
           </Transition.Child>
         }

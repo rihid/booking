@@ -3,7 +3,7 @@ import Container from '@/components/ui/container';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/button';
 
 function InvoiceDetail() {
   return (
@@ -103,7 +103,7 @@ function InvoiceDetail() {
       <div className="flex items-center justify-center mt-10">
         <Button
           className="bg-brand hover:bg-brand/90"
-        >Confirm & pay</Button>
+        >Download Invoice</Button>
       </div>
     </div>
   )

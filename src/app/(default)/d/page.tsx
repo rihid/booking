@@ -4,11 +4,15 @@ import Container from '@/components/ui/container';
 import { MapPin, Clock, Star, Check, Camera, ShowerHead, GlassWater, CupSoda, Bath } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ShowMoreButton from '@/components/partial/about-product-detail/show-more-button';
+import HeaaderDetailCarousel from '@/components/partial/header/header-detail-carousel';
 
 function Detail() {
   return (
     <div className="flex flex-col min-h-screen">
-      <HeaderImageCarausel className="shrink-0" />
+      {/* <HeaderImageCarausel /> */}
+      <React.Fragment>
+        <HeaaderDetailCarousel />
+      </React.Fragment>
       <div className="flex-1 w-full py-7 mb-20">
         <Container className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-brand truncate mr-4">
