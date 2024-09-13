@@ -97,7 +97,7 @@
   }
 
   /* link hover */
-  .g-animate::after {
+  .g-animate::after, .g-active-tab:after {
     content: '';
     display: block;
     position: absolute;
@@ -108,8 +108,10 @@
     transform: scaleX(0);
     transition: 0.15s linear;
   }
-
   .g-animate:hover::after {
+    transform: scaleX(1);
+  }
+  .g-active-tab:after {
     transform: scaleX(1);
   }
 }

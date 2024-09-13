@@ -4,7 +4,7 @@ import Container from '@/components/ui/container';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
@@ -16,110 +16,134 @@ export const metadata: Metadata = {
 }
 
 function Explore() {
+
+  const tabs = [
+    {
+      id: 1,
+      label: 'trip'
+    },
+    {
+      id: 2,
+      label: 'coastal',
+    },
+    {
+      id: 3,
+      label: 'rental'
+    }
+  ];
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Container className="mt-6 mb-4 space-y-4">
-        <div className="flex items-center justify-start gap-x-2">
-          <Image
-            src="/images/avatar.png"
-            alt="avatar"
-            width={34}
-            height={34}
-            className="object-contain"
-          />
-          <p className="text-sm">Hi, Dimas Amrullah</p>
-        </div>
-        <div className="relative">
-          <Search className="absolute w-6 h-6 top-1/2 left-2 transform -translate-y-1/2" />
-          <Input
-            type="text"
-            placeholder="Where do yo want to go"
-            className="rounded-full pl-12"
-          />
-        </div>
-      </Container>
-      <Container el="nav" className="sticky top-0 z-30 bg-background pb-3 pt-1 border-b shadow-sm rounded-3xl">
-        <ul className="flex gap-6">
-          <li className="relative flex items-center g-animate py-3">
-            <button type="button" className="text-sm font-semibold text-foreground/50 hover:text-brand">Trip</button>
-          </li>
-          <li className="relative flex items-center g-animate py-3">
-            <button type="button" className="text-sm font-semibold text-foreground/50 hover:text-brand">Coastal</button>
-          </li>
-          <li className="relative flex items-center g-animate py-3">
-            <button type="button" className="text-sm font-semibold text-foreground/50 hover:text-brand">Rental</button>
-          </li>
-        </ul>
-      </Container>
-      <div className="relative mt-6 mb-20">
-        <Tabs defaultValue='trip'>
+      <Tabs defaultValue='trip'>
+        <Container className="mt-6 mb-4 space-y-4">
+          <div className="flex items-center justify-start gap-x-2">
+            <Image
+              src="/images/avatar.png"
+              alt="avatar"
+              width={34}
+              height={34}
+              className="object-contain"
+            />
+            <p className="text-sm">Hi, Dimas Amrullah</p>
+          </div>
+          <div className="relative">
+            <Search className="absolute w-6 h-6 top-1/2 left-2 transform -translate-y-1/2" />
+            <Input
+              type="text"
+              placeholder="Where do yo want to go"
+              className="rounded-full pl-12"
+            />
+          </div>
+        </Container>
+        <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
+          {/* <ul className="flex gap-6">
+            {tabs.map(tab => {
+              return (
+                <li key={tab.id} className="relative flex items-center g-animate py-3">
+                  <button
+                    type="button" 
+                    className="text-sm capitalize font-semibold text-foreground/50 hover:text-brand"
+                  >{tab.label}</button>
+                </li>
+              )
+            })}
+          </ul> */}
+          <TabsList className="flex gap-6 justify-start bg-background text-foreground/50">
+            <TabsTrigger value='trip' className="font-bold">Trip</TabsTrigger>
+            <TabsTrigger value='coastal' className="font-bold">Coastal</TabsTrigger>
+            <TabsTrigger value='rental' className="font-bold">Rental</TabsTrigger>
+          </TabsList>
+        </Container>
+        <div className="relative mt-6 mb-20">
           <TabsContent value='trip'>
-            <Card className="border-none shadow-none py-2">
-              <Container className="relative flex flex-col">
-                <React.Fragment>
-                  <ProductCarousel />
-                </React.Fragment>
-                <div className="space-y-0.5 mt-3">
-                  <div>
-                    <div className="flex justify-between items-center">
-                      <Link
-                        href={`/d`}
-                        className="truncate mr-8"
-                      >
-                        <h4 className="text-base font-semibold text-brand truncate">
-                          Beginer Ride
-                        </h4>
-                      </Link>
-                      <div className="flex items-center text-xs font-normal text-foreground/50">
-                        <span className="mr-1">Marina</span>
-                        <MapPin className="inline-block text-brand w-4 h-4" />
+            <Container className="space-y-6">
+              <Card className="border-none shadow-none">
+                <div className="relative flex flex-col">
+                  <React.Fragment>
+                    <ProductCarousel />
+                  </React.Fragment>
+                  <div className="space-y-0.5 mt-3">
+                    <div>
+                      <div className="flex justify-between items-center">
+                        <Link
+                          href={`/d`}
+                          className="truncate mr-8"
+                        >
+                          <h4 className="text-base font-semibold text-brand truncate">
+                            Beginer Ride
+                          </h4>
+                        </Link>
+                        <div className="flex items-center text-xs font-normal text-foreground/50">
+                          <span className="mr-1">Marina</span>
+                          <MapPin className="inline-block text-brand w-4 h-4" />
+                        </div>
                       </div>
+                      <p className="text-xs text-foreground/50 font-normal truncate">Lorem ipsum dolor sit amet.</p>
                     </div>
-                    <p className="text-xs text-foreground/50 font-normal truncate">Lorem ipsum dolor sit amet.</p>
-                  </div>
 
-                  <div className="flex items-center text-foreground/50">
-                    <p className="text-base font-medium">
-                      Rp 1.000.000
-                    </p>
-                    <span className="text-xs">/single</span>
+                    <div className="flex items-center text-foreground/50">
+                      <p className="text-base font-medium">
+                        Rp 1.000.000
+                      </p>
+                      <span className="text-xs">/single</span>
+                    </div>
                   </div>
                 </div>
-              </Container>
-            </Card>
-            <Card className="border-none shadow-none py-2">
-              <Container className="relative flex flex-col">
-                <React.Fragment>
-                  <ProductCarousel />
-                </React.Fragment>
-                <div className="space-y-0.5 mt-3">
-                  <div>
-                    <div className="flex justify-between items-center">
-                      <Link
-                        href={`/d`}
-                        className="truncate mr-8"
-                      >
-                        <h2 className="text-base font-semibold text-brand truncate">
-                          Beginer Ride
-                        </h2>
-                      </Link>
-                      <div className="flex items-center text-xs font-normal text-foreground/50">
-                        <span className="mr-1">Marina</span>
-                        <MapPin className="inline-block text-brand w-4 h-4" />
+              </Card>
+              <Card className="border-none shadow-none">
+                <div className="relative flex flex-col">
+                  <React.Fragment>
+                    <ProductCarousel />
+                  </React.Fragment>
+                  <div className="space-y-0.5 mt-3">
+                    <div>
+                      <div className="flex justify-between items-center">
+                        <Link
+                          href={`/d`}
+                          className="truncate mr-8"
+                        >
+                          <h2 className="text-base font-semibold text-brand truncate">
+                            Beginer Ride
+                          </h2>
+                        </Link>
+                        <div className="flex items-center text-xs font-normal text-foreground/50">
+                          <span className="mr-1">Marina</span>
+                          <MapPin className="inline-block text-brand w-4 h-4" />
+                        </div>
                       </div>
+                      <p className="text-xs text-foreground/50 font-normal truncate">Lorem ipsum dolor sit amet.</p>
                     </div>
-                    <p className="text-xs text-foreground/50 font-normal truncate">Lorem ipsum dolor sit amet.</p>
-                  </div>
 
-                  <div className="flex items-center text-foreground/50">
-                    <p className="text-base text-foreground/75 font-medium">
-                      Rp 1.000.000
-                    </p>
-                    <span className="text-xs">/single</span>
+                    <div className="flex items-center text-foreground/50">
+                      <p className="text-base text-foreground/75 font-medium">
+                        Rp 1.000.000
+                      </p>
+                      <span className="text-xs">/single</span>
+                    </div>
                   </div>
                 </div>
-              </Container>
-            </Card>
+              </Card>
+            </Container>
           </TabsContent>
           <TabsContent value='coastal'>
             testing 2
@@ -127,8 +151,8 @@ function Explore() {
           <TabsContent value='rental'>
             testing
           </TabsContent>
-        </Tabs>
-      </div>
+        </div>
+      </Tabs>
     </div>
   )
 }

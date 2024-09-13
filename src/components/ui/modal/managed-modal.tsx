@@ -21,7 +21,6 @@ function ManagedModal() {
   //   console.log(scrollbarWidth)
 	// }, [bodyScrollable])
 
-
   console.log('Modal state:', { showModal, modalView });
   console.log(scrollbarWidth)
   console.log(bodyScrollable)

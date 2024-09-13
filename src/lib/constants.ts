@@ -5,5 +5,22 @@ export const siteSetting = {
     url: '/images/logo-white.svg',
     alt: 'Seadoo Safari Seamrang Logo',
     href: '/'
-  }
+  },
+  mainMenu: [
+    {
+      id: 1,
+      name: 'explore',
+      path: '/explore'
+    },
+    {
+      id: 2,
+      name: 'trips',
+      path: '/trips',
+    },
+    {
+      id: 3,
+      name: 'profile',
+      path: '/profile'
+    }
+  ]
 }

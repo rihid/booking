@@ -2,15 +2,18 @@
 
 import React from 'react';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
-import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import Image from 'next/image';
-import { cn } from '@/assets/styles/utils';
+import Autoplay from 'embla-carousel-autoplay'
 
 function HeaaderDetailCarousel() {
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [count, setCount] = React.useState(0)
+
+  const plugin = React.useRef(
+    Autoplay({ delay: 2500, stopOnInteraction: false })
+  )
 
   React.useEffect(() => {
     if (!api) {
@@ -23,11 +26,23 @@ function HeaaderDetailCarousel() {
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap() + 1)
     })
+
   }, [api])
 
   return (
     <>
-      <Carousel setApi={setApi} className="w-full flex-shrink-0 overflow-hidden">
+      <Carousel 
+        setApi={setApi} 
+        // plugins={[
+        //   Autoplay({
+        //     delay: 3000,
+        //   })
+        // ]}
+        plugins={[plugin.current]}
+        onMouseEnter={plugin.current.stop}
+        onMouseLeave={plugin.current.reset}
+        className="w-full flex-shrink-0 overflow-hidden"
+      >
         <CarouselContent>
           {Array.from({ length: 5 }).map((_, index) => (
             <CarouselItem key={index}>

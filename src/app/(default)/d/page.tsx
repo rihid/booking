@@ -9,7 +9,6 @@ import HeaaderDetailCarousel from '@/components/partial/header/header-detail-car
 function Detail() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* <HeaderImageCarausel /> */}
       <React.Fragment>
         <HeaaderDetailCarousel />
       </React.Fragment>
