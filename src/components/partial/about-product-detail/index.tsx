@@ -1,15 +1,16 @@
 import React from 'react';
 import Container from '@/components/ui/container';
-import CloseButton from '../../ui/button/close-button';
+import CloseButton from '@/components/ui/button/close-button';
+import Heading from '@/components/ui/heading';
 
 function AboutProductDetail() {
   return (
     <div className="w-full h-full">
       <Container className="relative flex flex-col w-full mx-auto mt-5">
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end my-4">
           <CloseButton />
         </div>
-        <h2 className="font-bold text-xl text-foreground/75">About</h2>
+        <Heading variant='lg' className="text-center text-foreground/75">About</Heading>
         <article className="mt-4 text-xs font-normal text-foreground/50">
           <p>Cocok untuk pemula yang ingin berkendara dengan
             pemandangan kapal-kapal di luar pelabuhan, kamu

@@ -1,22 +1,45 @@
 import React from 'react';
 import HeaderImageCarausel from '@/components/partial/header/header-image-carausel';
 import Container from '@/components/ui/container';
-import { MapPin, Clock, Star, Check, Camera, ShowerHead, GlassWater, CupSoda, Bath } from 'lucide-react';
+import { MapPin, Clock, Star, Check, Camera, ShowerHead, GlassWater, CupSoda, Bath, ChevronLeft, Share2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import ShowMoreButton from '@/components/partial/about-product-detail/show-more-button';
 import HeaaderDetailCarousel from '@/components/partial/header/header-detail-carousel';
+import OpenModalButton from '@/components/ui/button/open-modal-button';
+import Heading from '@/components/ui/heading';
+import { Button } from '@/components/ui/button/button';
+import Link from 'next/link';
 
 function Detail() {
   return (
     <div className="flex flex-col min-h-screen">
-      <React.Fragment>
+      <div className="relative">
         <HeaaderDetailCarousel />
-      </React.Fragment>
+        <div className="absolute z-30 top-6 left-0 right-0 px-[30px] flex items-center justify-between">
+          <Button
+            type='button'
+            variant="outline"
+            size="icon"
+            className="bg-background/50 rounded-full h-7 w-7 p-1"
+          >
+            <Link href="/explore">
+              <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+            </Link>
+          </Button>
+          <Button
+            type='button'
+            variant="outline"
+            size="icon"
+            className="bg-background/50 rounded-full h-7 w-7 p-1"
+          >
+            <Link href="#">
+              <Share2 className="w-4 h-4 text-muted-foreground" />
+            </Link>
+          </Button>
+        </div>
+      </div>
       <div className="flex-1 w-full py-7 mb-20">
         <Container className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-brand truncate mr-4">
-            Mangrove Morosari
-          </h2>
+          <Heading variant='base' className="text-brand truncate mr-4">Mangrove Morosari</Heading>
           <div className="flex items-center text-xs font-normal text-foreground/50">
             <span className="mr-1">Marina</span>
             <MapPin className="inline-block text-brand w-4 h-4" />
@@ -98,8 +121,13 @@ function Detail() {
             <p className="">Suitable for beginners who want to ride with a view of the ships
               outside the harbor, you can also enjoy the beautiful sunset on the
               open sea in the afternoon. What an Experience.
-              <ShowMoreButton />
-              {/* <button type="button" className="inline-block ml-1 text-brand hover:underline hover:underline-offset-1">Show More</button> */}
+              <OpenModalButton
+                view='about-product-detail-view'
+                variant='link'
+                className="ml-1 text-xs text-brand hover:underline hover:underline-offset-2"
+              >
+                Show more
+              </OpenModalButton>
             </p>
           </div>
         </Container>

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button/button';
 import { useUiLayoutStore } from '@/store/ui-layout';
+import { cn } from '@/assets/styles/utils';
 
 export type OpenModalButtonProps = {
   view: string;
@@ -30,7 +31,10 @@ function OpenModalButton({
         <Button
           variant="default"
           onClick={handleClick}
-          className="bg-brand text-xs h-auto hover:bg-brand/90"
+          className={cn(
+            "bg-brand text-xs h-auto hover:bg-brand/90",
+            className
+          )}
           {...props}
         >
           {children}
@@ -41,7 +45,10 @@ function OpenModalButton({
         <Button
           variant="link"
           onClick={handleClick}
-          className="p-0 h-auto font-medium"
+          className={cn(
+            "p-0 h-auto font-medium",
+            className
+          )}
           {...props}
         >
           {children}

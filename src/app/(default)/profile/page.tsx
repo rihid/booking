@@ -4,6 +4,7 @@ import Container from '@/components/ui/container';
 import Image from 'next/image';
 import { ChevronRight, CircleUserRound, Bell } from 'lucide-react';
 import Link from 'next/link';
+import Heading from '@/components/ui/heading';
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -15,7 +16,7 @@ function Profile() {
     <div className="flex flex-col min-h-screen py-6 gap-6">
       <Container className="bg-background gap-x-6">
         <div className="flex itesm-center justify-between mb-4">
-          <h2 className="font-bold text-xl text-foreground/75">Profile</h2>
+          <Heading variant='lg' className="text-foreground/75">Profile</Heading>
           <Bell className="w-6 h-6" />
         </div>
         <button

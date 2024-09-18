@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { Button } from "@/components/ui/button/button"
 import Link from "next/link";
 import Logo from "@/components/ui/logo";
+import Heading from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: 'Home | Booking Safari',
@@ -24,7 +25,7 @@ function Home() {
       <div className="mx-10 mb-20">
         <div className="flex items-center mt-4">
           <div className="w-4 my-2 self-stretch bg-brand"></div>
-          <h1 className="font-extrabold py-0 uppercase text-3xl text-background tracking-wide ml-4">The Ultimate Island Hoping Experience</h1>
+          <Heading variant="xl" className="uppercase py-0 text-background ml-4">The Ultimate Island Hoping Experience</Heading>
         </div>
         <div className="flex items-center mt-4">
           <div className="w-2.5 self-stretch bg-transparent"></div>

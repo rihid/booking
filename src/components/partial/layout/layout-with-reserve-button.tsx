@@ -18,7 +18,7 @@ const ReserveButton = () => {
         >
           <Link href={'/confirm-n-pay'}>
             Reserve
-          </Link>
+          </Link> 
         </Button>
       </Container>
     </div>

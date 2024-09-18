@@ -94,7 +94,7 @@ function Trips() {
                   <Button variant="secondary" className="text-xs h-auto">Re-Book</Button>
                   {/* <Button className="bg-brand text-xs h-auto hover:bg-brand/90">Write Reviews</Button> */}
                   <OpenModalButton
-                    view='rider-detail-view'
+                    view='review-view'
                     variant='default'
                   >
                     Write Reviews

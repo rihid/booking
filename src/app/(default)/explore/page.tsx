@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import ProductCarousel from '@/components/partial/product/product-carousel';
+import Heading from '@/components/ui/heading';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -89,9 +90,7 @@ function Explore() {
                           href={`/d`}
                           className="truncate mr-8"
                         >
-                          <h4 className="text-base font-semibold text-brand truncate">
-                            Beginer Ride
-                          </h4>
+                          <Heading variant='base' className="text-brand truncate">Beginner Ride</Heading>
                         </Link>
                         <div className="flex items-center text-xs font-normal text-foreground/50">
                           <span className="mr-1">Marina</span>
@@ -122,9 +121,7 @@ function Explore() {
                           href={`/d`}
                           className="truncate mr-8"
                         >
-                          <h2 className="text-base font-semibold text-brand truncate">
-                            Beginer Ride
-                          </h2>
+                          <Heading variant='base' className="text-brand truncate">Beginner Ride 1</Heading>
                         </Link>
                         <div className="flex items-center text-xs font-normal text-foreground/50">
                           <span className="mr-1">Marina</span>

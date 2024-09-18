@@ -35,14 +35,14 @@ function Modal({
         {variant === 'center' &&
           <Transition.Child
             as={React.Fragment}
-            enter="transition-all ease-in-out duration-300"
-            enterFrom="translate-x-[100%]"
-            enterTo="translate-x-0"
-            leave="transition-all ease-in-out duration-300"
-            leaveFrom="translate-x-0"
-            leaveTo="translate-x-[100%]"
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="wrapper fixed bottom-0 right-0 top-0 h-full w-full max-w-lg bg-background">
+            <Dialog.Panel className="wrapper w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
               {children}
             </Dialog.Panel>
           </Transition.Child>
