@@ -7,7 +7,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/assets/styles/utils';
 
-function ProductCarousel() {
+function ProductCarousel({
+  productId,
+}:{
+  productId: string;
+}) {
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [count, setCount] = React.useState(0)
@@ -31,7 +35,7 @@ function ProductCarousel() {
         <CarouselContent>
           {Array.from({ length: 5 }).map((_, index) => (
             <CarouselItem key={index}>
-              <Link href={'/d'}>
+              <Link href={`/p/${encodeURIComponent(productId)}`}>
                 <div className="flex aspect-w-5 aspect-h-4 w-full h-0">
                   <Image
                     src="/images/img-grid-1.png"

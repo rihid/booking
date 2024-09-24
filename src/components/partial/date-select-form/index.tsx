@@ -46,11 +46,11 @@ function DateSelectForm() {
             <ToggleGroupItem value="e">10:00AM</ToggleGroupItem>
             <ToggleGroupItem value="f">11:00AM</ToggleGroupItem>
             <ToggleGroupItem value="g">12:00AM</ToggleGroupItem>
-            <ToggleGroupItem value="h">1:00AM</ToggleGroupItem>
-            <ToggleGroupItem value="i">2:00Am</ToggleGroupItem>
-            <ToggleGroupItem value="j">3:00AM</ToggleGroupItem>
-            <ToggleGroupItem value="k">4:00AM</ToggleGroupItem>
-            <ToggleGroupItem value="l">5:00AM</ToggleGroupItem>
+            <ToggleGroupItem value="h">1:00PM</ToggleGroupItem>
+            <ToggleGroupItem value="i">2:00PM</ToggleGroupItem>
+            <ToggleGroupItem value="j">3:00PM</ToggleGroupItem>
+            <ToggleGroupItem value="k">4:00PM</ToggleGroupItem>
+            <ToggleGroupItem value="l">5:00PM</ToggleGroupItem>
           </ToggleGroup>
         </div>
         <div className="flex items-center justify-center mt-6 w-full">

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button/button';
 import Link from 'next/link';
 import HeaderImageStatic from '@/components/partial/header/header-image-static';
+import LoginForm from './module/login-form';
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -19,24 +20,24 @@ function Login() {
       <div className="flex-1 w-full">
         <div className="mx-12 mt-10">
           <h3 className="font-extrabold text-base text-foreground/75 mb-5 text-center tracking-tight leading-none">Login to your account</h3>
-          <form
-            action=""
+          {/* <form
+            action =""
             className="w-full mx-auto space-y-4"
           >
             <div>
-              <Input id="email" placeholder="Email" />
+              <Input id="username" name='username' type='username' placeholder="Email" />
             </div>
             <div>
-              <Input id="phone" type="password" placeholder="Password" />
+              <Input id="password" name='password' type="password" placeholder="Password" />
             </div>
             <div className="flex flex-col">
               <div className="text-xs text-foreground/50 text-right font-light mb-2">
                 <Link href={"#"} className="hover:text-brand/80 hover:underline hover:underline-offset-2">Forgot your password?</Link>
               </div>
-              <Button className="bg-brand font-bold hover:bg-brand/80">Login</Button>
+              <Button type='submit' className="bg-brand font-bold hover:bg-brand/80">Login</Button>
             </div>
-          </form>
-
+          </form> */}
+          <LoginForm />
         </div>
         <div className="mx-12 mt-5">
           <div className="relative">

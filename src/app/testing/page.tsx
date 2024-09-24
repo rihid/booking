@@ -2,6 +2,7 @@
 import React from 'react'
 import { Calendar } from '@/components/ui/calendar'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import Rating from '@/components/ui/rating';
 
 function Testing() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -20,6 +21,9 @@ function Testing() {
           <ToggleGroupItem value="b">B</ToggleGroupItem>
           <ToggleGroupItem value="c">C</ToggleGroupItem>
         </ToggleGroup>
+      </div>
+      <div>
+        <Rating />
       </div>
     </div>
   )

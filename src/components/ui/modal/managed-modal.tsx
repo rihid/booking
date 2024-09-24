@@ -4,6 +4,9 @@ import React from 'react';
 import Modal from "@/components/ui/modal";
 import AboutProductDetail from '@/components/partial/about-product-detail';
 import DateSelectForm from '@/components/partial/date-select-form';
+import RiderForm from '@/components/partial/rider-form';
+import RiderDetailForm from '@/components/partial/rider-detail-form';
+import ReviewForm from '@/components/partial/review-form';
 import { useUiLayoutStore } from '@/store/ui-layout';
 // import { getScrollbarWidth } from '@/lib/helper';
 // import useBodyScrollable from '@/lib/hooks/use-body-scrollable';
@@ -30,7 +33,7 @@ function ManagedModal() {
         onClose={() => closeModal()}
         variant='center'
       >
-        <div className="">testing</div>
+        <ReviewForm />
       </Modal>
     )
   } else {
@@ -43,9 +46,8 @@ function ManagedModal() {
         {modalView === 'testing' && <div>testing testing</div>}
         {modalView === 'about-product-detail-view' && <AboutProductDetail/>}
         {modalView === 'dates-select-view' && <DateSelectForm />}
-        {modalView === 'rider-select-view' && <div>Riders</div>}
-        {modalView === 'rider-detail-view' && <div>Riders Detail</div>}
-        {/* {modalView === 'review-view' && <div>Review</div>} */}
+        {modalView === 'rider-select-view' && <RiderForm/>}
+        {modalView === 'rider-detail-view' && <RiderDetailForm />}
       </Modal>
     )
 

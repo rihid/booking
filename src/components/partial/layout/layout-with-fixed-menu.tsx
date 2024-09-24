@@ -23,8 +23,8 @@ const MENUS = [
       src="/images/trip-icon.svg"
       width={28}
       height={28}
-      alt="instagram"
-      className="object-contain"
+      alt="Trips"
+      className="object-contain w-auto h-auto"
     />
   },
   {
