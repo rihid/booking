@@ -10,8 +10,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import FormError from '@/components/ui/form-error';
 import { postAuth } from '@/lib/data';
-import axios from 'axios';
-import { loginUrl, userTokenUrl, getHeader } from '@/lib/config/api';
 import { useRouter } from 'next/navigation';
 import { login } from '@/lib/action/auth';
 
@@ -40,7 +38,7 @@ function LoginForm() {
 
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     const res = await postAuth(values);
-    login(res.token)
+    login(res.token);
   }
 
   return (
