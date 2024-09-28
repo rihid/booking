@@ -32,6 +32,7 @@ function LoginForm() {
     // const res = await postAuth(values)
     postAuth(values)
     .then(response => {
+      if(response)
       login(response.token);
     })
     .catch(error => {
@@ -88,7 +89,7 @@ function LoginForm() {
           <div className="text-xs text-foreground/50 text-right font-light mb-2">
             <Link href={"#"} className="hover:text-brand/80 hover:underline hover:underline-offset-2">Forgot your password?</Link>
           </div>
-          <Button type='submit' className="bg-brand font-bold hover:bg-brand/80">Login</Button>
+          <Button type='submit' disabled={isPending} className="bg-brand font-bold hover:bg-brand/80">Login</Button>
         </div>
       </form>
     </Form>
