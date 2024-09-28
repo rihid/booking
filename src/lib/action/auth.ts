@@ -11,6 +11,5 @@ export async function login(token: string) {
     user = await getUserToken(token);
   }
   await createSession(user)
-  // 5. Redirect user
   redirect('/explore')
 }

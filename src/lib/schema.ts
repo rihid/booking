@@ -1,15 +1,15 @@
 import { z } from "zod";
 
 // Form Schema
-export const LoginSchema = z.object({
+export const LoginFormSchema = z.object({
   username: z.string({
     message: "Password is required",
   }),
   password: z.string().min(1, {
     message: "Password is required",
-  }),
-  code: z.optional(z.unknown()),
+  })
 });
+
 // api rerponse Schema
 export const AuthSchema = z.object({
   token: z.string(),

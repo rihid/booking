@@ -1,10 +1,10 @@
 import axios from "axios";
 import { z } from "zod";
-import { productUrl, loginUrl, userTokenUrl, customerUrl } from "@/lib/config/api";
-import { LoginSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema } from "@/lib/schema";
+import { productUrl, loginUrl, userTokenUrl, customerUrl } from "@/lib/data/endpoints";
+import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema } from "@/lib/schema";
 import { generateProductSlug } from '@/lib/helper';
 
-export const postAuth = async (body: z.infer<typeof LoginSchema>) => {
+export const postAuth = async (body: z.infer<typeof LoginFormSchema>) => {
   try {
     const res = await axios.post(loginUrl, body, {headers:  {
       Accept: 'application/json',

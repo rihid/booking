@@ -4,6 +4,7 @@ import React from 'react';
 import { z } from 'zod';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
+import { LoginFormSchema } from '@/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
@@ -19,26 +20,24 @@ function LoginForm() {
   const [error, setError] = React.useState<string | undefined>("");
   const [success, setSuccess] = React.useState<string | undefined>("");
 
-  const LoginSchema = z.object({
-    username: z.string({
-      message: "Email/Username is required",
-    }),
-    password: z.string().min(1, {
-      message: "Password is required",
-    }),
-  });
-
-  const form = useForm<z.infer<typeof LoginSchema>>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<z.infer<typeof LoginFormSchema>>({
+    resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
-    const res = await postAuth(values);
-    login(res.token);
+  const onSubmit = async (values: z.infer<typeof LoginFormSchema>) => {
+    // const res = await postAuth(values)
+    postAuth(values)
+    .then(response => {
+      login(response.token);
+    })
+    .catch(error => {
+      setError(error.message);
+      throw error
+    });
   }
 
   return (
