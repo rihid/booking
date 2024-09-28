@@ -13,7 +13,7 @@ export default function CounterButton({ qty }: { qty: number }) {
     }
   }
   const handleMinus = () => {
-    if (count > 1) {
+    if (count >= 1) {
       setCount(prev => prev - qty)
     }
   }
@@ -23,7 +23,7 @@ export default function CounterButton({ qty }: { qty: number }) {
         <button
           type="button"
           onClick={handleMinus}
-          disabled={count === 1}
+          disabled={count === 0}
           className="flex-none px-1 text-muted-foreground hover:bg-brand/30 hover:text-brand hover:rounded-l-sm disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-muted-foreground disabled:opacity-50"
         >
           <Minus className="w-4 h-4" />

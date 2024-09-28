@@ -5,7 +5,9 @@
  */
 export const publicRoutes = [
   "/",
-  "/explore"
+  "/explore",
+  "/setting",
+  /^\/p\/[a-zA-Z0-9_-]+$/ // RegEx for route /p/id-product
 ];
 
 /**

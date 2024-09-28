@@ -13,12 +13,13 @@ import { postAuth } from '@/lib/data';
 import axios from 'axios';
 import { loginUrl, userTokenUrl, getHeader } from '@/lib/config/api';
 import { useRouter } from 'next/navigation';
-import { login } from '@/lib/action/login';
+import { login } from '@/lib/action/auth';
 
 function LoginForm() {
   const router = useRouter()
-  const [isPending, setIsPending] = React.useTransition();
+  const [isPending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | undefined>("");
+  const [success, setSuccess] = React.useState<string | undefined>("");
 
   const LoginSchema = z.object({
     username: z.string({
@@ -37,38 +38,9 @@ function LoginForm() {
     },
   });
 
-  // const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
-  //   const body = values;
-  //   let authUser: { [key: string]: any } = {};
-
-  //   await axios.post(loginUrl, body)
-  //     .then(response => {
-  //       console.log(response.data)
-  //       authUser.token = response.data.token
-  //       window.localStorage.setItem('authUser', JSON.stringify(authUser))
-  //     })
-  //     .catch(error => {
-  //       console.log(error)
-  //       throw error
-  //     })
-
-  //   await axios.get(userTokenUrl, { headers: getHeader() })
-  //     .then(response => {
-  //       console.log(response.data.data)
-  //       authUser.user = response.data.data
-  //       window.localStorage.setItem('authUser', JSON.stringify(authUser))
-  //       // store.commit('SET_AUTH_USER', response.data.data)
-  //       router.push('/explore')
-  //     })
-  //     .catch(error => {
-  //       console.log(error)
-  //       throw error
-  //     })
-  // }
-
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
-    const body = values;
-    login(values)
+    const res = await postAuth(values);
+    login(res.token)
   }
 
   return (
@@ -78,7 +50,7 @@ function LoginForm() {
         className="w-full mx-auto space-y-4"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        {/* <FormError message={error} /> */}
+        <FormError message={error} />
         <div className="space-y-4">
           <FormField
             control={form.control}

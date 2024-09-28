@@ -2,18 +2,14 @@ import { z } from "zod";
 
 // Form Schema
 export const LoginSchema = z.object({
-  // email: z.string().email({
-  //   message: "Email is required",
-  // }),
   username: z.string({
     message: "Password is required",
   }),
   password: z.string().min(1, {
     message: "Password is required",
   }),
-  code: z.optional(z.string()),
+  code: z.optional(z.unknown()),
 });
-
 // api rerponse Schema
 export const AuthSchema = z.object({
   token: z.string(),
@@ -29,26 +25,19 @@ export const AuthSchema = z.object({
   })
 })
 export const UserTokenSchema = z.object({
-  error: z.boolean(),
-  message: z.string(),
-  data: z.object({
-    id: z.string(),
-    name: z.string(),
-    username: z.string().nullable(),
-    email: z.string(),
-    org_no: z.string().nullable(),
-    type: z.string().nullable(),
-    greetings: z.string().nullable(),
-    role: z.array(z.string()).nullable(),
-    permission: z.object({
-      lock_view: z.boolean(),
-      purchase_view: z.boolean(),
-      book_request_view: z.boolean(),
-      role_view: z.boolean(),
-      user_view: z.boolean()
-    }).nullable()
-  })
+  id: z.string(),
+  name: z.string(),
+  username: z.string().nullable(),
+  email: z.string(),
+  org_no: z.string().nullable(),
+  type: z.string().nullable(),
+  avatar: z.optional(z.string().nullable()),
+  greetings: z.string().nullable(),
+  role: z.array(z.string()).nullable(),
+  permission: z.any().nullable(),
+  customer_no: z.string().nullable(),
 });
+
 export const ProductSchema = z.object({
   id: z.string(),
   product_no: z.string(),

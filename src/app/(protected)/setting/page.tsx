@@ -1,10 +1,10 @@
 import React from 'react';
-import { auth } from '@/auth';
+import { getSession } from '@/lib/session';
 
 async function Setting() {
-  const session = await auth();
+  const session = await getSession();
   return (
-    <div>{JSON.stringify(session)}</div>
+    <div>{JSON.stringify(session, null, 2)}</div>
   )
 }
 

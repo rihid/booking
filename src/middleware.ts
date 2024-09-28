@@ -1,40 +1,40 @@
-import NextAuth from "next-auth";
-import authConfig from "@/auth.config";
-import { publicRoutes, authRoutes, apiAuthPrefix, DEFAULT_LOGIN_REDIRECT } from "@/routes";
-
-const { auth } = NextAuth(authConfig);
-
-export default auth((req) => {
-  const { nextUrl } = req;
-  const isLoggedIn = !!req.auth;
-
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-
-  console.log("isLoggedIn: ", isLoggedIn);
-  console.log("isApiAuthRoute: ", isApiAuthRoute);
-  console.log("isAuthRoute: ", isAuthRoute);
-  console.log("isPublicRoute: ", isPublicRoute);
-
-
-  if (isApiAuthRoute) {
-    return null;
+import { NextRequest, NextResponse } from 'next/server'
+import { decrypt } from '@/lib/session'
+import { cookies } from 'next/headers'
+import { getSession } from '@/lib/session'
+ 
+// 1. Specify protected and public routes
+const protectedRoutes = ['/confirm-n-pay', '/profile', '/trips']
+const publicRoutes = ['/login', '/register',, '/explore', '/']
+ 
+export default async function middleware(req: NextRequest) {
+  // 2. Check if the current route is protected or public
+  const path = req.nextUrl.pathname
+  const isProtectedRoute = protectedRoutes.includes(path)
+  const isPublicRoute = publicRoutes.includes(path)
+ 
+  // 3. get session
+  const cookie = cookies().get('session')?.value
+  const session = await decrypt(cookie as string)
+ 
+  // 4. Redirect to /login if the user is not authenticated
+  if (isProtectedRoute && !session) {
+    return NextResponse.redirect(new URL('/login', req.nextUrl))
   }
-
-  if (isAuthRoute) {
-    if (isLoggedIn) {
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-    }
-    return null;
+ 
+  // 5. Redirect to /dashboard if the user is authenticated
+  if (
+    isPublicRoute &&
+    session &&
+    !req.nextUrl.pathname.startsWith('/explore')
+  ) {
+    return NextResponse.redirect(new URL('/explore', req.nextUrl))
   }
-
-  if (!isLoggedIn && !isPublicRoute) {
-    return Response.redirect(new URL("/login", nextUrl))
-  }
-
-  return null;
-});
+ 
+  return NextResponse.next()
+}
+ 
+// Routes Middleware should not run on
 export const config = {
-  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
-};
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+}

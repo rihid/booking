@@ -1,3 +1,9 @@
+import slugify from 'slugify';
+import { z } from "zod";
+import { ProductSchema } from './schema';
+
+const productsType = z.array(ProductSchema);
+
 export function getScrollbarWidth() {
 
   // Creating invisible container
@@ -27,3 +33,26 @@ export const currency = (num: number) => {
   const c = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(num)
   return c;
 }
+
+
+export const generateProductSlug = (products: z.infer<typeof productsType>) => {
+  const usedSlugs = new Set();
+
+  return products.map(product => {
+    let baseSlug = slugify(product.product_name, { lower: true, strict: true });
+    let uniqueSlug = baseSlug;
+    let counter = 1;
+    // Cek apakah slug sudah ada dalam usedSlugs
+    while (usedSlugs.has(uniqueSlug)) {
+      uniqueSlug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+    // Simpan slug yang telah dipastikan unik
+    usedSlugs.add(uniqueSlug);
+    // Mengembalikan produk dengan slug
+    return {
+      ...product,
+      slug: uniqueSlug
+    };
+  });
+};
