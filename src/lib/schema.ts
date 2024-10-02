@@ -9,6 +9,57 @@ export const LoginFormSchema = z.object({
     message: "Password is required",
   })
 });
+export const BookingFieldSchema = z.object({
+  type_id: z.string().nullable(),
+  book_no: z.string().nullable(),
+  book_date: z.string().nullable(),
+  customer_no: z.string().nullable(),
+  schedule_check_in_date: z.string().nullable(),
+  schedule_check_out_date: z.string().nullable(),
+  check_in_date: z.string().nullable(),
+  check_out_date: z.string().nullable(),
+  duration: z.string().nullable(),
+  notes: z.string().nullable(),
+  product_no: z.string().nullable(),
+  bill_no: z.string().nullable(),
+  create_by: z.string().nullable(),
+  status: z.string().nullable(),
+  lock: z.boolean().nullable(),
+  org_no: z.string().nullable(),
+  branch_no: z.string().nullable(),
+  unit_qty: z.string().nullable(),
+  subtotal: z.string().nullable(),
+  discount: z.string().nullable(),
+  promo_id: z.string().nullable(),
+  tax: z.string().nullable(),
+  tax_id: z.string().nullable(),
+  total: z.string().nullable(),
+  ref_no: z.string().nullable(),
+  captain_no: z.string().nullable(),
+  customer_service_no: z.string().nullable(),
+  penalty: z.string().nullable(),
+  numbers: z.array(z.any()),
+  riders: z.array(z.any()),
+  payments: z.array(
+    z.object({
+      id: z.string().nullable(),
+      payment_no: z.string().nullable(),
+      book_no: z.string().nullable(),
+      payment_date: z.string().nullable(),
+      method_id: z.string().nullable(),
+      amount: z.string(),
+      promo_id: z.string().nullable(),
+      round: z.string().nullable(),
+      discount: z.string().nullable(),
+      total: z.string().nullable(),
+      org_no: z.string().nullable(),
+      payment_type: z.string().nullable(),
+      note: z.string().nullable(),
+      cash_id: z.string().nullable(),
+      promo: z.array(z.any())
+    })
+  )
+});
 
 // api rerponse Schema
 export const AuthSchema = z.object({
@@ -36,6 +87,7 @@ export const UserTokenSchema = z.object({
   role: z.array(z.string()).nullable(),
   permission: z.any().nullable(),
   customer_no: z.string().nullable(),
+  token: z.optional(z.any())
 });
 
 export const ProductSchema = z.object({

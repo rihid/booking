@@ -4,11 +4,14 @@ import { productUrl, loginUrl, userTokenUrl, customerUrl } from "@/lib/data/endp
 import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema } from "@/lib/schema";
 import { generateProductSlug } from '@/lib/helper';
 
+
 export const postAuth = async (body: z.infer<typeof LoginFormSchema>) => {
   try {
-    const res = await axios.post(loginUrl, body, {headers:  {
-      Accept: 'application/json',
-    }});
+    const res = await axios.post(loginUrl, body, {
+      headers: {
+        Accept: 'application/json',
+      }
+    });
     const data = AuthSchema.parse(res.data)
 
     return data;
@@ -49,11 +52,11 @@ export const getCustomerByNo = async (body: { customer_no: string }) => {
 
 export const getAllProductPublic = async () => {
   try {
-    const res = await axios.get(productUrl, { 
+    const res = await axios.get(productUrl, {
       headers: {
         Accept: 'application/json',
       }
-     });
+    });
     const products = z.array(ProductSchema).parse(res.data.data);
     // generate slug
     const withSlug = generateProductSlug(products)
@@ -65,15 +68,22 @@ export const getAllProductPublic = async () => {
 }
 export const getSingleProductPublic = async (id: string) => {
   try {
-    const res = await axios.get(productUrl + '/' + id, { 
+    const res = await axios.get(productUrl + '/' + id, {
       headers: {
         Accept: 'application/json',
       }
-     });
+    });
     const product = SingleProductSchema.parse(res.data.data);
     return product;
   } catch (error) {
     console.log(error);
     throw error;
   }
+}
+export const createCustomer = async (body: any) => {
+  await axios.post(customerUrl, body, {
+    headers: {
+      Accept: 'application/json',
+    }
+  })
 }

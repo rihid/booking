@@ -6,6 +6,7 @@ import { ChevronRight, CircleUserRound, Bell } from 'lucide-react';
 import Link from 'next/link';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
+import { logout } from '@/lib/action/auth';
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -103,7 +104,7 @@ function Profile() {
             <li className="border-b border-foreground/50">
               <form action={async () => {
                 "use server"
-                // await signOut();
+                await logout();
               }}>
                 <button type='submit' className="flex items-center justify-between h-full w-full py-3">
                   <div className="flex items-center gap-2">

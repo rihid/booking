@@ -5,30 +5,33 @@ import HeaderImageStatic from '@/components/partial/header/header-image-static';
 import LoginForm from './login-form';
 import Image from 'next/image';
 import Link from 'next/link';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 function LoginPageClient({ token }: { token: string | string[] | null }) {
-
+  const router = useRouter();
   React.useEffect(() => {
     if (token) {
-      fetch('/api/auth/login', {
-        method: 'POST',
+      const body = JSON.stringify({ token })
+      axios.post('/api/auth/login', body, {
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),
+        }
       })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.message === 'Login successful') {
-            window.location.href = '/explore';
+        .then(response => {
+          if (response.data.message === 'Login successful') {
+            router.push('/explore')
           } else {
-            console.error(data.message);
+            console.error(response.data.message);
           }
         })
-        .catch((err) => console.error(err));
+        .catch( error => {
+          console.log(error)
+          throw error
+        })
     }
   }, [token]);
-  
+
   return (
     <div className="flex flex-col items-center justify-between w-full h-full min-h-screen">
       <HeaderImageStatic className="shrink-0" />

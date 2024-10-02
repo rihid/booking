@@ -4,13 +4,139 @@ import React from 'react';
 import Modal from '@/components/ui/modal';
 import Container from '@/components/ui/container';
 import { Card } from '@/components/ui/card';
-import CounterButton from '@/components/ui/button/counter-button';
+import { Plus, Minus } from 'lucide-react';
 import CloseButton from '@/components/ui/button/close-button';
 import Heading from '@/components/ui/heading';
 import { useUiLayoutStore } from '@/store/ui-layout';
+import { useBookStore } from '@/providers/store-providers/book-provider';
 
-function RiderFormModal() {
+type Props = {
+  riderQty: number
+}
+
+function CounterButton({
+  counter,
+  defaultValue = 1,
+  onCountChange,
+}: {
+  counter: number;
+  defaultValue?: number;
+  onCountChange: (newCount: number) => void;
+}) {
+  const [count, setCount] = React.useState(defaultValue);
+
+  const handlePlus = () => {
+    if (count < 10) {
+      const newCount = count + counter;
+      setCount(newCount);
+      onCountChange(newCount);
+    }
+  }
+  const handleMinus = () => {
+    if (count >= 1) {
+      const newCount = count - counter;
+      setCount(newCount);
+      onCountChange(newCount);
+    }
+  }
+  return (
+    <div className="flex space-x-2 items-center">
+      <div className="h-6 flex border border-slate-200 delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-slate-200 rounded-sm">
+        <button
+          type="button"
+          onClick={handleMinus}
+          disabled={count === 0}
+          className="flex-none px-1 text-muted-foreground hover:bg-brand/30 hover:text-brand hover:rounded-l-sm disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-muted-foreground disabled:opacity-50"
+        >
+          <Minus className="w-4 h-4" />
+        </button>
+
+        <div className="flex-1 w-8 text-xs text-center text-muted-foreground flex items-center justify-center">
+          {count}
+        </div>
+        <button
+          type="button"
+          onClick={handlePlus}
+          disabled={count === 10}
+          className="flex-none px-1 text-muted-foreground hover:bg-brand/30 hover:text-brand hover:rounded-l-sm disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-muted-foreground disabled:opacity-50"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
+    </div >
+  )
+}
+
+function SingleRiderCard({
+  initialQty = '1',
+}:{
+  initialQty: string
+}) {
+  const { bookingField, updateBookingField } = useBookStore(state => state);
+
+  const handleCountChange = (newCount: number) => {
+    const updatedNumbers = [...bookingField.numbers];
+    updatedNumbers[0] = {
+      ...updatedNumbers[0],
+      qty: newCount.toString(),
+    };
+    updateBookingField({ numbers: updatedNumbers });
+  };
+  return (
+    <Card className='flex items-center justify-between py-3 px-8'>
+      <div>
+        <Heading variant='sm' className="text-muted-foreground">Single Riders</Heading>
+        <div className="font-normal text-xs text-foreground/50">
+          <span>Aged 13+</span>
+        </div>
+      </div>
+      <CounterButton defaultValue={parseInt(initialQty)} counter={1} onCountChange={handleCountChange} />
+    </Card>
+  )
+}
+function CopleRiderCard({
+  initialQty = '0',
+}: {
+  initialQty: string;
+}) {
+  const { bookingField, updateBookingField } = useBookStore(state => state);
+
+  const handleCountChange = (newCount: number) => {
+    const updatedNumbers = [...bookingField.numbers];
+
+    if (!updatedNumbers[1]) {
+      updatedNumbers[1] = {
+        ...updatedNumbers[0],
+        qty: newCount.toString(),
+      };
+    } else {
+      updatedNumbers[1].qty = newCount;
+    }
+
+    updateBookingField({ numbers: updatedNumbers });
+  };
+
+  return (
+    <Card className='flex items-center justify-between py-3 px-8'>
+      <div>
+        <Heading variant='sm' className="text-muted-foreground">Couple Riders</Heading>
+        <div className="font-normal text-xs text-foreground/50">
+          <span>Aged 13+</span>
+        </div>
+      </div>
+      <CounterButton defaultValue={parseInt(initialQty)} counter={1} onCountChange={handleCountChange} />
+    </Card>
+  )
+}
+
+function RiderFormModal({
+  numbers,
+}: {
+  numbers: any
+}) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
+  const qtySingleInit = numbers[0].qty;
+  const qtyCoupleInit = numbers.length === 2 ? numbers[1].qty : '0';
   return (
     <Modal
       open={showModal}
@@ -24,24 +150,8 @@ function RiderFormModal() {
           </div>
           <Heading variant='lg' className="text-center text-foreground/75">Riders</Heading>
           <div className="mt-6 w-full space-y-6">
-            <Card className='flex items-center justify-between py-3 px-8'>
-              <div>
-                <Heading variant='sm' className="text-muted-foreground">Single Riders</Heading>
-                <div className="font-normal text-xs text-foreground/50">
-                  <span>Aged 13+</span>
-                </div>
-              </div>
-              <CounterButton qty={1} />
-            </Card>
-            <Card className='flex items-center justify-between py-3 px-8'>
-              <div>
-                <Heading variant='sm' className="text-muted-foreground">Couple Riders</Heading>
-                <div className="font-normal text-xs text-foreground/50">
-                  <span>Aged 13+</span>
-                </div>
-              </div>
-              <CounterButton qty={0} />
-            </Card>
+            <SingleRiderCard initialQty={qtySingleInit} />
+            <CopleRiderCard initialQty={qtyCoupleInit} />
           </div>
         </Container>
       </div>

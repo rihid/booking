@@ -119,3 +119,22 @@ export function ProductDetailLoader() {
     </>
   )
 }
+export function ProductSummaryLoader() {
+  return (
+    <Container className="flex items-start bg-background py-6 gap-x-6">
+      <div className="w-32 flex-shrink-0 overflow-hidden rounded-md">
+        <Skeleton className="h-[85px]" />
+      </div>
+      <div className="flex flex-col space-y-3 flex-grow min-w-0">
+        <div className="min-w-0 space-y-2">
+          <Skeleton className="h-6 w-36" />
+          <Skeleton className="h-4 w-36" />
+        </div>
+
+        <div className="flex items-center">
+        <Skeleton className="h-3 w-24" />
+        </div>
+      </div>
+    </Container>
+  )
+}

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Metadata } from 'next';
 import ConfirmNPayClient from './module/confirm-n-pay-client';
@@ -8,9 +9,8 @@ export const metadata: Metadata = {
 }
 
 function ConfirmNPay() {
-  return (
-    <ConfirmNPayClient />
-  );
+
+  return <ConfirmNPayClient />;
 }
 
 export default ConfirmNPay;

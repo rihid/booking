@@ -4,7 +4,6 @@ import { getSession } from '@/lib/session';
 
 async function UserAvatar({ }) {
   const session = await getSession();
-  console.log('session,', session)
   let avatar;
   if(session !== null) {
     // @ts-ignore

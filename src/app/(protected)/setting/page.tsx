@@ -3,8 +3,11 @@ import { getSession } from '@/lib/session';
 
 async function Setting() {
   const session = await getSession();
+
   return (
-    <div>{JSON.stringify(session, null, 2)}</div>
+    <>
+      <div>{JSON.stringify(session, null, 2)}</div>
+    </>
   )
 }
 

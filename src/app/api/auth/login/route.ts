@@ -11,6 +11,7 @@ export async function POST(request: Request) {
 
   try {
     const user = await getUserToken(token);
+    user.token = token;
     await createSession(user)
     return NextResponse.json({ message: 'Login successful' }, { status: 200 });
   } catch (error) {

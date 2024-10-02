@@ -1,120 +1,96 @@
 'use client';
 
 import React from 'react';
-import { ChevronLeft, Star, SquarePen, CreditCard, Wallet, Check } from 'lucide-react';
+import { ChevronLeft, SquarePen, CreditCard, Wallet, Check } from 'lucide-react';
 import Container from '@/components/ui/container';
-import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import OpenModalButton from '@/components/ui/button/open-modal-button';
-import { product } from '@/lib/constants';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import DatesFormModal from './dates-form-modal';
 import RiderFormModal from './rider-form-modal';
 import { useUiLayoutStore } from '@/store/ui-layout';
+import { useBookStore } from '@/providers/store-providers/book-provider';
 import RiderDetailFormModal from './rider-detail-form-modal';
+import { useRouter } from 'next/navigation';
+import ProductSummary from './product-summary';
+import moment from 'moment';
+import useMidtransSnap from '@/lib/hooks/use-midtrans-snap';
 
 
 function ConfirmNPayClient() {
-  const { modalView } = useUiLayoutStore()
-  const handleCheckout = async () => {
-    const data = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: product.quantity
-    }
+  const router = useRouter();
+  const { modalView } = useUiLayoutStore();
+  const { bookingField, productBooked, updateBookingField, } = useBookStore((state) => state);
 
-    const response = await fetch('/api/transaction', {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    })
-    const responseData = await response.json();
-    // @ts-ignore
-    window.snap.pay(responseData.token)
+  const [isAddRider, setIsAddRider] = React.useState<boolean>(false)
 
+
+  const totalRiders = bookingField.numbers.reduce((acc, val) => {
+    return acc + parseInt(val.qty)
+  }, 0)
+
+  const handdleCheckedChange = (checked: boolean) => {
+    setIsAddRider(checked)
+    console.log('switch val', checked)
   }
 
+  const product = {
+    id: productBooked?.id,
+    name: productBooked?.product_name,
+    price: productBooked?.prices[0].amount,
+    quantity: 1
+  }
+  const { handleCheckout } = useMidtransSnap(product);
+
   React.useEffect(() => {
-    const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js'
-    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ''
-
-    let scriptTag = document.createElement('script');
-    scriptTag.src = midtransScriptUrl
-
-    scriptTag.setAttribute("data-client-key", clientKey)
-    scriptTag.async = true
-
-    document.body.appendChild(scriptTag)
-    return () => {
-      document.body.removeChild(scriptTag)
+    if (productBooked) {
+      updateBookingField({
+        numbers: bookingField.numbers.map((number, i) => ({
+          ...number,
+          product_no: productBooked.prices[i]?.product_no || number.product_no,
+          product_sku: productBooked.prices[i]?.product_sku || number.product_sku,
+          price: productBooked.prices[i]?.amount || number.price,
+          subtotal: productBooked.prices[i]?.amount || number.subtotal,
+          total: productBooked.prices[i]?.amount || number.total,
+          uom_id: productBooked.prices[i]?.uom_id || number.uom_id,
+          description: productBooked.product_description || number.description,
+        })),
+      })
     }
-
-  }, [])
+  }, [productBooked, updateBookingField])
 
   return (
     <div className="flex flex-col min-h-screen mb-20">
       <Container className="py-6 sticky top-0 z-30 bg-background w-full border-b border-foreground-muted flex justify-between items-center shrink-0">
-        <button type="button">
-          <Link href="/d">
+        <button
+          type="button"
+          onClick={() => router.back()}
+        >
+          <span>
             <ChevronLeft className="w-5 h-5" />
-          </Link>
+          </span>
         </button>
         <h3 className="font-bold text-sm text-foreground/75">Confirm & Pay</h3>
         <div></div>
       </Container>
-      <Container className="flex items-start bg-background py-6 gap-x-6">
-        <div className="w-32 flex-shrink-0 overflow-hidden rounded-md">
-          <Link href={"#"}>
-            <div className="aspect-w-6 aspect-h-4 w-full h-full">
-              <Image
-                src="/images/img-grid-2.png"
-                alt="image"
-                width={0}
-                height={0}
-                sizes="100vw"
-                className="object-cover transition-all duration-300 group-hover:scale-105"
-                priority={true}
-              />
-            </div>
-          </Link>
-        </div>
-        <div className="flex flex-col space-y-3 flex-grow min-w-0">
-          <div className="min-w-0">
-            <Link href={`/d`}>
-              <h4 className="text-base font-semibold text-foreground/75 truncate">
-                Beginner Ride 1 Lorem Ipsum Dolor Sit Amet
-              </h4>
-            </Link>
-            <p className="text-xs text-foreground/50 font-normal mt-1 truncate">Riding outside harbour</p>
-          </div>
-
-          <div className="flex items-center text-foreground/50 gap-x-2">
-            <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-            <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
-          </div>
-        </div>
-      </Container>
+      <ProductSummary product={productBooked} />
       <Container className="border-t-4 border-slate-100 bg-background py-8">
         <h3 className="font-bold text-base text-foreground/75 mb-3">Your Trip</h3>
         <div className="space-y-6">
           <div className="flex items-start justify-between w-full">
             <div className="text-foreground/75">
               <h4 className="font-semibold text-sm">Dates</h4>
-              <p className="text-xs font-normal text-foreground/50">August 17 2024</p>
+              <p className="text-xs font-normal text-foreground/50">{moment(bookingField.book_date).format('MMMM DD YYYY')}</p>
             </div>
-            {/* <Button variant="link" className="p-0 h-auto font-medium">Edit</Button> */}
             <OpenModalButton variant='link' view='dates-select-view'>Edit</OpenModalButton>
           </div>
           <div className="flex items-start justify-between w-full">
             <div className="text-foreground/75">
               <h4 className="font-semibold text-sm">Riders</h4>
-              <p className="text-xs font-normal text-foreground/50">3 Riders</p>
+              <p className="text-xs font-normal text-foreground/50">{totalRiders} Riders</p>
             </div>
-            {/* <Button variant="link" className="p-0 h-auto font-medium">Edit</Button> */}
             <OpenModalButton variant='link' view='rider-select-view'>Edit</OpenModalButton>
           </div>
           <div className="flex flex-wrap items-start justify-between w-full">
@@ -146,46 +122,32 @@ function ConfirmNPayClient() {
       </Container>
       <Container className="border-t-4 border-slate-100 bg-background py-8">
         <h3 className="font-bold text-base text-foreground/75 mb-3">Riders Details</h3>
+        <div className="flex items-center justify-between mb-6">
+          <Label htmlFor="add-as-rider" className="text-sm font-normal text-muted-foreground">Add as riders</Label>
+          <Switch
+            id="add-as-rider"
+            checked={isAddRider}
+            onCheckedChange={handdleCheckedChange}
+          />
+        </div>
         <div className="space-y-6">
-          <div className="flex items-start justify-between w-full">
-            <div className="text-foreground/75">
-              <h4 className="font-semibold text-sm">Pramanda Tirta Mulya</h4>
-              <p className="text-xs font-normal text-foreground/50">ID Card - 33803028038082304</p>
-            </div>
-            <OpenModalButton
-              view='rider-detail-view'
-              variant='link'
-              className='border-none'
-            >
-              <SquarePen className="w-5 h-5" />
-            </OpenModalButton>
-          </div>
-          <div className="flex items-start justify-between w-full">
-            <div className="text-foreground/75">
-              <h4 className="font-semibold text-sm">Dimas Amrullah</h4>
-              <p className="text-xs font-normal text-foreground/50">ID Card - 33803028038082304</p>
-            </div>
-            <OpenModalButton
-              view='rider-detail-view'
-              variant='link'
-              className='border-none'
-            >
-              <SquarePen className="w-5 h-5" />
-            </OpenModalButton>
-          </div>
-          <div className="flex items-start justify-between w-full">
-            <div className="text-foreground/75">
-              <h4 className="font-semibold text-sm">Arsyad Zufaery</h4>
-              <p className="text-xs font-normal text-foreground/50">ID Card - 33803028038082304</p>
-            </div>
-            <OpenModalButton
-              view='rider-detail-view'
-              variant='link'
-              className='border-none'
-            >
-              <SquarePen className="w-5 h-5" />
-            </OpenModalButton>
-          </div>
+          {Array.from({ length: totalRiders }).map((_, idx) => {
+            return (
+              <div className="flex items-start justify-between w-full">
+                <div className="text-foreground/75">
+                  <h4 className="font-semibold text-sm">Your name here</h4>
+                  <p className="text-xs font-normal text-foreground/50">ID Card - 0000</p>
+                </div>
+                <OpenModalButton
+                  view='rider-detail-view'
+                  variant='link'
+                  className='border-none'
+                >
+                  <SquarePen className="w-5 h-5" />
+                </OpenModalButton>
+              </div>
+            )
+          })}
         </div>
       </Container>
       <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
@@ -309,10 +271,10 @@ function ConfirmNPayClient() {
         </div>
       </Container>
       {/* modal */}
-      {modalView === 'dates-select-view' && <DatesFormModal />}
-      {modalView === 'rider-select-view' && <RiderFormModal />}
+      {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.book_date as string} />}
+      {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
       {modalView === 'rider-detail-view' && <RiderDetailFormModal />}
-      
+
     </div>
   )
 }

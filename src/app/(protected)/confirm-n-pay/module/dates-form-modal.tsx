@@ -9,19 +9,41 @@ import CloseButton from '@/components/ui/button/close-button';
 import { Button } from '@/components/ui/button/button';
 import Heading from '@/components/ui/heading';
 import { useUiLayoutStore } from '@/store/ui-layout';
+import moment from 'moment';
+import { useBookStore } from '@/providers/store-providers/book-provider';
 
-function DatesFormModal() {
+type Props = {
+  dates: string;
+}
+function DatesFormModal({
+  dates,
+}: Props) {
+  const { updateBookingField } = useBookStore(state => state)
   const { showModal, closeModal } = useUiLayoutStore(state => state);
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
-  console.log(date)
+  const [date, setDate] = React.useState<Date | undefined>(new Date(dates));
+  const [time, setTime] = React.useState<number>(6)
 
+  const handleValueChange = (val: string) => {
+    setTime(parseInt(val));
+  }
+  const dateWithHours = () => {
+    const dateSetHours = date?.setHours(time);
+    return dateSetHours;
+  }
+  const handleSave = () => {
+    const newDate = moment(dateWithHours()).format('YYYY-MM-DD, h:mm:ss a')
+    updateBookingField({
+      book_date: newDate
+    });
+    closeModal();
+  }
   return (
     <Modal
       open={showModal}
       onClose={() => closeModal()}
       variant='bottom'
     >
-      <div className="w-full h-full pb-10">
+      <form className="w-full h-full pb-10">
         <Container className="relative flex flex-col justify-center w-full mx-auto mt-5">
           <div className="flex justify-end mt-4 mb-2">
             <CloseButton />
@@ -46,28 +68,31 @@ function DatesFormModal() {
               type="single"
               variant="outline"
               className="flex-wrap justify-start mt-4 gap-2 text-xs text-foregorund/50 rounded-sm"
+              onValueChange={value => handleValueChange(value)}
             >
-              <ToggleGroupItem value="a">6:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="b">7:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="c">8:00Am</ToggleGroupItem>
-              <ToggleGroupItem value="d">9:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="e">10:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="f">11:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="g">12:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="h">1:00PM</ToggleGroupItem>
-              <ToggleGroupItem value="i">2:00PM</ToggleGroupItem>
-              <ToggleGroupItem value="j">3:00PM</ToggleGroupItem>
-              <ToggleGroupItem value="k">4:00PM</ToggleGroupItem>
-              <ToggleGroupItem value="l">5:00PM</ToggleGroupItem>
+              <ToggleGroupItem value="6">6:00AM</ToggleGroupItem>
+              <ToggleGroupItem value="7">7:00AM</ToggleGroupItem>
+              <ToggleGroupItem value="8">8:00Am</ToggleGroupItem>
+              <ToggleGroupItem value="9">9:00AM</ToggleGroupItem>
+              <ToggleGroupItem value="10">10:00AM</ToggleGroupItem>
+              <ToggleGroupItem value="11">11:00AM</ToggleGroupItem>
+              <ToggleGroupItem value="12">12:00AM</ToggleGroupItem>
+              <ToggleGroupItem value="13">1:00PM</ToggleGroupItem>
+              <ToggleGroupItem value="14">2:00PM</ToggleGroupItem>
+              <ToggleGroupItem value="15">3:00PM</ToggleGroupItem>
+              <ToggleGroupItem value="16">4:00PM</ToggleGroupItem>
+              <ToggleGroupItem value="17">5:00PM</ToggleGroupItem>
             </ToggleGroup>
           </div>
           <div className="flex items-center justify-center mt-6 w-full">
             <Button
+              type='button'
               className="bg-brand hover:bg-brand/90"
+              onClick={handleSave}
             >Save</Button>
           </div>
         </Container>
-      </div>
+      </form>
     </Modal>
   )
 }

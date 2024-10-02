@@ -1,20 +1,28 @@
 'use client'
 
-import React from 'react'
-import { Plus, Minus } from 'lucide-react'
+import React from 'react';
+import { Plus, Minus } from 'lucide-react';
+import { useBookStore } from '@/providers/store-providers/book-provider';
 
 
-export default function CounterButton({ qty }: { qty: number }) {
-  const [count, setCount] = React.useState(qty)
+export default function CounterButton({
+  counter,
+  defaultValue = 1,
+}: {
+  counter: number;
+  defaultValue?: number
+}) {
+  const { updateBookingField } = useBookStore(state => state)
+  const [count, setCount] = React.useState(defaultValue);
 
   const handlePlus = () => {
     if (count < 10) {
-      setCount(prev => prev + qty)
+      setCount(prev => prev + counter)
     }
   }
   const handleMinus = () => {
     if (count >= 1) {
-      setCount(prev => prev - qty)
+      setCount(prev => prev - counter)
     }
   }
   return (

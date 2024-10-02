@@ -26,8 +26,8 @@ export const siteSetting = {
 }
 
 export const product = {
-  id: (Math.random() * 100) + 1,
-  name: "Beginner Ride 1",
-  price: 1000000,
+  id: 1,
+  name: 'Seadoo Safari Semarang',
+  price: 1567870,
   quantity: 1
 }
