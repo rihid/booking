@@ -13,6 +13,19 @@ function Testing() {
   const { count, incrementCount, decrementCount } = useCounterStore(
     (state) => state,
   )
+  // const fetchToken = async () => {
+  //   const response = await fetch('/api/auth/jwt', {
+  //     credentials: 'include',
+  //   });
+  //   if (response.ok) {
+  //     const data = await response.json();
+  //     return data.token;
+  //   }
+  //   return null;
+  // };
+  // React.useEffect(() => {
+  //   fetchToken();
+  // }, [])
   return (
     <div>
       <Calendar

@@ -17,49 +17,136 @@ import { useRouter } from 'next/navigation';
 import ProductSummary from './product-summary';
 import moment from 'moment';
 import useMidtransSnap from '@/lib/hooks/use-midtrans-snap';
+import axios from 'axios';
+import { customerUrl } from '@/lib/data/endpoints';
 
+type RiderType = {
+  book_no: string | null;
+  unit_no: string | null;
+  customer_no: string | null;
+  notes: string | null;
+  book_unit_id: string | null;
+  rating: string | null;
+  rating_notes: string | null;
+}
 
-function ConfirmNPayClient() {
+function ConfirmNPayClient({
+  token,
+}: {
+  token: any
+}) {
   const router = useRouter();
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, updateBookingField, } = useBookStore((state) => state);
 
-  const [isAddRider, setIsAddRider] = React.useState<boolean>(false)
-
+  const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
 
   const totalRiders = bookingField.numbers.reduce((acc, val) => {
     return acc + parseInt(val.qty)
   }, 0)
 
-  const handdleCheckedChange = (checked: boolean) => {
+  const createCustomer = async (body: any) => {
+    await axios.post(customerUrl, body, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token
+      }
+    })
+      .then(response => {
+        const data = response.data.data
+        console.log(data)
+        return data;
+      })
+      .catch(error => {
+        console.log(error);
+        throw error;
+      })
+  }
+  const handdleCheckedChange = async (checked: boolean) => {
+    const body = {
+      customer_no: null,
+      name: "Rizal Hidayatulloh",
+      address: null,
+      phone: null,
+      email: "rizalhidayat006@gmail.com",
+      identity_number: null,
+      vat: null,
+      rating: null,
+      birthday: null,
+      age: null,
+      org_no: "01",
+      type: "individual",
+      from: "user"
+    }
+    if (checked) {
+      // const data = await createCustomer(body);
+      // console.log(data)
+      await axios.post(customerUrl, body, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + token
+        }
+      })
+        .then(response => {
+          const data = response.data.data
+          console.log(data)
+          // return data;
+        })
+        .catch(error => {
+          console.log(error);
+          throw error;
+        })
+    }
     setIsAddRider(checked)
-    console.log('switch val', checked)
   }
 
   const product = {
     id: productBooked?.id,
     name: productBooked?.product_name,
-    price: productBooked?.prices[0].amount,
+    price: parseInt(productBooked?.prices[0].amount as string),
     quantity: 1
   }
   const { handleCheckout } = useMidtransSnap(product);
 
   React.useEffect(() => {
     if (productBooked) {
+      // numbers
+      const numberArr = bookingField.numbers.map((number, i) => ({
+        ...number,
+        product_no: productBooked.prices[i]?.product_no || number.product_no,
+        product_sku: productBooked.prices[i]?.product_sku || number.product_sku,
+        price: productBooked.prices[i]?.amount || number.price,
+        subtotal: productBooked.prices[i]?.amount || number.subtotal,
+        total: productBooked.prices[i]?.amount || number.total,
+        uom_id: productBooked.prices[i]?.uom_id || number.uom_id,
+        description: productBooked.product_description || number.description,
+      }));
+      // riders
+      let riderArr = [...bookingField.riders];
+      const riderCount = bookingField.riders.length
+      if (totalRiders > riderCount) {
+        for (let i = riderCount; i < totalRiders; i++) {
+          riderArr.push({
+            book_no: null,
+            unit_no: null,
+            customer_no: "",
+            notes: null,
+            book_unit_id: null,
+            rating: null,
+            rating_notes: null,
+          });
+        }
+      } else if (totalRiders < riderCount) {
+        riderArr = riderArr.slice(0, totalRiders);
+      }
+
       updateBookingField({
-        numbers: bookingField.numbers.map((number, i) => ({
-          ...number,
-          product_no: productBooked.prices[i]?.product_no || number.product_no,
-          product_sku: productBooked.prices[i]?.product_sku || number.product_sku,
-          price: productBooked.prices[i]?.amount || number.price,
-          subtotal: productBooked.prices[i]?.amount || number.subtotal,
-          total: productBooked.prices[i]?.amount || number.total,
-          uom_id: productBooked.prices[i]?.uom_id || number.uom_id,
-          description: productBooked.product_description || number.description,
-        })),
-      })
+        numbers: numberArr,
+        riders: riderArr,
+      });
+
     }
-  }, [productBooked, updateBookingField])
+  }, [productBooked, totalRiders, updateBookingField])
 
   return (
     <div className="flex flex-col min-h-screen mb-20">
@@ -131,21 +218,24 @@ function ConfirmNPayClient() {
           />
         </div>
         <div className="space-y-6">
-          {Array.from({ length: totalRiders }).map((_, idx) => {
+          {bookingField.riders.map((rider, idx) => {
             return (
-              <div className="flex items-start justify-between w-full">
-                <div className="text-foreground/75">
-                  <h4 className="font-semibold text-sm">Your name here</h4>
-                  <p className="text-xs font-normal text-foreground/50">ID Card - 0000</p>
+              <React.Fragment key={idx}>
+                <div className="flex items-start justify-between w-full">
+                  <div className="text-foreground/75">
+                    <h4 className="font-semibold text-sm">Your name here</h4>
+                    <p className="text-xs font-normal text-foreground/50">ID Card - 0000</p>
+                  </div>
+                  <OpenModalButton
+                    view='rider-detail-view'
+                    variant='link'
+                    className='border-none'
+                  >
+                    <SquarePen className="w-5 h-5" />
+                  </OpenModalButton>
                 </div>
-                <OpenModalButton
-                  view='rider-detail-view'
-                  variant='link'
-                  className='border-none'
-                >
-                  <SquarePen className="w-5 h-5" />
-                </OpenModalButton>
-              </div>
+                {modalView === 'rider-detail-view' && <RiderDetailFormModal />}
+              </React.Fragment>
             )
           })}
         </div>
@@ -182,7 +272,6 @@ function ConfirmNPayClient() {
                 Rp 1,100.000 x 1 Single Ride
               </dt>
               <dd className="text-foreground/50 text-sm">
-                {/* <p className="text-xs text-foreground/50">You can ride your own Jetsky</p> */}
                 Rp 1,200,000
               </dd>
             </div>
@@ -196,7 +285,6 @@ function ConfirmNPayClient() {
                 Total
               </dt>
               <dd className="text-foreground/75 font-semibold text-sm">
-                {/* <p className="text-xs text-foreground/50">You can ride your own Jetsky</p> */}
                 Rp 1,200,000
               </dd>
             </div>
@@ -270,10 +358,8 @@ function ConfirmNPayClient() {
           >Confirm & pay</Button>
         </div>
       </Container>
-      {/* modal */}
       {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.book_date as string} />}
       {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
-      {modalView === 'rider-detail-view' && <RiderDetailFormModal />}
 
     </div>
   )

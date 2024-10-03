@@ -1,9 +1,24 @@
+'use server';
+
 import axios from "axios";
 import { z } from "zod";
 import { productUrl, loginUrl, userTokenUrl, customerUrl } from "@/lib/data/endpoints";
 import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema } from "@/lib/schema";
 import { generateProductSlug } from '@/lib/helper';
+import { getSession } from "../session";
 
+// export const setHeader = async() => {
+//   const session = await getSession();
+//   const headers: { [key: string]: any} = {
+//     Accept: 'application/json',
+//   }
+//   if(session) {
+//     // @ts-ignore
+//     headers.Authorization = 'Bearer ' + session.user.token
+//   }
+
+//   return headers;
+// }
 
 export const postAuth = async (body: z.infer<typeof LoginFormSchema>) => {
   try {
@@ -79,11 +94,4 @@ export const getSingleProductPublic = async (id: string) => {
     console.log(error);
     throw error;
   }
-}
-export const createCustomer = async (body: any) => {
-  await axios.post(customerUrl, body, {
-    headers: {
-      Accept: 'application/json',
-    }
-  })
 }

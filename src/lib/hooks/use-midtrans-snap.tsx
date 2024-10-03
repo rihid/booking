@@ -1,6 +1,12 @@
 import React from "react";
 
 const useMidtransSnap = (product: any) => {
+  // const data = {
+  //   id: '1',
+  //   name: 'Seadoo Safari Semarang',
+  //   price: '1567870',
+  //   quantity: '1'
+  // }
   const handleCheckout = React.useCallback(async () => {
     try {
       const response = await fetch('/api/transaction', {

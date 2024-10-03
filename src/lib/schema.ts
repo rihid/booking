@@ -60,6 +60,21 @@ export const BookingFieldSchema = z.object({
     })
   )
 });
+export const CustomerFieldSchema = z.object({
+  customer_no: z.string().nullable(),
+  name: z.string(),
+  address: z.string().nullable(),
+  phone: z.string().nullable(),
+  email: z.string(),
+  identity_number: z.string().nullable(),
+  vat: z.string().nullable(),
+  rating: z.string().nullable(),
+  birthday: z.string().nullable(),
+  age: z.string().nullable(),
+  org_no: z.string().nullable(),
+  type: z.string().nullable(),
+  from: z.string().nullable()
+})
 
 // api rerponse Schema
 export const AuthSchema = z.object({

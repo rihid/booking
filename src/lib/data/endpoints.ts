@@ -5,5 +5,26 @@ export const loginUrl = domain + '/safari/api/v1/auth-service/user/auth';
 export const userTokenUrl = domain + '/safari/api/v1/auth-service/user/token'
 export const productUrl = domain + '/safari/api/v2/master-service/product';
 // booking service
-export const bookingUrl = domain + '/booking-service'
+export const bookingUrl = domain + '/safari/api/v1/booking-service'
 export const customerUrl = bookingUrl + '/customer'
+
+export const setHeader = async () => {
+  let token;
+  const response = await fetch('http://localhost:3000/api/auth/jwt', {
+    method: 'GET',
+    credentials: 'include'
+  });
+  if (response.ok) {
+    const data = await response.json();
+    token = data.token;
+  }
+
+  const headers: { [key: string]: any } = {
+    Accept: 'application/json',
+  };
+  if (token) {
+    headers.Authorization = 'Bearer ' + token;
+  }
+
+  return headers;
+};
