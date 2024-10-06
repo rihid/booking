@@ -11,12 +11,11 @@ export const metadata: Metadata = {
 
 async function ConfirmNPay() {
   const session = await getSession();
-  let token;
+  let user;
   if(session) {
-    // @ts-ignore
-    token = session.user.token;
+    user = session.user;
   }
-  return <ConfirmNPayClient token={token}  />;
+  return <ConfirmNPayClient user={user}  />;
 }
 
 export default ConfirmNPay;

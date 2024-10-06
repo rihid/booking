@@ -19,56 +19,49 @@ import moment from 'moment';
 import useMidtransSnap from '@/lib/hooks/use-midtrans-snap';
 import axios from 'axios';
 import { customerUrl } from '@/lib/data/endpoints';
-
-type RiderType = {
-  book_no: string | null;
-  unit_no: string | null;
-  customer_no: string | null;
-  notes: string | null;
-  book_unit_id: string | null;
-  rating: string | null;
-  rating_notes: string | null;
-}
+import { z } from 'zod';
+import { CustomerFieldSchema } from '@/lib/schema';
+import { currency } from '@/lib/helper';
 
 function ConfirmNPayClient({
-  token,
+  user,
 }: {
-  token: any
+  user: any
 }) {
   const router = useRouter();
   const { modalView } = useUiLayoutStore();
-  const { bookingField, productBooked, updateBookingField, } = useBookStore((state) => state);
+  const { bookingField, productBooked, customers, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
 
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
+  const [index, setIndex] = React.useState<number>(0)
+  const [customer, setCustomer] = React.useState<z.infer<typeof CustomerFieldSchema>>({
+    id: null,
+    customer_no: null,
+    name: "",
+    address: null,
+    phone: null,
+    email: "",
+    identity_number: null,
+    vat: null,
+    rating: null,
+    birthday: null,
+    age: null,
+    org_no: "",
+    type: "individual",
+    from: ""
+  })
 
   const totalRiders = bookingField.numbers.reduce((acc, val) => {
     return acc + parseInt(val.qty)
   }, 0)
 
-  const createCustomer = async (body: any) => {
-    await axios.post(customerUrl, body, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token
-      }
-    })
-      .then(response => {
-        const data = response.data.data
-        console.log(data)
-        return data;
-      })
-      .catch(error => {
-        console.log(error);
-        throw error;
-      })
-  }
   const handdleCheckedChange = async (checked: boolean) => {
     const body = {
       customer_no: null,
-      name: "Rizal Hidayatulloh",
+      name: user.name,
       address: null,
       phone: null,
-      email: "rizalhidayat006@gmail.com",
+      email: user.email,
       identity_number: null,
       vat: null,
       rating: null,
@@ -79,18 +72,19 @@ function ConfirmNPayClient({
       from: "user"
     }
     if (checked) {
-      // const data = await createCustomer(body);
-      // console.log(data)
       await axios.post(customerUrl, body, {
         headers: {
           Accept: 'application/json',
-          Authorization: 'Bearer ' + token
+          Authorization: 'Bearer ' + user.token
         }
       })
         .then(response => {
           const data = response.data.data
           console.log(data)
-          // return data;
+          editCustomer(0, {
+            ...customers[0],
+            ...data,
+          })
         })
         .catch(error => {
           console.log(error);
@@ -100,10 +94,31 @@ function ConfirmNPayClient({
     setIsAddRider(checked)
   }
 
+  const handleOpenModal = (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => {
+    setIndex(idx);
+    setCustomer(customer);
+    editCustomer(idx, {
+      ...customers[idx],
+      ...customer
+    })
+  }
+
+  // prices
+  const singlePrice = parseFloat(bookingField.numbers[0].price);
+  const couplePrice = parseFloat(bookingField.numbers[1].price);
+  const singleSubtotal = singlePrice * parseFloat(bookingField.numbers[0].qty);
+  const coupleSubtotal = couplePrice * parseFloat(bookingField.numbers[1].qty);
+  const sumTotal = (...items: number[]) => {
+    const total = items.reduce( (acc, item) => {
+      return acc + item;
+    }, 0)
+    return total;
+  }
+  const totalPrice = sumTotal(singleSubtotal, coupleSubtotal);
   const product = {
     id: productBooked?.id,
     name: productBooked?.product_name,
-    price: parseInt(productBooked?.prices[0].amount as string),
+    price: totalPrice,
     quantity: 1
   }
   const { handleCheckout } = useMidtransSnap(product);
@@ -139,15 +154,88 @@ function ConfirmNPayClient({
       } else if (totalRiders < riderCount) {
         riderArr = riderArr.slice(0, totalRiders);
       }
-
       updateBookingField({
         numbers: numberArr,
         riders: riderArr,
       });
 
-    }
-  }, [productBooked, totalRiders, updateBookingField])
+      // customer
+      let customerArr = [...customers];
+      if (totalRiders > customerArr.length) {
+        const newCustomer = {
+          id: null,
+          customer_no: null,
+          name: "",
+          address: null,
+          phone: null,
+          email: "",
+          identity_number: null,
+          vat: null,
+          rating: null,
+          birthday: null,
+          age: null,
+          org_no: "",
+          type: "",
+          from: "",
+        };
 
+        addCustomer(newCustomer);
+      }
+      else if (totalRiders < customerArr.length) {
+        const updatedCustomerArr = customerArr.slice(0, totalRiders);
+        updateCustomerList(updatedCustomerArr);
+      }
+
+    }
+  }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList])
+
+  const RiderDetailComp = () => {
+    return (
+      <Container className="border-t-4 border-slate-100 bg-background py-8">
+        <h3 className="font-bold text-base text-foreground/75 mb-3">Riders Details</h3>
+        <div className="flex items-center justify-between mb-6">
+          <Label htmlFor="add-as-rider" className="text-sm font-normal text-muted-foreground">Add as riders</Label>
+          <Switch
+            id="add-as-rider"
+            checked={isAddRider}
+            onCheckedChange={handdleCheckedChange}
+          />
+        </div>
+        <div className="space-y-6">
+          {customers.map((customer, idx) => {
+
+            return (
+              <React.Fragment key={idx}>
+                <div className="flex items-start justify-between w-full">
+                  {customer.id !== null ?
+                    <div className="text-foreground/75">
+                      <h4 className="font-semibold text-sm">{customer.name}</h4>
+                      <p className="text-xs font-normal text-foreground/50">ID Card - {customer.identity_number}</p>
+                    </div>
+                    :
+                    <div className="text-foreground/75">
+                      <h4 className="font-semibold text-sm">Your name here</h4>
+                      <p className="text-xs font-normal text-foreground/50">ID Card - 0000</p>
+                    </div>
+                  }
+
+                  <OpenModalButton
+                    view='rider-detail-view'
+                    variant='link'
+                    className='border-none'
+                    // @ts-ignore
+                    onClick={() => handleOpenModal(idx, customer)}
+                  >
+                    <SquarePen className="w-5 h-5" />
+                  </OpenModalButton>
+                </div>
+              </React.Fragment>
+            )
+          })}
+        </div>
+      </Container>
+    )
+  }
   return (
     <div className="flex flex-col min-h-screen mb-20">
       <Container className="py-6 sticky top-0 z-30 bg-background w-full border-b border-foreground-muted flex justify-between items-center shrink-0">
@@ -207,59 +295,25 @@ function ConfirmNPayClient({
           </div>
         </div>
       </Container>
-      <Container className="border-t-4 border-slate-100 bg-background py-8">
-        <h3 className="font-bold text-base text-foreground/75 mb-3">Riders Details</h3>
-        <div className="flex items-center justify-between mb-6">
-          <Label htmlFor="add-as-rider" className="text-sm font-normal text-muted-foreground">Add as riders</Label>
-          <Switch
-            id="add-as-rider"
-            checked={isAddRider}
-            onCheckedChange={handdleCheckedChange}
-          />
-        </div>
-        <div className="space-y-6">
-          {bookingField.riders.map((rider, idx) => {
-            return (
-              <React.Fragment key={idx}>
-                <div className="flex items-start justify-between w-full">
-                  <div className="text-foreground/75">
-                    <h4 className="font-semibold text-sm">Your name here</h4>
-                    <p className="text-xs font-normal text-foreground/50">ID Card - 0000</p>
-                  </div>
-                  <OpenModalButton
-                    view='rider-detail-view'
-                    variant='link'
-                    className='border-none'
-                  >
-                    <SquarePen className="w-5 h-5" />
-                  </OpenModalButton>
-                </div>
-                {modalView === 'rider-detail-view' && <RiderDetailFormModal />}
-              </React.Fragment>
-            )
-          })}
-        </div>
-      </Container>
+      <RiderDetailComp />
       <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
         <div>
           <h3 className="font-bold text-base text-foreground/75 mb-3">Price Details</h3>
           <dl className="space-y-4">
             <div className="flex items-center justify-between gap-x-6 gap-y-4">
               <dt className="text-sm font-medium text-foreground/50">
-                Rp 1,100.000 x 1 Single Ride
+                {currency(singlePrice)} x {bookingField.numbers[0].qty} Single Ride
               </dt>
               <dd className="text-foreground/50 text-sm">
-                {/* <p className="text-xs text-foreground/50">You can ride your own Jetsky</p> */}
-                Rp 1,200,000
+                {currency(singleSubtotal)}
               </dd>
             </div>
             <div className="flex items-center justify-between gap-x-6 gap-y-4">
               <dt className="text-sm font-medium text-foreground/50">
-                Rp 1,100.000 x 1 Couple Ride
+                {currency(couplePrice)} x {bookingField.numbers[1].qty} Couple Ride
               </dt>
               <dd className="text-foreground/50 text-sm">
-                {/* <p className="text-xs text-foreground/50">You trip guided by our captain</p> */}
-                Rp 1,200,000
+                { currency(coupleSubtotal)}
               </dd>
             </div>
           </dl>
@@ -269,10 +323,10 @@ function ConfirmNPayClient({
           <dl className="space-y-4">
             <div className="flex items-center justify-between gap-x-6 gap-y-4">
               <dt className="text-sm font-medium text-foreground/50">
-                Rp 1,100.000 x 1 Single Ride
+                Rp 000.000 x 0 Single Ride
               </dt>
               <dd className="text-foreground/50 text-sm">
-                Rp 1,200,000
+                Rp 000,000
               </dd>
             </div>
           </dl>
@@ -285,7 +339,7 @@ function ConfirmNPayClient({
                 Total
               </dt>
               <dd className="text-foreground/75 font-semibold text-sm">
-                Rp 1,200,000
+                {currency(totalPrice)}
               </dd>
             </div>
           </dl>
@@ -360,6 +414,7 @@ function ConfirmNPayClient({
       </Container>
       {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.book_date as string} />}
       {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
+      {modalView === 'rider-detail-view' && <RiderDetailFormModal token={user.token} idx={index} customer={customer} />}
 
     </div>
   )

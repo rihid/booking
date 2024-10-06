@@ -7,12 +7,15 @@ import { cn } from '@/assets/styles/utils';
 
 export type OpenModalButtonProps = {
   view: string;
+  onClick?: () => void;
   variant?: string;
   className?: string;
   children: React.ReactNode
 }
+
 function OpenModalButton({
   view,
+  onClick,
   variant = 'link',
   className,
   children,
@@ -22,7 +25,10 @@ function OpenModalButton({
 
   const handleClick = () => {
     setModalView(view);
-    return openModal(view);
+    openModal(view);
+    if (onClick) {
+      onClick();
+    }
   }
 
   switch (variant) {
@@ -55,7 +61,6 @@ function OpenModalButton({
         </Button>
       )
   }
-
 }
 
 export default OpenModalButton;

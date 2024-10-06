@@ -105,10 +105,14 @@ function CopleRiderCard({
     const updatedNumbers = [...bookingField.numbers];
 
     if (!updatedNumbers[1]) {
-      updatedNumbers[1] = {
-        ...updatedNumbers[0],
-        qty: newCount.toString(),
-      };
+      if(newCount !== 0) {
+        updatedNumbers[1] = {
+          ...updatedNumbers[0],
+          qty: newCount.toString(),
+        }
+      } else if (newCount === 0) {
+        updatedNumbers.slice(0, 1);
+      }
     } else {
       updatedNumbers[1].qty = newCount;
     }

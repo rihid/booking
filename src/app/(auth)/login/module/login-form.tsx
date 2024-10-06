@@ -29,16 +29,17 @@ function LoginForm() {
   });
 
   const onSubmit = async (values: z.infer<typeof LoginFormSchema>) => {
-    // const res = await postAuth(values)
-    postAuth(values)
-    .then(response => {
-      if(response)
-      login(response.token);
+    startTransition(() => {
+      postAuth(values)
+        .then(response => {
+          if (response)
+            login(response.token);
+        })
+        .catch(error => {
+          setError(error.message);
+          throw error
+        });
     })
-    .catch(error => {
-      setError(error.message);
-      throw error
-    });
   }
 
   return (

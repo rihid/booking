@@ -2,17 +2,21 @@ import { createStore } from "zustand/vanilla";
 import { persist, createJSONStorage } from 'zustand/middleware';
 import moment from "moment";
 import { z } from 'zod';
-import { SingleProductSchema, BookingFieldSchema } from "@/lib/schema";
+import { SingleProductSchema, BookingFieldSchema, CustomerFieldSchema } from "@/lib/schema";
 
 const initialDate = moment().format('YYYY-MM-DD');
 
 export type BookState = {
   bookingField: z.infer<typeof BookingFieldSchema>;
   productBooked: z.infer<typeof SingleProductSchema> | null;
+  customers: z.infer<typeof CustomerFieldSchema>[];
 }
 export type BookActions = {
   addBooking: (product: z.infer<typeof SingleProductSchema> | null) => void;
   updateBookingField: (values: Partial<BookState['bookingField']>) => void;
+  addCustomer: (customer: z.infer<typeof CustomerFieldSchema>) => void;
+  editCustomer: (index: number, customer: z.infer<typeof CustomerFieldSchema>) => void;
+  updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => void
 }
 
 export type BookStore = BookState & BookActions
@@ -101,6 +105,7 @@ export const defaultInitState: BookState = {
     ]
   },
   productBooked: null,
+  customers: []
 }
 
 export const createBookStore = (
@@ -118,7 +123,21 @@ export const createBookStore = (
               ...values
             }
           })))
-        }
+        },
+        addCustomer: (customer: z.infer<typeof CustomerFieldSchema>) => set((state) => ({
+          customers: [
+            ...state.customers,
+            customer
+          ]
+        })),
+        editCustomer: (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => set((state) => {
+          const customerArr = [...state.customers];
+          customerArr[idx] = customer;
+          return { customers: customerArr };
+        }),
+        updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => set((state) => ({
+          customers: customers
+        })),
       }),
       {
         name: 'safari-booking',

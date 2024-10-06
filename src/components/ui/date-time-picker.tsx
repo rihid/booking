@@ -760,5 +760,101 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
 
 DateTimePicker.displayName = 'DateTimePicker';
 
-export { DateTimePicker, TimePickerInput, TimePicker };
+const DatePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePickerProps>(
+  (
+    {
+      locale = enUS,
+      value,
+      onChange,
+      hourCycle = 24,
+      yearRange = 50,
+      disabled = false,
+      displayFormat,
+      granularity = 'day',
+      placeholder = 'Pick a date',
+      ...props
+    },
+    ref,
+  ) => {
+    const [month, setMonth] = React.useState<Date>(value ?? new Date());
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    /**
+     * carry over the current time when a user clicks a new day
+     * instead of resetting to 00:00
+     */
+    const handleSelect = (newDay: Date | undefined) => {
+      if (!newDay) return;
+      if (!value) {
+        onChange?.(newDay);
+        setMonth(newDay);
+        return;
+      }
+      const diff = newDay.getTime() - value.getTime();
+      const diffInDays = diff / (1000 * 60 * 60 * 24);
+      const newDateFull = add(value, { days: Math.ceil(diffInDays) });
+      onChange?.(newDateFull);
+      setMonth(newDateFull);
+    };
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        ...buttonRef.current,
+        value,
+      }),
+      [value],
+    );
+
+    let loc = enUS;
+    const { options, localize, formatLong } = locale;
+    if (options && localize && formatLong) {
+      loc = {
+        ...enUS,
+        options,
+        localize,
+        formatLong,
+      };
+    }
+
+    return (
+      <Popover>
+        <PopoverTrigger asChild disabled={disabled}>
+          <Button
+            variant="outline"
+            className={cn(
+              'w-full flex items-center justify-between text-left font-normal',
+              !value && 'text-muted-foreground',
+            )}
+            ref={buttonRef}
+          >
+            {value ? (
+              <span>{format(value, 'P')}</span>
+            ) : (
+              <span>{placeholder}</span>
+            )}
+            <CalendarIcon className="inline-flex h-4 w-4" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            selected={value}
+            month={month}
+            onSelect={(d) => handleSelect(d)}
+            onMonthChange={handleSelect}
+            yearRange={yearRange}
+            locale={locale}
+            {...props}
+          />
+        </PopoverContent>
+      </Popover>
+    );
+  },
+);
+
+DatePicker.displayName = 'DatePicker';
+
+
+
+export { DateTimePicker, TimePickerInput, TimePicker, DatePicker };
 export type { TimePickerType, DateTimePickerProps, DateTimePickerRef };

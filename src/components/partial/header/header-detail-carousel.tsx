@@ -31,8 +31,8 @@ function HeaaderDetailCarousel() {
 
   return (
     <>
-      <Carousel 
-        setApi={setApi} 
+      <Carousel
+        setApi={setApi}
         // plugins={[
         //   Autoplay({
         //     delay: 3000,
@@ -46,19 +46,17 @@ function HeaaderDetailCarousel() {
         <CarouselContent>
           {Array.from({ length: 5 }).map((_, index) => (
             <CarouselItem key={index}>
-              <Link href={'/d'}>
-                <div className="flex aspect-w-5 aspect-h-4 w-full h-0">
-                  <Image
-                    src="/images/img-grid-3.png"
-                    alt='auth-image'
-                    width={0}
-                    height={0}
-                    priority
-                    sizes='100vw'
-                    className="h-full w-full object-cover object-center rounded-b-[40px]"
-                  />
-                </div>
-              </Link>
+              <div className="flex aspect-w-5 aspect-h-4 w-full h-0 cursor-pointer">
+                <Image
+                  src="/images/img-grid-3.png"
+                  alt='auth-image'
+                  width={0}
+                  height={0}
+                  priority
+                  sizes='100vw'
+                  className="h-full w-full object-cover object-center rounded-b-[40px]"
+                />
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>

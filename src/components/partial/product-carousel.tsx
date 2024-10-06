@@ -9,8 +9,10 @@ import { cn } from '@/assets/styles/utils';
 
 function ProductCarousel({
   slug,
-}:{
+  pictures,
+}: {
   slug: string;
+  pictures: any;
 }) {
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
@@ -28,28 +30,48 @@ function ProductCarousel({
       setCurrent(api.selectedScrollSnap())
     })
   }, [api])
-
   return (
     <>
       <Carousel setApi={setApi} className="w-full flex-shrink-0 rounded-md overflow-hidden">
-        <CarouselContent>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <CarouselItem key={index}>
-              <Link href={`/p/${encodeURIComponent(slug)}`}>
-                <div className="flex aspect-w-5 aspect-h-4 w-full h-0">
-                  <Image
-                    src="/images/img-grid-1.png"
-                    alt="image"
-                    width={0}
-                    height={0}
-                    sizes="100vw"
-                    className="h-full w-full object-cover rounded-md"
-                  />
-                </div>
-              </Link>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+        {pictures.length !== 0 ?
+          <CarouselContent>
+            {pictures.map((picture: any) => (
+              <CarouselItem key={picture.id}>
+                <Link href={`/p/${encodeURIComponent(slug)}`}>
+                  <div className="flex aspect-w-5 aspect-h-4 w-full h-0">
+                    <Image
+                      src={picture.url}
+                      alt="image"
+                      width={0}
+                      height={0}
+                      sizes="100vw"
+                      className="h-full w-full object-cover rounded-md"
+                    />
+                  </div>
+                </Link>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          :
+          <CarouselContent>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <CarouselItem key={index}>
+                <Link href={`/p/${encodeURIComponent(slug)}`}>
+                  <div className="flex aspect-w-5 aspect-h-4 w-full h-0">
+                    <Image
+                      src="/images/img-grid-1.png"
+                      alt="image"
+                      width={0}
+                      height={0}
+                      sizes="100vw"
+                      className="h-full w-full object-cover rounded-md"
+                    />
+                  </div>
+                </Link>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        }
         <div className="absolute bottom-4 left-0 right-0">
           <div className="flex items-center justify-center space-x-1">
             {Array.from({ length: count }).map((_, index) => (
@@ -63,7 +85,6 @@ function ProductCarousel({
               />
             ))}
           </div>
-
         </div>
       </Carousel>
     </>

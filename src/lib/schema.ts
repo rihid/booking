@@ -61,22 +61,23 @@ export const BookingFieldSchema = z.object({
   )
 });
 export const CustomerFieldSchema = z.object({
+  id: z.optional(z.string().nullable()),
   customer_no: z.string().nullable(),
   name: z.string(),
   address: z.string().nullable(),
   phone: z.string().nullable(),
-  email: z.string(),
+  email: z.string().nullable(),
   identity_number: z.string().nullable(),
   vat: z.string().nullable(),
   rating: z.string().nullable(),
-  birthday: z.string().nullable(),
+  birthday: z.any().nullable(),
   age: z.string().nullable(),
   org_no: z.string().nullable(),
   type: z.string().nullable(),
-  from: z.string().nullable()
+  from: z.optional(z.string().nullable())
 })
 
-// api rerponse Schema
+// api response Schema
 export const AuthSchema = z.object({
   token: z.string(),
   kong: z.object({
@@ -152,6 +153,7 @@ export const ProductSchema = z.object({
     org_no: z.string().nullable(),
     branch_no: z.string().nullable()
   })),
+  pictures: z.array(z.any())
 });
 
 export const SingleProductSchema = z.object({
@@ -253,3 +255,18 @@ export const SingleProductSchema = z.object({
     })
   )
 });
+export const CustomerSchema = z.object({
+  id: z.string(),
+  customer_no: z.string(),
+  name: z.string(),
+  address: z.string().nullable(),
+  phone: z.string().nullable(),
+  email: z.string().nullable(),
+  identity_number: z.string().nullable(),
+  vat: z.string().nullable(),
+  rating: z.string().nullable(),
+  birthday: z.string().nullable(),
+  age: z.string().nullable(),
+  org_no: z.string().nullable(),
+  type: z.string().nullable(),
+})

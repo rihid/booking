@@ -26,16 +26,3 @@ function HeaderImageCarausel({
 }
 
 export default HeaderImageCarausel;
-
-{/* <Link href={'/d'}>
-<div className="flex aspect-w-5 aspect-h-4 w-full h-0">
-  <Image
-    src="/images/img-grid-1.png"
-    alt="image"
-    width={0}
-    height={0}
-    sizes="100vw"
-    className="h-full w-full object-cover rounded-md"
-  />
-</div>
-</Link> */}

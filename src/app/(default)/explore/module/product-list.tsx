@@ -18,7 +18,7 @@ async function ProductList() {
           className="border-none shadow-none"
         >
           <div className="relative flex flex-col">
-            <ProductCarousel slug={product.slug} />
+            <ProductCarousel slug={product.slug} pictures={product.pictures} />
             <div className="space-y-0.5 mt-3">
               <div>
                 <div className="flex justify-between items-center">

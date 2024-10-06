@@ -30,6 +30,7 @@ function Testing() {
     <div>
       <Calendar
         mode="single"
+        captionLayout='dropdown-years'
         selected={date}
         onSelect={setDate}
         className="rounded-md border shadow"
