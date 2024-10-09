@@ -54,7 +54,7 @@ function ProductCarousel({
           </CarouselContent>
           :
           <CarouselContent>
-            {Array.from({ length: 5 }).map((_, index) => (
+            {Array.from({ length: 3 }).map((_, index) => (
               <CarouselItem key={index}>
                 <Link href={`/p/${encodeURIComponent(slug)}`}>
                   <div className="flex aspect-w-5 aspect-h-4 w-full h-0">

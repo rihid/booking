@@ -789,7 +789,7 @@ const DatePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePickerPr
         setMonth(newDay);
         return;
       }
-      const diff = newDay.getTime() - value.getTime();
+      const diff = newDay.getTime() - new Date(value).getTime();
       const diffInDays = diff / (1000 * 60 * 60 * 24);
       const newDateFull = add(value, { days: Math.ceil(diffInDays) });
       onChange?.(newDateFull);
@@ -822,7 +822,7 @@ const DatePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePickerPr
           <Button
             variant="outline"
             className={cn(
-              'w-full flex items-center justify-between text-left font-normal',
+              'w-full px-4 flex items-center justify-between text-left font-normal',
               !value && 'text-muted-foreground',
             )}
             ref={buttonRef}

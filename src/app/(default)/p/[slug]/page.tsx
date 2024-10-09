@@ -63,7 +63,7 @@ async function Detail({
     <React.Fragment>
       <div className="flex flex-col min-h-screen">
         <div className="relative">
-          <HeaaderDetailCarousel />
+          <HeaaderDetailCarousel pictures={selectedProd.pictures} />
           <div className="absolute z-30 top-6 left-0 right-0 px-[30px] flex items-center justify-between">
             <Button
               type='button'

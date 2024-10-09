@@ -6,7 +6,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Autoplay from 'embla-carousel-autoplay'
 
-function HeaaderDetailCarousel() {
+function HeaaderDetailCarousel({
+  pictures,
+}: {
+  pictures: any;
+}) {
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [count, setCount] = React.useState(0)
@@ -43,23 +47,44 @@ function HeaaderDetailCarousel() {
         onMouseLeave={plugin.current.reset}
         className="w-full flex-shrink-0 overflow-hidden"
       >
-        <CarouselContent>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <CarouselItem key={index}>
-              <div className="flex aspect-w-5 aspect-h-4 w-full h-0 cursor-pointer">
-                <Image
-                  src="/images/img-grid-3.png"
-                  alt='auth-image'
-                  width={0}
-                  height={0}
-                  priority
-                  sizes='100vw'
-                  className="h-full w-full object-cover object-center rounded-b-[40px]"
-                />
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+        {pictures.length !== 0 ?
+          <CarouselContent>
+            {pictures.map((picture: any) => (
+              <CarouselItem key={picture.id}>
+                <div className="flex aspect-w-5 aspect-h-4 w-full h-0 cursor-pointer">
+                  <Image
+                    src={picture.url}
+                    alt='auth-image'
+                    width={0}
+                    height={0}
+                    priority
+                    sizes='100vw'
+                    quality={100}
+                    className="h-full w-full object-cover object-center rounded-b-[40px]"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          :
+          <CarouselContent>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <CarouselItem key={index}>
+                <div className="flex aspect-w-5 aspect-h-4 w-full h-0 cursor-pointer">
+                  <Image
+                    src="/images/img-grid-3.png"
+                    alt='auth-image'
+                    width={0}
+                    height={0}
+                    priority
+                    sizes='100vw'
+                    className="h-full w-full object-cover object-center rounded-b-[40px]"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        }
         <div className="absolute bottom-5 right-7">
           <div className="py-1 px-2 rounded bg-background/50 text-center text-xs font-foreground/50">
             <span>

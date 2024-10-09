@@ -14,14 +14,16 @@ import { useUiLayoutStore } from '@/store/ui-layout';
 import { useBookStore } from '@/providers/store-providers/book-provider';
 import RiderDetailFormModal from './rider-detail-form-modal';
 import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import ProductSummary from './product-summary';
 import moment from 'moment';
 import useMidtransSnap from '@/lib/hooks/use-midtrans-snap';
 import axios from 'axios';
-import { customerUrl } from '@/lib/data/endpoints';
+import { customerUrl, customerUserUrl } from '@/lib/data/endpoints';
 import { z } from 'zod';
-import { CustomerFieldSchema } from '@/lib/schema';
+import { CustomerFieldSchema, BookingFieldSchema } from '@/lib/schema';
 import { currency } from '@/lib/helper';
+import RiderInfoModal from './rider-info-modal';
 
 function ConfirmNPayClient({
   user,
@@ -32,8 +34,91 @@ function ConfirmNPayClient({
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
 
+  const [booking, setBooking] = React.useState<z.infer<typeof BookingFieldSchema>>({
+    type_id: "",
+    book_no: null,
+    book_date: "",
+    customer_no: "",
+    schedule_check_in_date: "",
+    schedule_check_out_date: null,
+    check_in_date: null,
+    check_out_date: null,
+    duration: null,
+    notes: null,
+    product_no: null,
+    bill_no: null,
+    create_by: null,
+    status: "open",
+    lock: false,
+    org_no: "",
+    branch_no: null,
+    unit_qty: null,
+    subtotal: "0",
+    discount: "0",
+    promo_id: null,
+    tax: "0",
+    tax_id: null,
+    total: "",
+    ref_no: null,
+    captain_no: null,
+    customer_service_no: null,
+    penalty: null,
+    numbers: [
+      {
+        id: null,
+        book_no: null,
+        type: "product",
+        qty: "1",
+        product_no: "",
+        product_sku: "",
+        variant: null,
+        price: "0",
+        subtotal: "0",
+        discount: "0",
+        tax: "0",
+        tax_id: null,
+        total: "",
+        is_guided: false,
+        ref_no: null,
+        check: false,
+        uom_id: "",
+        description: null
+      }
+    ],
+    riders: [
+      {
+        book_no: null,
+        unit_no: null,
+        customer_no: "",
+        notes: null,
+        book_unit_id: null,
+        rating: null,
+        rating_notes: null
+      }
+    ],
+    payments: [
+      {
+        id: null,
+        payment_no: null,
+        book_no: null,
+        payment_date: "",
+        method_id: "",
+        amount: "",
+        promo_id: null,
+        round: null,
+        discount: "0",
+        total: "",
+        org_no: "",
+        payment_type: "down_payment",
+        note: null,
+        cash_id: null,
+        promo: []
+      }
+    ]
+  });
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
-  const [index, setIndex] = React.useState<number>(0)
+  const [index, setIndex] = React.useState<number>(0);
+  const [totalPrice, setTotalPrice] = React.useState(0);
   const [customer, setCustomer] = React.useState<z.infer<typeof CustomerFieldSchema>>({
     id: null,
     customer_no: null,
@@ -49,7 +134,7 @@ function ConfirmNPayClient({
     org_no: "",
     type: "individual",
     from: ""
-  })
+  });
 
   const totalRiders = bookingField.numbers.reduce((acc, val) => {
     return acc + parseInt(val.qty)
@@ -71,7 +156,9 @@ function ConfirmNPayClient({
       type: "individual",
       from: "user"
     }
+    let custNo;
     if (checked) {
+      // crete customer
       await axios.post(customerUrl, body, {
         headers: {
           Accept: 'application/json',
@@ -79,12 +166,32 @@ function ConfirmNPayClient({
         }
       })
         .then(response => {
-          const data = response.data.data
-          console.log(data)
+          const data = response.data.data;
+          custNo = data.customer_no;
+          console.log('create customer response', data)
           editCustomer(0, {
             ...customers[0],
             ...data,
           })
+        })
+        .catch(error => {
+          console.log(error);
+          throw error;
+        })
+      // crete customer user
+      const bodyObj = {
+        user_id: user.id,
+        customer_no: custNo,
+        type: 'main',
+      }
+      await axios.post(customerUserUrl, bodyObj, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + user.token
+        }
+      })
+        .then(response => {
+          console.log('user cust:', response.data.data)
         })
         .catch(error => {
           console.log(error);
@@ -104,17 +211,13 @@ function ConfirmNPayClient({
   }
 
   // prices
-  const singlePrice = parseFloat(bookingField.numbers[0].price);
-  const couplePrice = parseFloat(bookingField.numbers[1].price);
-  const singleSubtotal = singlePrice * parseFloat(bookingField.numbers[0].qty);
-  const coupleSubtotal = couplePrice * parseFloat(bookingField.numbers[1].qty);
   const sumTotal = (...items: number[]) => {
-    const total = items.reduce( (acc, item) => {
+    const total = items.reduce((acc, item) => {
       return acc + item;
     }, 0)
     return total;
   }
-  const totalPrice = sumTotal(singleSubtotal, coupleSubtotal);
+
   const product = {
     id: productBooked?.id,
     name: productBooked?.product_name,
@@ -128,13 +231,14 @@ function ConfirmNPayClient({
       // numbers
       const numberArr = bookingField.numbers.map((number, i) => ({
         ...number,
-        product_no: productBooked.prices[i]?.product_no || number.product_no,
-        product_sku: productBooked.prices[i]?.product_sku || number.product_sku,
-        price: productBooked.prices[i]?.amount || number.price,
-        subtotal: productBooked.prices[i]?.amount || number.subtotal,
-        total: productBooked.prices[i]?.amount || number.total,
+        product_no: productBooked.product_no || number.product_no,
+        product_sku: productBooked.variants[i]?.product_sku || number.product_sku,
+        price: productBooked.variants[i]?.price || number.price,
+        subtotal: productBooked.variants[i]?.price || number.subtotal,
+        total: productBooked.variants[i]?.price || number.total,
         uom_id: productBooked.prices[i]?.uom_id || number.uom_id,
-        description: productBooked.product_description || number.description,
+        variant: productBooked.variants[i]?.variant_name || number.variant,
+        description: null,
       }));
       // riders
       let riderArr = [...bookingField.riders];
@@ -162,7 +266,7 @@ function ConfirmNPayClient({
       // customer
       let customerArr = [...customers];
       if (totalRiders > customerArr.length) {
-        const newCustomer = {
+        const customerObj = {
           id: null,
           customer_no: null,
           name: "",
@@ -179,7 +283,7 @@ function ConfirmNPayClient({
           from: "",
         };
 
-        addCustomer(newCustomer);
+        addCustomer(customerObj);
       }
       else if (totalRiders < customerArr.length) {
         const updatedCustomerArr = customerArr.slice(0, totalRiders);
@@ -188,6 +292,12 @@ function ConfirmNPayClient({
 
     }
   }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList])
+  React.useEffect(() => {
+    const totalPrice = bookingField.numbers.reduce((acc, val) => {
+      return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty)
+    }, 0)
+    setTotalPrice(totalPrice)
+  }, [bookingField.numbers])
 
   const RiderDetailComp = () => {
     return (
@@ -218,20 +328,83 @@ function ConfirmNPayClient({
                       <p className="text-xs font-normal text-foreground/50">ID Card - 0000</p>
                     </div>
                   }
+                  {customer.id !== null ?
+                    <OpenModalButton
+                      view='rider-info-view'
+                      variant='link'
+                      className='border-none'
+                      onClick={() => handleOpenModal(idx, customer)}
+                    >
+                      <SquarePen className="w-5 h-5" />
+                    </OpenModalButton>
+                    :
+                    <OpenModalButton
+                      view='rider-detail-view'
+                      variant='link'
+                      className='border-none'
+                      onClick={() => handleOpenModal(idx, customer)}
+                    >
+                      <SquarePen className="w-5 h-5" />
+                    </OpenModalButton>
 
-                  <OpenModalButton
-                    view='rider-detail-view'
-                    variant='link'
-                    className='border-none'
-                    // @ts-ignore
-                    onClick={() => handleOpenModal(idx, customer)}
-                  >
-                    <SquarePen className="w-5 h-5" />
-                  </OpenModalButton>
+                  }
                 </div>
               </React.Fragment>
             )
           })}
+        </div>
+      </Container>
+    )
+  }
+  const PriceDetailComp = () => {
+    return (
+      <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
+        <div>
+          <h3 className="font-bold text-base text-foreground/75 mb-3">Price Details</h3>
+          <dl className="space-y-4">
+            {bookingField.numbers.map((number, idx) => {
+              const subTotal = number.price.replace(/\./g, '') * number.qty;
+                
+              return (
+                <React.Fragment key={idx}>
+                  <div className="flex items-center justify-between gap-x-6 gap-y-4">
+                    <dt className="text-sm font-medium text-foreground/50">
+                      {currency(parseInt(number.price.replace(/\./g, '')))} x {number.qty} {number.variant} Ride
+                    </dt>
+                    <dd className="text-foreground/50 text-sm">
+                      {currency(subTotal)}
+                    </dd>
+                  </div>
+                </React.Fragment>
+              )
+            })}
+          </dl>
+        </div>
+        <div>
+          <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
+          <dl className="space-y-4">
+            <div className="flex items-center justify-between gap-x-6 gap-y-4">
+              <dt className="text-sm font-medium text-foreground/50">
+                Rp 000.000 x 0 Single Ride
+              </dt>
+              <dd className="text-foreground/50 text-sm">
+                Rp 000,000
+              </dd>
+            </div>
+          </dl>
+        </div>
+        <hr className="border border-slate-200" />
+        <div>
+          <dl className="space-y-4">
+            <div className="flex items-center justify-between gap-x-6 gap-y-4">
+              <dt className="text-sm font-semibold text-foreground/75">
+                Total
+              </dt>
+              <dd className="text-foreground/75 font-semibold text-sm">
+                {currency(totalPrice)}
+              </dd>
+            </div>
+          </dl>
         </div>
       </Container>
     )
@@ -296,55 +469,7 @@ function ConfirmNPayClient({
         </div>
       </Container>
       <RiderDetailComp />
-      <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
-        <div>
-          <h3 className="font-bold text-base text-foreground/75 mb-3">Price Details</h3>
-          <dl className="space-y-4">
-            <div className="flex items-center justify-between gap-x-6 gap-y-4">
-              <dt className="text-sm font-medium text-foreground/50">
-                {currency(singlePrice)} x {bookingField.numbers[0].qty} Single Ride
-              </dt>
-              <dd className="text-foreground/50 text-sm">
-                {currency(singleSubtotal)}
-              </dd>
-            </div>
-            <div className="flex items-center justify-between gap-x-6 gap-y-4">
-              <dt className="text-sm font-medium text-foreground/50">
-                {currency(couplePrice)} x {bookingField.numbers[1].qty} Couple Ride
-              </dt>
-              <dd className="text-foreground/50 text-sm">
-                { currency(coupleSubtotal)}
-              </dd>
-            </div>
-          </dl>
-        </div>
-        <div>
-          <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
-          <dl className="space-y-4">
-            <div className="flex items-center justify-between gap-x-6 gap-y-4">
-              <dt className="text-sm font-medium text-foreground/50">
-                Rp 000.000 x 0 Single Ride
-              </dt>
-              <dd className="text-foreground/50 text-sm">
-                Rp 000,000
-              </dd>
-            </div>
-          </dl>
-        </div>
-        <hr className="border border-slate-200" />
-        <div>
-          <dl className="space-y-4">
-            <div className="flex items-center justify-between gap-x-6 gap-y-4">
-              <dt className="text-sm font-semibold text-foreground/75">
-                Total
-              </dt>
-              <dd className="text-foreground/75 font-semibold text-sm">
-                {currency(totalPrice)}
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </Container>
+      <PriceDetailComp />
       <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
         <div>
           <h3 className="font-bold text-base text-foreground/75 mb-3">Pay With</h3>
@@ -414,8 +539,8 @@ function ConfirmNPayClient({
       </Container>
       {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.book_date as string} />}
       {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
+      {modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} />}
       {modalView === 'rider-detail-view' && <RiderDetailFormModal token={user.token} idx={index} customer={customer} />}
-
     </div>
   )
 }

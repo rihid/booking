@@ -25,7 +25,7 @@ async function UserAvatar({ }) {
         <p className="text-sm">Hi, Guest</p>
         :
         // @ts-ignore
-        <p className="text-sm capitalize">Hi, {session.user?.name}</p>
+        <p className="text-sm capitalize text-muted-foreground">{session.user?.greetings}, <strong>{session.user?.name.split(' ')[0]}</strong></p>
       }
     </div>
   )

@@ -34,47 +34,52 @@ function RiderDetailFormModal({
   const { editCustomer, customers } = useBookStore(state => state);
 
   const [isPending, startTransition] = React.useTransition();
-
+  console.log(customer)
   const form = useForm<z.infer<typeof CustomerFieldSchema>>({
     resolver: zodResolver(CustomerFieldSchema),
     defaultValues: customer,
-    // defaultValues: {
-    //   customer_no: '',
-    //   name: "",
-    //   address: null,
-    //   phone: null,
-    //   email: "",
-    //   identity_number: null,
-    //   vat: null,
-    //   rating: null,
-    //   birthday: null,
-    //   age: null,
-    //   org_no: "",
-    //   type: "individual",
-    //   from: ""
-    // }
   })
   const onSubmit = (values: z.infer<typeof CustomerFieldSchema>) => {
     startTransition(async () => {
-      // console.log(values)
-      await axios.post(customerUrl, values, {
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer ' + token
-        }
-      })
-        .then(response => {
-          const data = CustomerSchema.parse(response.data.data);
-          console.log(data)
-          editCustomer(idx, {
-            ...customers[idx],
-            ...data,
+      if(customer.id === null) {
+        await axios.post(customerUrl, values, {
+          headers: {
+            Accept: 'application/json',
+            Authorization: 'Bearer ' + token
+          }
+        })
+          .then(response => {
+            const data = CustomerSchema.parse(response.data.data);
+            console.log(data)
+            editCustomer(idx, {
+              ...customers[idx],
+              ...data,
+            })
           })
+          .catch(error => {
+            console.log(error);
+            throw error
+          })
+      } else {
+        await axios.put(customerUrl + '/' + customer.id, values, {
+          headers: {
+            Accept: 'application/json',
+            Authorization: 'Bearer ' + token
+          }
         })
-        .catch(error => {
-          console.log(error);
-          throw error
-        })
+          .then(response => {
+            const data = CustomerSchema.parse(response.data.data);
+            console.log(data)
+            editCustomer(idx, {
+              ...customers[idx],
+              ...data,
+            })
+          })
+          .catch(error => {
+            console.log(error);
+            throw error;
+          })
+      }
     })
   }
   return (
@@ -144,19 +149,11 @@ function RiderDetailFormModal({
                       render={({ field }) => (
                         <FormItem>
                           <Label className="text-xs text-muted-foreground">Birthday</Label>
-                          {/* <FormControl>
-                            <Input
-                              {...field}
-                              disabled={isPending}
-                              placeholder="Birthday"
-                              type="text"
-                            />
-                          </FormControl> */}
                           <div>
                             <DatePicker 
                               {...field} 
                               granularity='day' 
-                              value={field.value} 
+                              value={field.value}
                               onChange={field.onChange}
                             />
                           </div>

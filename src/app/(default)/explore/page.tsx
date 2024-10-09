@@ -16,7 +16,6 @@ export const metadata: Metadata = {
 }
 
 async function Explore() {
-
   return (
     <div className="flex flex-col min-h-screen">
       <Tabs defaultValue='trip'>

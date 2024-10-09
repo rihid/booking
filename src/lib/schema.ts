@@ -226,7 +226,7 @@ export const SingleProductSchema = z.object({
         })
       ).nullable()
     }),
-  ).nullable(),
+  ),
   addons: z.array(z.any()),
   amenities: z.array(
     z.object({

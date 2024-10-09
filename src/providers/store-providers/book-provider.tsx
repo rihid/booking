@@ -3,6 +3,8 @@
 import { type ReactNode, createContext, useRef, useContext } from 'react';
 import { useStore } from 'zustand';
 import { type BookStore, createBookStore, defaultInitState } from '@/store/book';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export type BookStoreApi = ReturnType<typeof createBookStore>
 
@@ -21,6 +23,14 @@ export const BookStoreProvider = ({
   if (!storeRef.current) {
     storeRef.current = createBookStore(defaultInitState);
   }
+
+  // clear storage
+  // const pathname = usePathname();
+  // useEffect(() => {
+  //   if(pathname !== '/confirm-n-pay') {
+  //     storeRef.current?.persist.clearStorage();
+  //   }
+  // }, [pathname]);
 
   return (
     <BookStoreContext.Provider value={storeRef.current}>

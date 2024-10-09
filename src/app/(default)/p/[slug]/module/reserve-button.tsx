@@ -20,7 +20,6 @@ function ReserveButton({
     addBooking(product);
     router.push('/confirm-n-pay');
   }
-  console.log('productNo reserve', productBooked)
   return (
     <div className="wrapper fixed flex items-center z-40 bottom-0 h-[76px] border-t-2 border-t-slate-100 shadow-sm w-full bg-background pb-2">
       <Container className="flex items-center justify-between">

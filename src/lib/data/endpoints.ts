@@ -1,8 +1,10 @@
 import axios from "axios";
 // endpoints
 export const domain = process.env.NEXT_PUBLIC_API_URL;
-export const loginUrl = domain + '/safari/api/v1/auth-service/user/auth';
-export const userTokenUrl = domain + '/safari/api/v1/auth-service/user/token'
+export const authUrl = domain + '/safari/api/v1/auth-service/user'
+export const loginUrl = authUrl + '/auth';
+export const userTokenUrl = authUrl + '/token';
+export const customerUserUrl = authUrl + '/store-customer';
 export const productUrl = domain + '/safari/api/v2/master-service/product';
 // booking service
 export const bookingUrl = domain + '/safari/api/v1/booking-service'
