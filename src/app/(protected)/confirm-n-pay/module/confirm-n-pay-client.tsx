@@ -19,7 +19,7 @@ import ProductSummary from './product-summary';
 import moment from 'moment';
 import useMidtransSnap from '@/lib/hooks/use-midtrans-snap';
 import axios from 'axios';
-import { customerUrl, customerUserUrl } from '@/lib/data/endpoints';
+import { bookingUrl, customerUrl, customerUserUrl } from '@/lib/data/endpoints';
 import { z } from 'zod';
 import { CustomerFieldSchema, BookingFieldSchema } from '@/lib/schema';
 import { currency } from '@/lib/helper';
@@ -34,91 +34,8 @@ function ConfirmNPayClient({
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
 
-  const [booking, setBooking] = React.useState<z.infer<typeof BookingFieldSchema>>({
-    type_id: "",
-    book_no: null,
-    book_date: "",
-    customer_no: "",
-    schedule_check_in_date: "",
-    schedule_check_out_date: null,
-    check_in_date: null,
-    check_out_date: null,
-    duration: null,
-    notes: null,
-    product_no: null,
-    bill_no: null,
-    create_by: null,
-    status: "open",
-    lock: false,
-    org_no: "",
-    branch_no: null,
-    unit_qty: null,
-    subtotal: "0",
-    discount: "0",
-    promo_id: null,
-    tax: "0",
-    tax_id: null,
-    total: "",
-    ref_no: null,
-    captain_no: null,
-    customer_service_no: null,
-    penalty: null,
-    numbers: [
-      {
-        id: null,
-        book_no: null,
-        type: "product",
-        qty: "1",
-        product_no: "",
-        product_sku: "",
-        variant: null,
-        price: "0",
-        subtotal: "0",
-        discount: "0",
-        tax: "0",
-        tax_id: null,
-        total: "",
-        is_guided: false,
-        ref_no: null,
-        check: false,
-        uom_id: "",
-        description: null
-      }
-    ],
-    riders: [
-      {
-        book_no: null,
-        unit_no: null,
-        customer_no: "",
-        notes: null,
-        book_unit_id: null,
-        rating: null,
-        rating_notes: null
-      }
-    ],
-    payments: [
-      {
-        id: null,
-        payment_no: null,
-        book_no: null,
-        payment_date: "",
-        method_id: "",
-        amount: "",
-        promo_id: null,
-        round: null,
-        discount: "0",
-        total: "",
-        org_no: "",
-        payment_type: "down_payment",
-        note: null,
-        cash_id: null,
-        promo: []
-      }
-    ]
-  });
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
   const [index, setIndex] = React.useState<number>(0);
-  const [totalPrice, setTotalPrice] = React.useState(0);
   const [customer, setCustomer] = React.useState<z.infer<typeof CustomerFieldSchema>>({
     id: null,
     customer_no: null,
@@ -136,9 +53,17 @@ function ConfirmNPayClient({
     from: ""
   });
 
-  const totalRiders = bookingField.numbers.reduce((acc, val) => {
-    return acc + parseInt(val.qty)
-  }, 0)
+  const totalRiders = React.useMemo(() => {
+    const sum = bookingField.numbers.reduce((acc, val) => {
+      const qty = parseInt(val.qty);
+      const variant = val.variant.toLowerCase();
+      if (variant.includes("couple") || variant.includes("double")) {
+        return acc + (qty * 2);
+      }
+      return acc + qty;
+    }, 0);
+    return sum;
+  }, [bookingField.numbers]);
 
   const handdleCheckedChange = async (checked: boolean) => {
     const body = {
@@ -210,13 +135,11 @@ function ConfirmNPayClient({
     })
   }
 
-  // prices
-  const sumTotal = (...items: number[]) => {
-    const total = items.reduce((acc, item) => {
-      return acc + item;
-    }, 0)
-    return total;
-  }
+  const totalPrice = React.useMemo(() => {
+    return bookingField.numbers.reduce((acc, val) => {
+      return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
+    }, 0);
+  }, [bookingField.numbers]);
 
   const product = {
     id: productBooked?.id,
@@ -225,21 +148,52 @@ function ConfirmNPayClient({
     quantity: 1
   }
   const { handleCheckout } = useMidtransSnap(product);
-
+  const handleClickonfirm = async () => {
+    await axios.post(bookingUrl + '/book', bookingField, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + user.token
+      }
+    })
+      .then(response => {
+        console.log('data book:', response.data.data)
+      })
+      .catch(error => {
+        console.log(error);
+        throw error;
+      })
+    await handleCheckout();
+  }
   React.useEffect(() => {
     if (productBooked) {
-      // numbers
-      const numberArr = bookingField.numbers.map((number, i) => ({
-        ...number,
-        product_no: productBooked.product_no || number.product_no,
-        product_sku: productBooked.variants[i]?.product_sku || number.product_sku,
-        price: productBooked.variants[i]?.price || number.price,
-        subtotal: productBooked.variants[i]?.price || number.subtotal,
-        total: productBooked.variants[i]?.price || number.total,
-        uom_id: productBooked.prices[i]?.uom_id || number.uom_id,
-        variant: productBooked.variants[i]?.variant_name || number.variant,
-        description: null,
-      }));
+      const variants = productBooked.variants;
+      const numberArr = variants.map((variant, i) => ({
+        id: null,
+        book_no: null,
+        type: "product",
+        qty: i === 0 ? "1" : "0",
+        product_no: productBooked.product_no,
+        product_sku: variant.product_sku,
+        variant: variant.variant_name,
+        price: variant.price,
+        subtotal: "0",
+        discount: "0",
+        tax: "0",
+        tax_id: null,
+        total: "",
+        is_guided: false,
+        ref_no: null,
+        check: false,
+        uom_id: "",
+        description: productBooked.product_description
+      }))
+      updateBookingField({
+        numbers: numberArr,
+      });
+    }
+  }, [])
+  React.useEffect(() => {
+    if (productBooked) {
       // riders
       let riderArr = [...bookingField.riders];
       const riderCount = bookingField.riders.length
@@ -259,7 +213,6 @@ function ConfirmNPayClient({
         riderArr = riderArr.slice(0, totalRiders);
       }
       updateBookingField({
-        numbers: numberArr,
         riders: riderArr,
       });
 
@@ -292,12 +245,6 @@ function ConfirmNPayClient({
 
     }
   }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList])
-  React.useEffect(() => {
-    const totalPrice = bookingField.numbers.reduce((acc, val) => {
-      return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty)
-    }, 0)
-    setTotalPrice(totalPrice)
-  }, [bookingField.numbers])
 
   const RiderDetailComp = () => {
     return (
@@ -364,17 +311,19 @@ function ConfirmNPayClient({
           <dl className="space-y-4">
             {bookingField.numbers.map((number, idx) => {
               const subTotal = number.price.replace(/\./g, '') * number.qty;
-                
+
               return (
                 <React.Fragment key={idx}>
-                  <div className="flex items-center justify-between gap-x-6 gap-y-4">
-                    <dt className="text-sm font-medium text-foreground/50">
-                      {currency(parseInt(number.price.replace(/\./g, '')))} x {number.qty} {number.variant} Ride
-                    </dt>
-                    <dd className="text-foreground/50 text-sm">
-                      {currency(subTotal)}
-                    </dd>
-                  </div>
+                  {number.qty > 0 &&
+                    <div className="flex items-center justify-between gap-x-6 gap-y-4">
+                      <dt className="text-sm font-medium text-foreground/50">
+                        {currency(parseInt(number.price.replace(/\./g, '')))} x {number.qty} {number.variant} Ride
+                      </dt>
+                      <dd className="text-foreground/50 text-sm">
+                        {currency(subTotal)}
+                      </dd>
+                    </div>
+                  }
                 </React.Fragment>
               )
             })}
@@ -409,6 +358,7 @@ function ConfirmNPayClient({
       </Container>
     )
   }
+
   return (
     <div className="flex flex-col min-h-screen mb-20">
       <Container className="py-6 sticky top-0 z-30 bg-background w-full border-b border-foreground-muted flex justify-between items-center shrink-0">
@@ -532,7 +482,7 @@ function ConfirmNPayClient({
         <div className="flex items-center justify-center">
           <Button
             type='button'
-            onClick={handleCheckout}
+            onClick={handleClickonfirm}
             className="bg-brand hover:bg-brand/90"
           >Confirm & pay</Button>
         </div>

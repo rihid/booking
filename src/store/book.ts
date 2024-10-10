@@ -52,26 +52,26 @@ export const defaultInitState: BookState = {
     customer_service_no: null,
     penalty: null,
     numbers: [
-      {
-        id: null,
-        book_no: null,
-        type: "product",
-        qty: "1",
-        product_no: "",
-        product_sku: "",
-        variant: null,
-        price: "0",
-        subtotal: "0",
-        discount: "0",
-        tax: "0",
-        tax_id: null,
-        total: "",
-        is_guided: false,
-        ref_no: null,
-        check: false,
-        uom_id: "",
-        description: null
-      }
+      // {
+      //   id: null,
+      //   book_no: null,
+      //   type: "product",
+      //   qty: "1",
+      //   product_no: "",
+      //   product_sku: "",
+      //   variant: null,
+      //   price: "0",
+      //   subtotal: "0",
+      //   discount: "0",
+      //   tax: "0",
+      //   tax_id: null,
+      //   total: "",
+      //   is_guided: false,
+      //   ref_no: null,
+      //   check: false,
+      //   uom_id: "",
+      //   description: null
+      // }
     ],
     riders: [
       {
@@ -112,64 +112,64 @@ export const createBookStore = (
   initState: BookState = defaultInitState,
 ) => {
   return createStore<BookStore>()(
-    (set) => ({
-      ...initState,
-      addBooking: (product: z.infer<typeof SingleProductSchema> | null) => set((state) => ({ productBooked: product })),
-      updateBookingField: (values: Partial<BookState['bookingField']>) => {
-        set((state => ({
-          bookingField: {
-            ...state.bookingField,
-            ...values
-          }
-        })))
-      },
-      addCustomer: (customer: z.infer<typeof CustomerFieldSchema>) => set((state) => ({
-        customers: [
-          ...state.customers,
-          customer
-        ]
-      })),
-      editCustomer: (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => set((state) => {
-        const customerArr = [...state.customers];
-        customerArr[idx] = customer;
-        return { customers: customerArr };
-      }),
-      updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => set((state) => ({
-        customers: customers
-      })),
-    }),
-    // persist(
-    //   (set) => ({
-    //     ...initState,
-    //     addBooking: (product: z.infer<typeof SingleProductSchema> | null) => set((state) => ({ productBooked: product })),
-    //     updateBookingField: (values: Partial<BookState['bookingField']>) => {
-    //       set((state => ({
-    //         bookingField: {
-    //           ...state.bookingField,
-    //           ...values
-    //         }
-    //       })))
-    //     },
-    //     addCustomer: (customer: z.infer<typeof CustomerFieldSchema>) => set((state) => ({
-    //       customers: [
-    //         ...state.customers,
-    //         customer
-    //       ]
-    //     })),
-    //     editCustomer: (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => set((state) => {
-    //       const customerArr = [...state.customers];
-    //       customerArr[idx] = customer;
-    //       return { customers: customerArr };
-    //     }),
-    //     updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => set((state) => ({
-    //       customers: customers
-    //     })),
+    // (set) => ({
+    //   ...initState,
+    //   addBooking: (product: z.infer<typeof SingleProductSchema> | null) => set((state) => ({ productBooked: product })),
+    //   updateBookingField: (values: Partial<BookState['bookingField']>) => {
+    //     set((state => ({
+    //       bookingField: {
+    //         ...state.bookingField,
+    //         ...values
+    //       }
+    //     })))
+    //   },
+    //   addCustomer: (customer: z.infer<typeof CustomerFieldSchema>) => set((state) => ({
+    //     customers: [
+    //       ...state.customers,
+    //       customer
+    //     ]
+    //   })),
+    //   editCustomer: (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => set((state) => {
+    //     const customerArr = [...state.customers];
+    //     customerArr[idx] = customer;
+    //     return { customers: customerArr };
     //   }),
-    //   {
-    //     name: 'safari-booking',
-    //     storage: createJSONStorage(() => sessionStorage),
-    //   }
-    // )
+    //   updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => set((state) => ({
+    //     customers: customers
+    //   })),
+    // }),
+    persist(
+      (set) => ({
+        ...initState,
+        addBooking: (product: z.infer<typeof SingleProductSchema> | null) => set((state) => ({ productBooked: product })),
+        updateBookingField: (values: Partial<BookState['bookingField']>) => {
+          set((state => ({
+            bookingField: {
+              ...state.bookingField,
+              ...values
+            }
+          })))
+        },
+        addCustomer: (customer: z.infer<typeof CustomerFieldSchema>) => set((state) => ({
+          customers: [
+            ...state.customers,
+            customer
+          ]
+        })),
+        editCustomer: (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => set((state) => {
+          const customerArr = [...state.customers];
+          customerArr[idx] = customer;
+          return { customers: customerArr };
+        }),
+        updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => set((state) => ({
+          customers: customers
+        })),
+      }),
+      {
+        name: 'safari-booking',
+        storage: createJSONStorage(() => sessionStorage),
+      }
+    )
   )
 }
 

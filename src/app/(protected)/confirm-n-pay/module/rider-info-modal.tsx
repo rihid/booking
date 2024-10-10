@@ -20,8 +20,6 @@ function RiderInfoModal({
   customer,
 }: Props) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
-  console.log(idx)
-  console.log(customer)
   return (
     <Modal
       open={showModal}

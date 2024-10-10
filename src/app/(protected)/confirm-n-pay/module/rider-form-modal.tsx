@@ -11,7 +11,7 @@ import { useUiLayoutStore } from '@/store/ui-layout';
 import { useBookStore } from '@/providers/store-providers/book-provider';
 
 type Props = {
-  riderQty: number
+  numbers: any;
 }
 
 function CounterButton({
@@ -67,80 +67,10 @@ function CounterButton({
   )
 }
 
-function SingleRiderCard({
-  initialQty = '1',
-}:{
-  initialQty: string
-}) {
-  const { bookingField, updateBookingField } = useBookStore(state => state);
-
-  const handleCountChange = (newCount: number) => {
-    const updatedNumbers = [...bookingField.numbers];
-    updatedNumbers[0] = {
-      ...updatedNumbers[0],
-      qty: newCount.toString(),
-    };
-    updateBookingField({ numbers: updatedNumbers });
-  };
-  return (
-    <Card className='flex items-center justify-between py-3 px-8'>
-      <div>
-        <Heading variant='sm' className="text-muted-foreground">Single Riders</Heading>
-        <div className="font-normal text-xs text-foreground/50">
-          <span>Aged 13+</span>
-        </div>
-      </div>
-      <CounterButton defaultValue={parseInt(initialQty)} counter={1} onCountChange={handleCountChange} />
-    </Card>
-  )
-}
-function CopleRiderCard({
-  initialQty = '0',
-}: {
-  initialQty: string;
-}) {
-  const { bookingField, updateBookingField } = useBookStore(state => state);
-
-  const handleCountChange = (newCount: number) => {
-    const updatedNumbers = [...bookingField.numbers];
-
-    if (!updatedNumbers[1]) {
-      if(newCount !== 0) {
-        updatedNumbers[1] = {
-          ...updatedNumbers[0],
-          qty: newCount.toString(),
-        }
-      } else if (newCount === 0) {
-        updatedNumbers.slice(0, 1);
-      }
-    } else {
-      updatedNumbers[1].qty = newCount;
-    }
-
-    updateBookingField({ numbers: updatedNumbers });
-  };
-
-  return (
-    <Card className='flex items-center justify-between py-3 px-8'>
-      <div>
-        <Heading variant='sm' className="text-muted-foreground">Couple Riders</Heading>
-        <div className="font-normal text-xs text-foreground/50">
-          <span>Aged 13+</span>
-        </div>
-      </div>
-      <CounterButton defaultValue={parseInt(initialQty)} counter={1} onCountChange={handleCountChange} />
-    </Card>
-  )
-}
-
 function RiderFormModal({
   numbers,
-}: {
-  numbers: any
-}) {
+}: Props) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
-  const qtySingleInit = numbers[0].qty;
-  const qtyCoupleInit = numbers.length === 2 ? numbers[1].qty : '0';
   return (
     <Modal
       open={showModal}
@@ -154,8 +84,31 @@ function RiderFormModal({
           </div>
           <Heading variant='lg' className="text-center text-foreground/75">Riders</Heading>
           <div className="mt-6 w-full space-y-6">
-            <SingleRiderCard initialQty={qtySingleInit} />
-            <CopleRiderCard initialQty={qtyCoupleInit} />
+            {numbers.map((number: any, idx: number) => {
+              const { bookingField, updateBookingField } = useBookStore(state => state);
+
+              const handleCountChange = (countVal: number) => {
+                console.log(countVal)
+                const numberArr = [...bookingField.numbers];
+                numberArr[idx] = {
+                  ...numberArr[idx],
+                  qty: countVal.toString(),
+                };
+                updateBookingField({ numbers: numberArr });
+                console.log(bookingField)
+              };
+              return (
+                <Card key={idx} className='flex items-center justify-between py-3 px-8'>
+                  <div>
+                    <Heading variant='sm' className="text-muted-foreground">{number.variant} Riders</Heading>
+                    <div className="font-normal text-xs text-foreground/50">
+                      <span>Aged 13+</span>
+                    </div>
+                  </div>
+                  <CounterButton defaultValue={parseInt(number.qty)} counter={1} onCountChange={handleCountChange} />
+                </Card>
+              )
+            })}
           </div>
         </Container>
       </div>

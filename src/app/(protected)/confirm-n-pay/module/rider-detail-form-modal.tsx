@@ -19,6 +19,7 @@ import { CustomerFieldSchema, CustomerSchema } from '@/lib/schema';
 import axios from 'axios';
 import { customerUrl } from '@/lib/data/endpoints';
 import { useBookStore } from '@/providers/store-providers/book-provider';
+import { Loader2 } from 'lucide-react';
 
 type Props = {
   token: any;
@@ -34,14 +35,13 @@ function RiderDetailFormModal({
   const { editCustomer, customers } = useBookStore(state => state);
 
   const [isPending, startTransition] = React.useTransition();
-  console.log(customer)
   const form = useForm<z.infer<typeof CustomerFieldSchema>>({
     resolver: zodResolver(CustomerFieldSchema),
     defaultValues: customer,
   })
   const onSubmit = (values: z.infer<typeof CustomerFieldSchema>) => {
     startTransition(async () => {
-      if(customer.id === null) {
+      if (customer.id === null) {
         await axios.post(customerUrl, values, {
           headers: {
             Accept: 'application/json',
@@ -50,7 +50,7 @@ function RiderDetailFormModal({
         })
           .then(response => {
             const data = CustomerSchema.parse(response.data.data);
-            console.log(data)
+            // console.log(data)
             editCustomer(idx, {
               ...customers[idx],
               ...data,
@@ -69,7 +69,7 @@ function RiderDetailFormModal({
         })
           .then(response => {
             const data = CustomerSchema.parse(response.data.data);
-            console.log(data)
+            // console.log(data)
             editCustomer(idx, {
               ...customers[idx],
               ...data,
@@ -80,6 +80,7 @@ function RiderDetailFormModal({
             throw error;
           })
       }
+      closeModal();
     })
   }
   return (
@@ -150,11 +151,12 @@ function RiderDetailFormModal({
                         <FormItem>
                           <Label className="text-xs text-muted-foreground">Birthday</Label>
                           <div>
-                            <DatePicker 
-                              {...field} 
-                              granularity='day' 
+                            <DatePicker
+                              {...field}
+                              granularity='day'
                               value={field.value}
                               onChange={field.onChange}
+                              disabled={isPending}
                             />
                           </div>
                           <FormMessage />
@@ -204,7 +206,12 @@ function RiderDetailFormModal({
                   </div>
                 </div>
                 <div className="flex flex-col mt-6">
-                  <Button type='submit' className="bg-brand font-bold hover:bg-brand/80">Submit</Button>
+                  <Button type='submit' disabled={isPending} className="bg-brand font-bold hover:bg-brand/80">
+                    {isPending &&
+                      <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
+                    }
+                    Submit
+                  </Button>
                 </div>
               </form>
             </Form>
