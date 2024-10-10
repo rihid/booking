@@ -22,8 +22,37 @@ export type BookActions = {
 export type BookStore = BookState & BookActions
 
 export const defaultInitState: BookState = {
+  /**
+    "type_id": "2f0c4a3be6ad4d37a09f2723292dc79a-AAA",
+    "book_no": null,
+    "book_date": "2024-10-10",
+    "schedule_check_in_date": "",
+    "schedule_check_out_date": null,
+    "check_in_date": null,
+    "check_out_date": null,
+    "duration": null,
+    "notes": null,
+    "product_no": null,
+    "bill_no": null,
+    "create_by": null,
+    "status": "open",
+    "lock": false,
+    "org_no": "",
+    "branch_no": null,
+    "unit_qty": null,
+    "subtotal": "0",
+    "discount": "0",
+    "promo_id": null,
+    "tax": "0",
+    "tax_id": null,
+    "total": "",
+    "ref_no": null,
+    "captain_no": null,
+    "customer_service_no": null,
+    "penalty": null,
+   */
   bookingField: {
-    type_id: "",
+    type_id: "2f0c4a3be6ad4d37a09f2723292dc79a-AAA",
     book_no: null,
     book_date: initialDate,
     customer_no: "",

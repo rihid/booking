@@ -15,8 +15,8 @@ import { useBookStore } from '@/providers/store-providers/book-provider';
 import RiderDetailFormModal from './rider-detail-form-modal';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
-import ProductSummary from './product-summary';
 import moment from 'moment';
+import ProductSummary from './product-summary';
 import useMidtransSnap from '@/lib/hooks/use-midtrans-snap';
 import axios from 'axios';
 import { bookingUrl, customerUrl, customerUserUrl } from '@/lib/data/endpoints';
@@ -53,6 +53,7 @@ function ConfirmNPayClient({
     from: ""
   });
 
+  console.log('user', user)
   const totalRiders = React.useMemo(() => {
     const sum = bookingField.numbers.reduce((acc, val) => {
       const qty = parseInt(val.qty);
@@ -148,7 +149,15 @@ function ConfirmNPayClient({
     quantity: 1
   }
   const { handleCheckout } = useMidtransSnap(product);
-  const handleClickonfirm = async () => {
+  const handleClickConfirm = async () => {
+    // payment
+    const paymentArr = [...bookingField.payments];
+    // updateBookingField({
+    //   payments: {
+    //     payment_date: moment().format('YYYY-MM-DD h:mm:ss'),
+    //   }
+    // })
+
     await axios.post(bookingUrl + '/book', bookingField, {
       headers: {
         Accept: 'application/json',
@@ -188,6 +197,8 @@ function ConfirmNPayClient({
         description: productBooked.product_description
       }))
       updateBookingField({
+        customer_no: user?.customer_no || null,
+        schedule_check_in_date: moment().format('MM-DD-YYYY h:mm:ss'),
         numbers: numberArr,
       });
     }
@@ -380,7 +391,7 @@ function ConfirmNPayClient({
           <div className="flex items-start justify-between w-full">
             <div className="text-foreground/75">
               <h4 className="font-semibold text-sm">Dates</h4>
-              <p className="text-xs font-normal text-foreground/50">{moment(bookingField.book_date).format('MMMM DD YYYY')}</p>
+              <p className="text-xs font-normal text-foreground/50">{moment(bookingField.schedule_check_in_date).format('MMMM DD YYYY')}</p>
             </div>
             <OpenModalButton variant='link' view='dates-select-view'>Edit</OpenModalButton>
           </div>
@@ -482,12 +493,12 @@ function ConfirmNPayClient({
         <div className="flex items-center justify-center">
           <Button
             type='button'
-            onClick={handleClickonfirm}
+            onClick={handleClickConfirm}
             className="bg-brand hover:bg-brand/90"
           >Confirm & pay</Button>
         </div>
       </Container>
-      {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.book_date as string} />}
+      {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.schedule_check_in_date as string} />}
       {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
       {modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} />}
       {modalView === 'rider-detail-view' && <RiderDetailFormModal token={user.token} idx={index} customer={customer} />}

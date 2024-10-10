@@ -7,19 +7,6 @@ import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTo
 import { generateProductSlug } from '@/lib/helper';
 import { getSession } from "../session";
 
-// export const setHeader = async() => {
-//   const session = await getSession();
-//   const headers: { [key: string]: any} = {
-//     Accept: 'application/json',
-//   }
-//   if(session) {
-//     // @ts-ignore
-//     headers.Authorization = 'Bearer ' + session.user.token
-//   }
-
-//   return headers;
-// }
-
 export const postAuth = async (body: z.infer<typeof LoginFormSchema>) => {
   try {
     const res = await axios.post(loginUrl, body, {

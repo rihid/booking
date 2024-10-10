@@ -31,9 +31,9 @@ function DatesFormModal({
     return dateSetHours;
   }
   const handleSave = () => {
-    const newDate = moment(dateWithHours()).format('YYYY-MM-DD, h:mm:ss a')
+    const newDate = moment(dateWithHours()).format('YYYY-MM-DD h:mm:ss')
     updateBookingField({
-      book_date: newDate
+      schedule_check_in_date: newDate
     });
     closeModal();
   }
