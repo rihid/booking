@@ -135,7 +135,7 @@ async function Detail({
             <Container className="flex flex-col w-full mx-auto mt-5">
               <h3 className="font-bold text-sm text-foreground/75 mb-3">Amenities</h3>
               <dl className="space-y-4">
-                {product.amenities.map(pa => {
+                {product.amenities.map((pa: any) => {
                   return (
                     <React.Fragment key={pa.id}>
                       <div className="flex items-start gap-x-6 gap-y-4">

@@ -122,6 +122,27 @@ function ConfirmNPayClient({
           console.log(error);
           throw error;
         })
+    } else {
+      const initialData = {
+        id: null,
+        customer_no: null,
+        name: "",
+        address: null,
+        phone: null,
+        email: "",
+        identity_number: null,
+        vat: null,
+        rating: null,
+        birthday: null,
+        age: null,
+        org_no: "",
+        type: "",
+        from: "",
+      }
+      editCustomer(0, {
+        ...customers[0],
+        ...initialData,
+      })
     }
     setIsAddRider(checked)
   }
@@ -191,7 +212,7 @@ function ConfirmNPayClient({
         product_no: productBooked.product_no,
         product_sku: variant.product_sku,
         variant: variant.variant_name,
-        price: variant.price,
+        price: variant.price ? variant.price.replace(/\./g, '') : null,
         subtotal: "0",
         discount: "0",
         tax: "0",

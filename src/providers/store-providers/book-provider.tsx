@@ -25,12 +25,12 @@ export const BookStoreProvider = ({
   }
 
   // clear storage
-  const pathname = usePathname();
-  useEffect(() => {
-    if(pathname !== '/confirm-n-pay') {
-      storeRef.current?.persist.clearStorage();
-    }
-  }, [pathname]);
+  // const pathname = usePathname();
+  // useEffect(() => {
+  //   if(pathname !== '/confirm-n-pay') {
+  //     storeRef.current?.persist.clearStorage();
+  //   }
+  // }, [pathname]);
 
   return (
     <BookStoreContext.Provider value={storeRef.current}>

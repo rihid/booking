@@ -7,12 +7,15 @@ import { useForm } from 'react-hook-form';
 import { LoginFormSchema } from '@/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/input-password';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import FormError from '@/components/ui/form-error';
+import { Loader2 } from 'lucide-react';
 import { postAuth } from '@/lib/data';
 import { useRouter } from 'next/navigation';
 import { login } from '@/lib/action/auth';
+import { cn } from '@/assets/styles/utils';
 
 function LoginForm() {
   const router = useRouter()
@@ -68,7 +71,7 @@ function LoginForm() {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
@@ -84,13 +87,34 @@ function LoginForm() {
                 <FormMessage />
               </FormItem>
             )}
+          /> */}
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <PasswordInput
+                    {...field}
+                    disabled={isPending}
+                    placeholder="Password"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
         <div className="flex flex-col">
           <div className="text-xs text-foreground/50 text-right font-light mb-2">
             <Link href={"#"} className="hover:text-brand/80 hover:underline hover:underline-offset-2">Forgot your password?</Link>
           </div>
-          <Button type='submit' disabled={isPending} className="bg-brand font-bold hover:bg-brand/80">Login</Button>
+          <Button type='submit' disabled={isPending} className="bg-brand font-bold hover:bg-brand/80">
+            {isPending &&
+              <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
+            }
+            Login
+          </Button>
         </div>
       </form>
     </Form>

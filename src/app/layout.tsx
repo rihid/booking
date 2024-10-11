@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cn } from "@/assets/styles/utils";
 import { fontSans } from "@/assets/styles/fonts";
+import { Toaster } from "@/components/ui/sonner";
 import ManagedModal from "@/components/ui/modal/managed-modal";
 
 // style
@@ -49,6 +50,7 @@ export default function RootLayout({
           <main className="wrapper bg-background flex flex-col justify-between w-full h-full min-h-screen">
             {children}
           </main>
+          <Toaster />
         </AppProviders>
       </body>
     </html>

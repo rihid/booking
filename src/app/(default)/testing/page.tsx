@@ -1,11 +1,22 @@
 'use client'
 import React from 'react'
 import { Calendar } from '@/components/ui/calendar'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import Rating from '@/components/ui/rating';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ProductListLoader } from '@/components/partial/loader';
 import { useCounterStore } from '@/providers/store-providers/testing-provider';
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import Container from '@/components/ui/container';
 
 function Testing() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -13,54 +24,53 @@ function Testing() {
   const { count, incrementCount, decrementCount } = useCounterStore(
     (state) => state,
   )
-  // const fetchToken = async () => {
-  //   const response = await fetch('/api/auth/jwt', {
-  //     credentials: 'include',
-  //   });
-  //   if (response.ok) {
-  //     const data = await response.json();
-  //     return data.token;
-  //   }
-  //   return null;
-  // };
-  // React.useEffect(() => {
-  //   fetchToken();
-  // }, [])
   return (
     <div>
       <Calendar
         mode="single"
-        captionLayout='dropdown-years'
+        // captionLayout='dropdown-years'
         selected={date}
         onSelect={setDate}
         className="rounded-md border shadow"
       />
-
-      <div className="">
-        <ToggleGroup type="single">
-          <ToggleGroupItem value="a">A</ToggleGroupItem>
-          <ToggleGroupItem value="b">B</ToggleGroupItem>
-          <ToggleGroupItem value="c">C</ToggleGroupItem>
-        </ToggleGroup>
-      </div>
       <div>
         <Rating />
       </div>
       <div>
-        <ProductListLoader />
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline">Open</Button>
+          </SheetTrigger>
+          <SheetContent side='bottom' className='wrapper'>
+            <SheetHeader>
+              <SheetTitle>Edit profile</SheetTitle>
+              <SheetDescription>
+                Make changes to your profile here. Click save when you're done.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Name
+                </Label>
+                <Input id="name" value="Pedro Duarte" className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-right">
+                  Username
+                </Label>
+                <Input id="username" value="@peduarte" className="col-span-3" />
+              </div>
+            </div>
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button type="submit">Save changes</Button>
+              </SheetClose>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
       </div>
-      <div>
-        <div>
-          Count: {count}
-          <hr />
-          <button type="button" onClick={() => void incrementCount()}>
-            Increment Count
-          </button>
-          <button type="button" onClick={() => void decrementCount()}>
-            Decrement Count
-          </button>
-        </div>
-      </div>
+      <div className="h-[600px] bg-blue-200">test</div>
     </div>
   )
 }
