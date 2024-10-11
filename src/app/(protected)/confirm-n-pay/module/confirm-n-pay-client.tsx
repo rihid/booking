@@ -211,7 +211,8 @@ function ConfirmNPayClient({
         numbers: numberArr,
       });
     }
-  }, [])
+  }, []);
+
   React.useEffect(() => {
     if (productBooked) {
       // riders
@@ -232,6 +233,13 @@ function ConfirmNPayClient({
       } else if (totalRiders < riderCount) {
         riderArr = riderArr.slice(0, totalRiders);
       }
+
+      // update riders
+      riderArr = riderArr.map((rider, i) => ({
+        ...rider,
+        customer_no: customers[i]?.customer_no || rider.customer_no,
+      }));
+
       updateBookingField({
         riders: riderArr,
       });
