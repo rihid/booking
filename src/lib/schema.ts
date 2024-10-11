@@ -146,13 +146,7 @@ export const ProductSchema = z.object({
     updated_at: z.string().nullable(),
     branch_no: z.string().nullable(),
   })),
-  amenities: z.array(z.object({
-    id: z.string(),
-    product_no: z.string(),
-    amentity_id: z.string().nullable(),
-    org_no: z.string().nullable(),
-    branch_no: z.string().nullable()
-  })),
+  amenities: z.any(),
   pictures: z.array(z.any())
 });
 
@@ -228,17 +222,7 @@ export const SingleProductSchema = z.object({
     }),
   ),
   addons: z.array(z.any()),
-  amenities: z.array(
-    z.object({
-      id: z.string(),
-      product_no: z.string(),
-      amentity_id: z.string().nullable(),
-      amenity: z.string(),
-      org_no: z.string().nullable(),
-      queue: z.number().nullable(),
-      branch_no: z.string().nullable()
-    })
-  ),
+  amenities: z.any(),
   pictures: z.array(
     z.object({
       id: z.string(),

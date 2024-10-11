@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { z } from "zod";
-import { productUrl, loginUrl, userTokenUrl, customerUrl } from "@/lib/data/endpoints";
+import { productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl } from "@/lib/data/endpoints";
 import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema } from "@/lib/schema";
 import { generateProductSlug } from '@/lib/helper';
 import { getSession } from "../session";
@@ -81,4 +81,21 @@ export const getSingleProductPublic = async (id: string) => {
     console.log(error);
     throw error;
   }
+}
+export const getAllBooking = async (token: any) => {
+  return axios.get(bookingUrl + '/book?begin=2024-08-01&end=2024-10-31&type=invoice', {
+    headers: {
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + token
+    }
+  })
+    .then(response => {
+      console.log(response.data);
+      const data = response.data.data;
+      return data;
+    })
+    .catch(error => {
+      console.log(error);
+      throw error;
+    })
 }

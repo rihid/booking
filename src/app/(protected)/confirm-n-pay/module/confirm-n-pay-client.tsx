@@ -53,7 +53,6 @@ function ConfirmNPayClient({
     from: ""
   });
 
-  console.log('user', user)
   const totalRiders = React.useMemo(() => {
     const sum = bookingField.numbers.reduce((acc, val) => {
       const qty = parseInt(val.qty);
@@ -151,14 +150,22 @@ function ConfirmNPayClient({
   const { handleCheckout } = useMidtransSnap(product);
   const handleClickConfirm = async () => {
     // payment
-    const paymentArr = [...bookingField.payments];
-    // updateBookingField({
-    //   payments: {
-    //     payment_date: moment().format('YYYY-MM-DD h:mm:ss'),
-    //   }
-    // })
-
-    await axios.post(bookingUrl + '/book', bookingField, {
+    const paymentArr = bookingField.payments.map((payment) => ({
+      ...payment,
+      payment_date: moment().format('YYYY-MM-DD h:mm:ss'),
+      method_id: "ff314ecb5e2c44689055171a7938d449-AAA",
+      amount: totalPrice.toString(),
+      total: totalPrice.toString(),
+      org_no: user?.org_no
+    }));
+    updateBookingField({
+      payments: paymentArr
+    });
+    const body = {
+      ...bookingField,
+      payments: paymentArr
+    }
+    await axios.post(bookingUrl + '/book', body, {
       headers: {
         Accept: 'application/json',
         Authorization: 'Bearer ' + user.token
@@ -197,8 +204,10 @@ function ConfirmNPayClient({
         description: productBooked.product_description
       }))
       updateBookingField({
-        customer_no: user?.customer_no || null,
-        schedule_check_in_date: moment().format('MM-DD-YYYY h:mm:ss'),
+        customer_no: user?.customer_no,
+        schedule_check_in_date: moment().format('YYYY-MM-DD h:mm:ss'),
+        org_no: user?.org_no,
+        total: totalPrice.toString(),
         numbers: numberArr,
       });
     }
@@ -255,7 +264,7 @@ function ConfirmNPayClient({
       }
 
     }
-  }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList])
+  }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList]);
 
   const RiderDetailComp = () => {
     return (
