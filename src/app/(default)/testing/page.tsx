@@ -17,6 +17,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import Container from '@/components/ui/container';
+import ModalDrawer from './drawer';
+import { useUiLayoutStore } from '@/store/ui-layout';
 
 function Testing() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -24,6 +26,12 @@ function Testing() {
   const { count, incrementCount, decrementCount } = useCounterStore(
     (state) => state,
   )
+
+  const { openModal, setModalView, modalView } = useUiLayoutStore(state => state);
+  const handleOpenModal = () => {
+    setModalView('rc-drawer-view');
+    openModal('rc-drawer-view');
+  } 
   return (
     <div>
       <Calendar
@@ -41,6 +49,7 @@ function Testing() {
           <SheetTrigger asChild>
             <Button variant="outline">Open</Button>
           </SheetTrigger>
+          <button type='button' className="wrapper fixed bg-black/25 cursor-default"></button>
           <SheetContent side='bottom' className='wrapper'>
             <SheetHeader>
               <SheetTitle>Edit profile</SheetTitle>
@@ -70,7 +79,11 @@ function Testing() {
           </SheetContent>
         </Sheet>
       </div>
+      <div>
+        <Button onClick={handleOpenModal}>Open</Button>
+      </div>
       <div className="h-[600px] bg-blue-200">test</div>
+      { modalView === 'rc-drawer-view' && <ModalDrawer />}
     </div>
   )
 }

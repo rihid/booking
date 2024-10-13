@@ -68,7 +68,9 @@
   html {
     /* overflow-y: scroll; */
     scroll-behavior: smooth;
+    /* scrollbar-gutter: stable both-edges; */
   }
+
   body {
     @apply bg-background text-foreground;
   }

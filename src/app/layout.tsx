@@ -7,6 +7,7 @@ import ManagedModal from "@/components/ui/modal/managed-modal";
 
 // style
 import "@/assets/styles/globals.css";
+import "@/assets/styles/rc-drawer.css";
 const inter = Inter({ subsets: ["latin"] });
 
 // providers
