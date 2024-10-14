@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drawer } from "@/components/ui/drawer";
+import { Drawer } from '@/components/ui/drawer';
 import { useUiLayoutStore } from '@/store/ui-layout';
 import motionProps from './motion';
 import { cn } from '@/assets/styles/utils';
