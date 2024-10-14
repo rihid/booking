@@ -4,6 +4,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button/button';
+import Heading from '@/components/ui/heading';
+import { Ratings } from '@/components/ui/ratings';
+import RatingComp from './module/rating-comp';
 
 function InvoiceDetail() {
   return (
@@ -47,6 +50,7 @@ function InvoiceDetail() {
           </div>
         </div>
       </Container>
+      <RatingComp />
       <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
         <div>
           <h3 className="font-bold text-base text-foreground/75 mb-3">Price Details</h3>

@@ -39,18 +39,6 @@ export const getUserToken = async (token: string) => {
     throw error;
   }
 }
-export const getCustomerByNo = async (body: { customer_no: string }) => {
-  let customer;
-  await axios.post(customerUrl + '/get-by-no', body, {
-    headers: {
-      Accept: 'application/json',
-    }
-  })
-    .then(
-
-  )
-    .catch()
-}
 
 export const getAllProductPublic = async () => {
   try {
@@ -59,7 +47,8 @@ export const getAllProductPublic = async () => {
         Accept: 'application/json',
       }
     });
-    const products = z.array(ProductSchema).parse(res.data.data);
+    // const products = z.array(ProductSchema).parse(res.data.data);
+    const products = res.data.data;
     // generate slug
     const withSlug = generateProductSlug(products)
     return withSlug;
@@ -75,7 +64,8 @@ export const getSingleProductPublic = async (id: string) => {
         Accept: 'application/json',
       }
     });
-    const product = SingleProductSchema.parse(res.data.data);
+    // const product = SingleProductSchema.parse(res.data.data);
+    const product = res.data.data
     return product;
   } catch (error) {
     console.log(error);

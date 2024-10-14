@@ -19,6 +19,7 @@ import {
 import Container from '@/components/ui/container';
 import ModalDrawer from './drawer';
 import { useUiLayoutStore } from '@/store/ui-layout';
+import { Ratings } from '@/components/ui/ratings';
 
 function Testing() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -31,7 +32,7 @@ function Testing() {
   const handleOpenModal = () => {
     setModalView('rc-drawer-view');
     openModal('rc-drawer-view');
-  } 
+  }
   return (
     <div>
       <Calendar
@@ -43,6 +44,7 @@ function Testing() {
       />
       <div>
         <Rating />
+        <Ratings rating={0} variant='yellow' />
       </div>
       <div>
         <Sheet>
@@ -62,13 +64,13 @@ function Testing() {
                 <Label htmlFor="name" className="text-right">
                   Name
                 </Label>
-                <Input id="name" value="Pedro Duarte" className="col-span-3" />
+                {/* <Input id="name" value="Pedro Duarte" className="col-span-3" /> */}
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="username" className="text-right">
                   Username
                 </Label>
-                <Input id="username" value="@peduarte" className="col-span-3" />
+                {/* <Input id="username" value="@peduarte" className="col-span-3" /> */}
               </div>
             </div>
             <SheetFooter>
@@ -83,7 +85,7 @@ function Testing() {
         <Button onClick={handleOpenModal}>Open</Button>
       </div>
       <div className="h-[600px] bg-blue-200">test</div>
-      { modalView === 'rc-drawer-view' && <ModalDrawer />}
+      {modalView === 'rc-drawer-view' && <ModalDrawer />}
     </div>
   )
 }

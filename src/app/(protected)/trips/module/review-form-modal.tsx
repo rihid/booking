@@ -8,9 +8,12 @@ import Heading from '@/components/ui/heading';
 import { Star } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useUiLayoutStore } from '@/store/ui-layout';
+import { Ratings } from '@/components/ui/ratings';
 
 function ReviewFormModal() {
-  const {showModal, closeModal} = useUiLayoutStore()
+  const { showModal, closeModal } = useUiLayoutStore();
+  const [ rating, setRating] = React.useState<number>(0);
+  console.log(rating)
   return (
     <Modal
       open={showModal}
@@ -26,14 +29,13 @@ function ReviewFormModal() {
             </CardHeader>
             <CardContent className="mt-6">
               <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col">
-                  <div className="flex items-center justify-center gap-1 text-brand">
-                    <Star className="w-8 h-8" />
-                    <Star className="w-8 h-8" />
-                    <Star className="w-8 h-8" />
-                    <Star className="w-8 h-8" />
-                    <Star className="w-8 h-8" />
-                  </div>
+                <div className="flex justify-center">
+                  <Ratings 
+                    rating={rating} 
+                    variant='yellow' 
+                    size={32}
+                    onRatingChange={(value) => setRating(value)}
+                  />
                 </div>
                 <div className="flex flex-col">
                   {/* <Input type='text' placeholder='add your feedback' className="outline-none border-none focus-visible:bg-none border-b border-slate-200 ring-transparent" /> */}

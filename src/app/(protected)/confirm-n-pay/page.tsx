@@ -12,10 +12,10 @@ export const metadata: Metadata = {
 async function ConfirmNPay() {
   const session = await getSession();
   let user;
-  if(session) {
+  if (session) {
     user = session.user;
   }
-  return <ConfirmNPayClient user={user}  />;
+  return <ConfirmNPayClient user={user} />;
 }
 
 export default ConfirmNPay;

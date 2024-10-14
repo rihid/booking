@@ -24,7 +24,6 @@ async function Trips() {
   console.log("book",bookData)
   return (
     <div className="flex flex-col min-h-screen">
-      <pre>{JSON.stringify(bookData, null, 2)}</pre>
       <Tabs defaultValue='on-progress'>
         <Container className="py-6 sticky top-0 z-30 bg-background w-full flex justify-between items-center shrink-0">
           <button type="button">
@@ -104,45 +103,6 @@ async function Trips() {
                   {/* <Button className="bg-brand text-xs h-auto hover:bg-brand/90">Write Reviews</Button> */}
                   <OpenModalButton
                     view='review-view'
-                    variant='default'
-                  >
-                    Write Reviews
-                  </OpenModalButton>
-                </CardFooter>
-              </Card>
-              <Card className="shadow-md">
-                <CardHeader className="flex-row items-center justify-between">
-                  <CardTitle className="text-foreground/75">Fun Ride</CardTitle>
-                  <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
-                    <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-                    <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-0.5">
-                  <div className="flex items-center justify-between">
-                    <div className="text-foreground/50">
-                      <span className="text-sm font-normal">#FEJR - 17 Agustus 2024</span>
-                    </div>
-                    <div className="flex items-center text-foreground/50 gap-x-2">
-                      <span className="text-xs font-normal">45 minutes</span>
-                      <Clock className="text-brand inline-block w-4 h-4" />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-foreground/50">
-                      <span className="text-sm  uppercase text-green-500 font-normal">Finish</span>
-                    </div>
-                    <div className="flex items-center text-foreground/50 gap-x-2">
-                      <span className="text-xs font-normal">Marina</span>
-                      <MapPin className="text-brand inline-block w-4 h-4" />
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="grid grid-cols-2 w-full gap-3">
-                  <Button variant="secondary" className="text-xs h-auto">Re-Book</Button>
-                  {/* <Button className="bg-brand text-xs h-auto hover:bg-brand/90">Write Reviews</Button> */}
-                  <OpenModalButton
-                    view='rider-detail-view'
                     variant='default'
                   >
                     Write Reviews

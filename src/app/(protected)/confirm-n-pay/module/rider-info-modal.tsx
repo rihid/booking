@@ -20,6 +20,7 @@ function RiderInfoModal({
   customer,
 }: Props) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
+  const [rider, setRider]  = React.useState<string>("");
   return (
     <Modal
       open={showModal}
@@ -33,15 +34,19 @@ function RiderInfoModal({
           </div>
           <Heading variant='lg' className="text-center text-foreground/75">Rider Information</Heading>
           <div className="mt-6 space-y-4">
-            <ToggleGroup type="single" className="flex flex-col w-full gap-4">
+            <ToggleGroup 
+              type="single" 
+              className="flex flex-col w-full gap-4"
+              onValueChange={(value) => console.log(value)}
+            >
               <ToggleGroupItem
-                value="credit-debit"
+                value="rider1"
                 className="w-full justify-start border border-muted-foreground rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
               >
                 Rider Pertama
               </ToggleGroupItem>
               <ToggleGroupItem
-                value="gopay"
+                value="rider2"
                 className="w-full justify-start border border-muted-foreground rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
               >
                 Rider Kedua
