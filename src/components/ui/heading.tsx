@@ -50,7 +50,7 @@ const Heading: React.FC<Props> = ({
   return (
     <Component
       className={cn(
-        'text-fill-base',
+        'text-fill-base text-muted-foreground',
         {
           'text-4xl font-extrabold tracking-wide': variant === 'xxl',
           'text-3xl font-extrabold tracking-wide': variant === 'xl',
