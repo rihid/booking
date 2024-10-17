@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import CloseButton from '@/components/ui/button/close-button';
 import Heading from '@/components/ui/heading';
 import { useUiLayoutStore } from '@/store/ui-layout';
+import { Select, SelectTrigger, SelectItem, SelectContent, SelectValue } from '@/components/ui/select';
 import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
 import { DatePicker } from '@/components/ui/date-time-picker';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -133,6 +134,7 @@ function RiderDetailFormModal({
                           <FormControl>
                             <Input
                               {...field}
+                              required
                               disabled={isPending}
                               placeholder="Name"
                               type="text"
@@ -199,6 +201,33 @@ function RiderDetailFormModal({
                               type="text"
                             />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label className="text-xs text-muted-foreground">Select</Label>
+                          <Select 
+                            onValueChange={field.onChange}
+                            // @ts-ignore
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue className="text-muted-foreground" placeholder="Select" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="rider">Rider</SelectItem>
+                              <SelectItem value="passenger">Passenger</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}

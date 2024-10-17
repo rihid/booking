@@ -13,6 +13,7 @@ import ReviewFormModal from './module/review-form-modal';
 import { getSession } from '@/lib/session';
 import { getAllProductPublic, getBookByCustomer, getInvoiceByCustomer, getSingleProductPublic } from '@/lib/data';
 import moment from 'moment';
+import BookingList from './module/booking-list';
 
 export const metadata: Metadata = {
   title: 'Trips',
@@ -31,7 +32,7 @@ async function Trips() {
   }
   const bookingData = await getBookByCustomer(token, bookingBody);
   const invoiceBody = {
-    customer_no: "PSJ/CRM/00001976",
+    customer_no: 'PSJ/CRM/00001976',
     type: "invoice",
     begin: null,
     end: null
@@ -42,9 +43,10 @@ async function Trips() {
     <div className="flex flex-col min-h-screen">
       <Tabs defaultValue='on-progress'>
         <Container className="py-6 sticky top-0 z-30 bg-background w-full flex justify-between items-center shrink-0">
-          <button type="button">
+          {/* <button type="button">
             <ChevronLeft className="w-5 h-5" />
-          </button>
+          </button> */}
+          <div></div>
           <h3 className="font-bold text-sm text-foreground/75">Trips</h3>
           <div></div>
         </Container>
@@ -56,69 +58,7 @@ async function Trips() {
         </Container>
         <div className="relative mt-6 mb-20">
           <TabsContent value='on-progress'>
-            <Container className="space-y-6">
-              {bookingData.length > 0 ?
-                bookingData.map((booking) => {
-                  const product = booking.product_no ? products.find(p => p.product_no === booking.product_no) : null;
-                  return (
-                    <Card key={booking.id} className="shadow-md">
-                      <CardHeader className="flex-row items-center justify-between">
-                        <CardTitle className="text-foreground/75">{product?.product_name}</CardTitle>
-                        <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
-                          <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-                          <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-0.5">
-                        <div className="flex items-center justify-between">
-                          <div className="text-foreground/50">
-                            <span className="text-sm font-normal">#{booking.book_no.split('/').pop()} - {moment(booking.book_date).format('MMMM Do YYYY')}</span>
-                          </div>
-                          <div className="flex items-center text-foreground/50 gap-x-2">
-                            <span className="text-xs font-normal">{booking.duration}</span>
-                            <Clock className="text-brand inline-block w-4 h-4" />
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="text-foreground/50">
-                            <span className="text-sm  uppercase text-brand font-normal">On Schedule</span>
-                          </div>
-                          <div className="flex items-center text-foreground/50 gap-x-2">
-                            <span className="text-xs font-normal">Marina</span>
-                            <MapPin className="text-brand inline-block w-4 h-4" />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )
-                }) :
-                (
-                  <div className="flex flex-col items-center justify-center h-auto">
-                    <div className="px-12 text-center">
-                      <Image
-                        src="/images/no-data-bro.svg"
-                        width={320}
-                        height={320}
-                        alt="404 Illustration"
-                      />
-                    </div>
-
-                    <div className="grid gap-2 text-center">
-                      <div className="grid gap-2">
-                        <h3>No Data Found</h3>
-                        <p>It&apos;s Okay!</p>
-                      </div>
-
-                      <div>
-                        <Link href="/" className="hover:underline underline-offset-2">
-                          Let&apos;s Go Back
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                )
-              }
-            </Container>
+            <BookingList bookings={bookingData} products={products} />
           </TabsContent>
           <TabsContent value='history'>
             <Container className="space-y-6">
@@ -196,7 +136,7 @@ async function Trips() {
           </TabsContent>
         </div>
       </Tabs>
-      {/* modal */}
+
       <ReviewFormModal />
     </div>
   )
