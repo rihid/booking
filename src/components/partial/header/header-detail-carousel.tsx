@@ -72,7 +72,7 @@ function HeaaderDetailCarousel({
               <CarouselItem key={index}>
                 <div className="flex aspect-w-5 aspect-h-4 w-full h-0 cursor-pointer">
                   <Image
-                    src="/images/img-grid-3.png"
+                    src="/images/sea-doo.svg"
                     alt='auth-image'
                     width={0}
                     height={0}

@@ -7,7 +7,7 @@ import { cn } from '@/assets/styles/utils';
 
 export type OpenModalButtonProps = {
   view: string;
-  onClick?: () => void;
+  onClickChange?: () => void;
   variant?: string;
   className?: string;
   children: React.ReactNode
@@ -15,7 +15,7 @@ export type OpenModalButtonProps = {
 
 function OpenModalButton({
   view,
-  onClick,
+  onClickChange,
   variant = 'link',
   className,
   children,
@@ -26,8 +26,8 @@ function OpenModalButton({
   const handleClick = () => {
     setModalView(view);
     openModal(view);
-    if (onClick) {
-      onClick();
+    if (onClickChange) {
+      onClickChange();
     }
   }
 
@@ -50,6 +50,20 @@ function OpenModalButton({
       return (
         <Button
           variant="link"
+          onClick={handleClick}
+          className={cn(
+            "p-0 h-auto font-medium",
+            className
+          )}
+          {...props}
+        >
+          {children}
+        </Button>
+      )
+    case 'outline':
+      return (
+        <Button
+          variant="outline"
           onClick={handleClick}
           className={cn(
             "p-0 h-auto font-medium",

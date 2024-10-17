@@ -33,8 +33,12 @@ export const currency = (num: number) => {
   const c = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(num)
   return c;
 }
-
-
+export const msToTime = ((value: number) => {
+  const hours = Math.floor((value % 86400000) / 3600000)
+  const minutes = Math.round(((value % 86400000) % 3600000) / 60000)
+  const seconds = Math.round((value % 60000) / 1000)
+  return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2)
+});
 export const generateProductSlug = (products: z.infer<typeof productsType>) => {
   const usedSlugs = new Set();
 

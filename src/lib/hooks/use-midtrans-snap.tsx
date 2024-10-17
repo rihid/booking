@@ -1,6 +1,6 @@
 import React from "react";
 
-const useMidtransSnap = (product: any) => {
+const useMidtransSnap = (body: any) => {
   const handleCheckout = React.useCallback(async () => {
     try {
       const response = await fetch('/api/transaction', {
@@ -8,7 +8,7 @@ const useMidtransSnap = (product: any) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(product),
+        body: JSON.stringify(body),
       });
       
       const responseData = await response.json();
@@ -17,7 +17,7 @@ const useMidtransSnap = (product: any) => {
     } catch(error) {
       console.log(error);
     }
-  }, [product]);
+  }, [body]);
 
   React.useEffect(() => {
     const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';

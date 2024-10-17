@@ -5,16 +5,13 @@ import Link from 'next/link';
 function NotFound404() {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <div className="grid gap-2 p-12 text-center">
+      <div className="grid gap-2 px-12 text-center">
         <Image
-          src="/images/404.svg"
+          src="/images/404-2.svg"
           width={320}
           height={320}
           alt="404 Illustration"
         />
-        <Link href="https://storyset.com/web" className="text-xs">
-          Web illustrations by Storyset
-        </Link>
       </div>
 
       <div className="grid gap-6 text-center">
@@ -24,7 +21,7 @@ function NotFound404() {
         </div>
 
         <div>
-          <Link href="/" className="hover:underline">
+          <Link href="/" className="hover:underline underline-offset-2">
             Let&apos;s Go Back
           </Link>
         </div>

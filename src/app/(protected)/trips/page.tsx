@@ -6,10 +6,13 @@ import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Star, Clock, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button/button';
+import Image from 'next/image';
+import Link from 'next/link';
 import OpenModalButton from '@/components/ui/button/open-modal-button';
 import ReviewFormModal from './module/review-form-modal';
 import { getSession } from '@/lib/session';
-import { getAllBooking } from '@/lib/data';
+import { getAllProductPublic, getBookByCustomer, getInvoiceByCustomer, getSingleProductPublic } from '@/lib/data';
+import moment from 'moment';
 
 export const metadata: Metadata = {
   title: 'Trips',
@@ -17,11 +20,24 @@ export const metadata: Metadata = {
 }
 
 async function Trips() {
-  const user = await getSession();
+  const session = await getSession();
   // @ts-ignore
-  const { token } = user.user;
-  const bookData = await getAllBooking(token);
-  console.log("book",bookData)
+  const { token, customer_no } = session.user;
+  const bookingBody = {
+    customer_no: customer_no as string,
+    type: "booking",
+    begin: null,
+    end: null
+  }
+  const bookingData = await getBookByCustomer(token, bookingBody);
+  const invoiceBody = {
+    customer_no: "PSJ/CRM/00001976",
+    type: "invoice",
+    begin: null,
+    end: null
+  }
+  const invoiceData = await getInvoiceByCustomer(token, invoiceBody);
+  const products = await getAllProductPublic();
   return (
     <div className="flex flex-col min-h-screen">
       <Tabs defaultValue='on-progress'>
@@ -41,78 +57,142 @@ async function Trips() {
         <div className="relative mt-6 mb-20">
           <TabsContent value='on-progress'>
             <Container className="space-y-6">
-              <Card className="shadow-md">
-                <CardHeader className="flex-row items-center justify-between">
-                  <CardTitle className="text-foreground/75">Beginner Ride</CardTitle>
-                  <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
-                    <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-                    <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
+              {bookingData.length > 0 ?
+                bookingData.map((booking) => {
+                  const product = booking.product_no ? products.find(p => p.product_no === booking.product_no) : null;
+                  return (
+                    <Card key={booking.id} className="shadow-md">
+                      <CardHeader className="flex-row items-center justify-between">
+                        <CardTitle className="text-foreground/75">{product?.product_name}</CardTitle>
+                        <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
+                          <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
+                          <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-0.5">
+                        <div className="flex items-center justify-between">
+                          <div className="text-foreground/50">
+                            <span className="text-sm font-normal">#{booking.book_no.split('/').pop()} - {moment(booking.book_date).format('MMMM Do YYYY')}</span>
+                          </div>
+                          <div className="flex items-center text-foreground/50 gap-x-2">
+                            <span className="text-xs font-normal">{booking.duration}</span>
+                            <Clock className="text-brand inline-block w-4 h-4" />
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="text-foreground/50">
+                            <span className="text-sm  uppercase text-brand font-normal">On Schedule</span>
+                          </div>
+                          <div className="flex items-center text-foreground/50 gap-x-2">
+                            <span className="text-xs font-normal">Marina</span>
+                            <MapPin className="text-brand inline-block w-4 h-4" />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                }) :
+                (
+                  <div className="flex flex-col items-center justify-center h-auto">
+                    <div className="px-12 text-center">
+                      <Image
+                        src="/images/no-data-bro.svg"
+                        width={320}
+                        height={320}
+                        alt="404 Illustration"
+                      />
+                    </div>
+
+                    <div className="grid gap-2 text-center">
+                      <div className="grid gap-2">
+                        <h3>No Data Found</h3>
+                        <p>It&apos;s Okay!</p>
+                      </div>
+
+                      <div>
+                        <Link href="/" className="hover:underline underline-offset-2">
+                          Let&apos;s Go Back
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-0.5">
-                  <div className="flex items-center justify-between">
-                    <div className="text-foreground/50">
-                      <span className="text-sm font-normal">#FEJR - 17 Agustus 2024</span>
-                    </div>
-                    <div className="flex items-center text-foreground/50 gap-x-2">
-                      <span className="text-xs font-normal">45 minutes</span>
-                      <Clock className="text-brand inline-block w-4 h-4" />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-foreground/50">
-                      <span className="text-sm  uppercase text-brand font-normal">On Schedule</span>
-                    </div>
-                    <div className="flex items-center text-foreground/50 gap-x-2">
-                      <span className="text-xs font-normal">Marina</span>
-                      <MapPin className="text-brand inline-block w-4 h-4" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="shadow-md">
-                <CardHeader className="flex-row items-center justify-between">
-                  <CardTitle className="text-foreground/75">Magrove Morosari</CardTitle>
-                  <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
-                    <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-                    <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-0.5">
-                  <div className="flex items-center justify-between">
-                    <div className="text-foreground/50">
-                      <span className="text-sm font-normal">#FEJR - 17 Agustus 2024</span>
-                    </div>
-                    <div className="flex items-center text-foreground/50 gap-x-2">
-                      <span className="text-xs font-normal">45 minutes</span>
-                      <Clock className="text-brand inline-block w-4 h-4" />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-foreground/50">
-                      <span className="text-sm  uppercase text-green-500 font-normal">Finish</span>
-                    </div>
-                    <div className="flex items-center text-foreground/50 gap-x-2">
-                      <span className="text-xs font-normal">Marina</span>
-                      <MapPin className="text-brand inline-block w-4 h-4" />
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="grid grid-cols-2 w-full gap-3">
-                  <Button variant="secondary" className="text-xs h-auto">Re-Book</Button>
-                  {/* <Button className="bg-brand text-xs h-auto hover:bg-brand/90">Write Reviews</Button> */}
-                  <OpenModalButton
-                    view='review-view'
-                    variant='default'
-                  >
-                    Write Reviews
-                  </OpenModalButton>
-                </CardFooter>
-              </Card>
+                )
+              }
             </Container>
           </TabsContent>
           <TabsContent value='history'>
-            testing
+            <Container className="space-y-6">
+              {invoiceData.length > 0 ?
+                invoiceData.map((invoice) => {
+                  const productVal = products.find(p => p.product_no === invoice.product_no)
+                  return (
+                    <Card key={invoice.id} className="shadow-md">
+                      <CardHeader className="flex-row items-center justify-between">
+                        <CardTitle className="text-foreground/75">{productVal?.product_name}</CardTitle>
+                        <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
+                          <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
+                          <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-0.5">
+                        <div className="flex items-center justify-between">
+                          <div className="text-foreground/50">
+                            <span className="text-sm font-normal">#{invoice.book_no.split('/').pop()} - {moment(invoice.book_date).format('MMMM Do YYYY')}</span>
+                          </div>
+                          <div className="flex items-center text-foreground/50 gap-x-2">
+                            <span className="text-xs font-normal">45 minutes</span>
+                            <Clock className="text-brand inline-block w-4 h-4" />
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="text-foreground/50">
+                            <span className="text-sm  uppercase text-green-500 font-normal">Finish</span>
+                          </div>
+                          <div className="flex items-center text-foreground/50 gap-x-2">
+                            <span className="text-xs font-normal">Marina</span>
+                            <MapPin className="text-brand inline-block w-4 h-4" />
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="grid grid-cols-2 w-full gap-3">
+                        <Button variant="secondary" className="text-xs h-auto">Re-Book</Button>
+                        <OpenModalButton
+                          view='review-view'
+                          variant='default'
+                        >
+                          Write Reviews
+                        </OpenModalButton>
+                      </CardFooter>
+                    </Card>
+                  )
+                }) :
+                (
+                  <div className="flex flex-col items-center justify-center h-auto">
+                    <div className="px-12 text-center">
+                      <Image
+                        src="/images/no-data-bro.svg"
+                        width={320}
+                        height={320}
+                        alt="404 Illustration"
+                      />
+                    </div>
+
+                    <div className="grid gap-2 text-center">
+                      <div className="grid gap-2">
+                        <h3>No Data Found</h3>
+                        <p>It&apos;s Okay!</p>
+                      </div>
+
+                      <div>
+                        <Link href="/" className="hover:underline underline-offset-2">
+                          Let&apos;s Go Back
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                )
+              }
+            </Container>
           </TabsContent>
         </div>
       </Tabs>

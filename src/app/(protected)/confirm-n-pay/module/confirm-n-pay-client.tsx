@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ChevronLeft, SquarePen, CreditCard, Wallet, Check } from 'lucide-react';
+import { ChevronLeft, SquarePen, CreditCard, Wallet, Check, Loader2 } from 'lucide-react';
 import Container from '@/components/ui/container';
 import { Button } from '@/components/ui/button/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -24,6 +24,7 @@ import { z } from 'zod';
 import { CustomerFieldSchema, BookingFieldSchema } from '@/lib/schema';
 import { currency } from '@/lib/helper';
 import RiderInfoModal from './rider-info-modal';
+import { cn } from '@/assets/styles/utils';
 
 function ConfirmNPayClient({
   user,
@@ -35,6 +36,7 @@ function ConfirmNPayClient({
   const { bookingField, productBooked, customers, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
 
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [index, setIndex] = React.useState<number>(0);
   const [customer, setCustomer] = React.useState<z.infer<typeof CustomerFieldSchema>>({
     id: null,
@@ -65,6 +67,12 @@ function ConfirmNPayClient({
     return sum;
   }, [bookingField.numbers]);
 
+  const totalPrice = React.useMemo(() => {
+    return bookingField.numbers.reduce((acc, val) => {
+      return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
+    }, 0);
+  }, [bookingField.numbers]);
+
   const handdleCheckedChange = async (checked: boolean) => {
     const body = {
       customer_no: null,
@@ -77,7 +85,7 @@ function ConfirmNPayClient({
       rating: null,
       birthday: null,
       age: null,
-      org_no: "01",
+      org_no: 'C0003',
       type: "individual",
       from: "user"
     }
@@ -93,7 +101,7 @@ function ConfirmNPayClient({
         .then(response => {
           const data = response.data.data;
           custNo = data.customer_no;
-          console.log('create customer response', data)
+          console.log('create customer', data)
           editCustomer(0, {
             ...customers[0],
             ...data,
@@ -116,7 +124,7 @@ function ConfirmNPayClient({
         }
       })
         .then(response => {
-          console.log('user cust:', response.data.data)
+          console.log('user customer:', response.data.data)
         })
         .catch(error => {
           console.log(error);
@@ -144,9 +152,8 @@ function ConfirmNPayClient({
         ...initialData,
       })
     }
-    setIsAddRider(checked)
+    setIsAddRider(checked);
   }
-
   const handleOpenModal = (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => {
     setIndex(idx);
     setCustomer(customer);
@@ -155,21 +162,33 @@ function ConfirmNPayClient({
       ...customer
     })
   }
+  const handleCheckout = async (body: any) => {
+    try {
+      const response = await fetch('/api/transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
 
-  const totalPrice = React.useMemo(() => {
-    return bookingField.numbers.reduce((acc, val) => {
-      return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
-    }, 0);
-  }, [bookingField.numbers]);
-
-  const product = {
-    id: productBooked?.id,
-    name: productBooked?.product_name,
-    price: totalPrice,
-    quantity: 1
+      const responseData = await response.json();
+      // @ts-ignore
+      window.snap.pay(responseData.token);
+    } catch (error) {
+      console.log(error);
+    }
   }
-  const { handleCheckout } = useMidtransSnap(product);
   const handleClickConfirm = async () => {
+    let bodyMidtrans = {
+      orderId: bookingField.book_no,
+      itemId: productBooked?.id,
+      productName: productBooked?.product_name,
+      price: totalPrice,
+      quantity: 1,
+      customer: user.name,
+      customerEmail: user.email
+    }
     // payment
     const paymentArr = bookingField.payments.map((payment) => ({
       ...payment,
@@ -177,7 +196,8 @@ function ConfirmNPayClient({
       method_id: "ff314ecb5e2c44689055171a7938d449-AAA",
       amount: totalPrice.toString(),
       total: totalPrice.toString(),
-      org_no: user?.org_no
+      org_no: 'C0003'
+      // org_no: user?.org_no
     }));
     updateBookingField({
       payments: paymentArr
@@ -186,6 +206,7 @@ function ConfirmNPayClient({
       ...bookingField,
       payments: paymentArr
     }
+    setIsLoading(true);
     await axios.post(bookingUrl + '/book', body, {
       headers: {
         Accept: 'application/json',
@@ -193,14 +214,22 @@ function ConfirmNPayClient({
       }
     })
       .then(response => {
-        console.log('data book:', response.data.data)
+        console.log('data book:', response.data.data);
+        const data = response.data.data;
+        bodyMidtrans.orderId = data.book_no;
+        // setIsLoading(false);
       })
       .catch(error => {
+        // setIsLoading(false);
         console.log(error);
         throw error;
       })
-    await handleCheckout();
+
+    // midtrans
+    await handleCheckout(bodyMidtrans);
+    setIsLoading(false);
   }
+
   React.useEffect(() => {
     if (productBooked) {
       const variants = productBooked.variants;
@@ -227,10 +256,27 @@ function ConfirmNPayClient({
       updateBookingField({
         customer_no: user?.customer_no,
         schedule_check_in_date: moment().format('YYYY-MM-DD h:mm:ss'),
-        org_no: user?.org_no,
+        product_no: productBooked.product_no,
+        // org_no: user?.org_no,
+        org_no: 'C0003',
         total: totalPrice.toString(),
         numbers: numberArr,
       });
+    }
+
+    // snap script midtrans here
+    const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ''
+
+    let scriptTag = document.createElement('script');
+    scriptTag.src = midtransScriptUrl
+
+    scriptTag.setAttribute("data-client-key", clientKey)
+    scriptTag.async = true
+
+    document.body.appendChild(scriptTag)
+    return () => {
+      document.body.removeChild(scriptTag)
     }
   }, []);
 
@@ -309,7 +355,6 @@ function ConfirmNPayClient({
         </div>
         <div className="space-y-6">
           {customers.map((customer, idx) => {
-
             return (
               <React.Fragment key={idx}>
                 <div className="flex items-start justify-between w-full">
@@ -329,7 +374,7 @@ function ConfirmNPayClient({
                       view='rider-info-view'
                       variant='link'
                       className='border-none'
-                      onClick={() => handleOpenModal(idx, customer)}
+                      onClickChange={() => handleOpenModal(idx, customer)}
                     >
                       <SquarePen className="w-5 h-5" />
                     </OpenModalButton>
@@ -338,7 +383,7 @@ function ConfirmNPayClient({
                       view='rider-detail-view'
                       variant='link'
                       className='border-none'
-                      onClick={() => handleOpenModal(idx, customer)}
+                      onClickChange={() => handleOpenModal(idx, customer)}
                     >
                       <SquarePen className="w-5 h-5" />
                     </OpenModalButton>
@@ -532,13 +577,19 @@ function ConfirmNPayClient({
           <Button
             type='button'
             onClick={handleClickConfirm}
+            disabled={isLoading}
             className="bg-brand hover:bg-brand/90"
-          >Confirm & pay</Button>
+          >
+            {isLoading &&
+              <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
+            }
+            Confirm & pay
+          </Button>
         </div>
       </Container>
       {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.schedule_check_in_date as string} />}
       {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
-      {modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} />}
+      {modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} user={user} />}
       {modalView === 'rider-detail-view' && <RiderDetailFormModal token={user.token} idx={index} customer={customer} />}
     </div>
   )

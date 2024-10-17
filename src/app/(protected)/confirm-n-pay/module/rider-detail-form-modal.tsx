@@ -97,7 +97,7 @@ function RiderDetailFormModal({
           <Heading variant='lg' className="text-center text-foreground/75">Rider Detail</Heading>
           <div className="mt-6 w-full space-y-6">
             <Form {...form}>
-              <form
+              <form // inputan dicustom menerima nilai 'null' di interface InputHTMLAttributes, kembalikan jika perlu
                 action="post"
                 className="w-full mx-auto"
                 onSubmit={form.handleSubmit(onSubmit)}

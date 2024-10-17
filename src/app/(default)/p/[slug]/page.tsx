@@ -9,7 +9,7 @@ import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button/button';
 import Link from 'next/link';
 import { getSingleProductPublic, getAllProductPublic } from '@/lib/data';
-import { currency } from '@/lib/helper';
+import { msToTime } from '@/lib/helper';
 import { SingleProductSchema } from '@/lib/schema';
 import { z } from 'zod';
 import { Suspense } from 'react';
@@ -51,13 +51,6 @@ async function Detail({
   }
   const product = await getSingleProductPublic(selectedProd.id);
   const validTripDuration = product.duration_trip !== null ? product.duration_trip : '0';
-
-  const msToTime = ((value: number) => {
-    const hours = Math.floor((value % 86400000) / 3600000)
-    const minutes = Math.round(((value % 86400000) % 3600000) / 60000)
-    const seconds = Math.round((value % 60000) / 1000)
-    return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2)
-  });
 
   return (
     <React.Fragment>

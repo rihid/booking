@@ -20,6 +20,7 @@ function Logo({
         width={220}
         height={50}
         priority
+        className="w-auto h-auto"
       />
     </Link>
   )

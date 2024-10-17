@@ -13,7 +13,6 @@ import { Ratings } from '@/components/ui/ratings';
 function ReviewFormModal() {
   const { showModal, closeModal } = useUiLayoutStore();
   const [ rating, setRating] = React.useState<number>(0);
-  console.log(rating)
   return (
     <Modal
       open={showModal}

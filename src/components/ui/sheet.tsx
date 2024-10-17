@@ -59,6 +59,7 @@ const SheetContent = React.forwardRef<
 >(({ side = "right", className, children, ...props }, ref) => (
   <SheetPortal>
     {/* <SheetOverlay /> */}
+    <div className="wrapper fixed inset-0 z-50 bg-black/25  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"></div>
     <SheetPrimitive.Content
       ref={ref}
       className={cn(sheetVariants({ side }), className)}

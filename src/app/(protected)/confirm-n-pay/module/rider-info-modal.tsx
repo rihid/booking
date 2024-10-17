@@ -9,18 +9,50 @@ import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import OpenModalButton from '@/components/ui/button/open-modal-button';
 import { useUiLayoutStore } from '@/store/ui-layout';
+import { getCustomerList } from '@/lib/data';
+import axios from 'axios';
+import { customerListUrl } from '@/lib/data/endpoints';
 
 type Props = {
   idx: number;
   customer: any;
+  user: any;
 }
 
 function RiderInfoModal({
   idx,
   customer,
+  user,
 }: Props) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
   const [rider, setRider]  = React.useState<string>("");
+  console.log(customer)
+  console.log(user.token)
+  const body = {
+    user_id: user.id as string,
+  }
+
+  // const getCustomerList = async() => {
+  //   axios.post(customerListUrl, body, {
+  //     headers: {
+  //       Accept: 'application/json',
+  //       Authorization: 'Bearer ' + user.token
+  //     }
+  //   })
+  //     .then(response => {
+  //       console.log(response.data.data);
+  //       const data = response.data.data;
+  //       // return data;
+  //     })
+  //     .catch(error => {
+  //       console.log(error)
+  //       throw error;
+  //     })
+  // }
+
+  // React.useEffect(() => {
+  //   getCustomerList();
+  // }, [])
   return (
     <Modal
       open={showModal}
@@ -53,13 +85,20 @@ function RiderInfoModal({
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
-          <div className="self-center flex-shrink mt-6">
+          <div className="flex-shrink flex flex-col w-full mt-6 gap-4">
             <OpenModalButton
               view='rider-detail-view'
               variant='default'
               className='h-10 px-4 py-2 bg-brand font-bold hover:bg-brand/8'
             >
               Add Rider
+            </OpenModalButton>
+            <OpenModalButton
+              view='rider-detail-view'
+              variant='outline'
+              className='h-10 px-4 py-2'
+            >
+              Add New
             </OpenModalButton>
           </div>
         </Container>

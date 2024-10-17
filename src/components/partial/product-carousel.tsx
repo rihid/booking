@@ -59,7 +59,7 @@ function ProductCarousel({
                 <Link href={`/p/${encodeURIComponent(slug)}`}>
                   <div className="flex aspect-w-5 aspect-h-4 w-full h-0">
                     <Image
-                      src="/images/img-grid-1.png"
+                      src="/images/sea-doo.svg"
                       alt="image"
                       width={0}
                       height={0}
