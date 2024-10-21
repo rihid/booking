@@ -60,3 +60,10 @@ export const generateProductSlug = (products: z.infer<typeof productsType>) => {
     };
   });
 };
+
+export const generateBasicToken = (token: any) => {
+  function base64 (string: any) {
+    return Buffer.from(string).toString('base64')
+  }
+  return base64(token);
+}

@@ -13,17 +13,76 @@ import { Button } from '@/components/ui/button';
 import OpenModalButton from '@/components/ui/button/open-modal-button';
 
 function BookingList({
+  user,
   bookings,
   products,
 }: {
+  user: any;
   bookings: z.infer<typeof BookByCustomerSchema>;
   products: z.infer<typeof ProductSchema>[];
 }) {
 
+  const handleCheckout = async (body: any) => {
+    try {
+      const response = await fetch('/api/transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      const responseData = await response.json();
+      console.log('respontoken', responseData);
+      // @ts-ignore
+      window.snap.pay(responseData.token);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const handleConfirmPayment = async (idx: number, prodNo: string) => {
+    const totalPrice = bookings[idx].numbers.reduce((acc, val) => {
+      return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
+    }, 0);
+    const product = products.find(p => p.product_no === prodNo);
+    let bodyMidtrans = {
+      orderId: bookings[idx].id,
+      itemId: product?.id,
+      productName: product?.product_name,
+      price: totalPrice,
+      quantity: 1,
+      customer: user.name,
+      customerEmail: user.email
+    }
+    console.log(bodyMidtrans)
+    await handleCheckout(bodyMidtrans);
+    // window.snap.pay('d2aebca0-291b-415c-9a7d-bfe9b98bf4df')
+  }
+
+  React.useEffect(() => {
+    // snap script midtrans here
+    const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ''
+
+    let scriptTag = document.createElement('script');
+    scriptTag.src = midtransScriptUrl
+
+    scriptTag.setAttribute("data-client-key", clientKey)
+    scriptTag.async = true
+
+    document.body.appendChild(scriptTag)
+    return () => {
+      document.body.removeChild(scriptTag)
+    }
+  }, []);
   return (
     <Container className="space-y-6">
       {bookings.length > 0 ?
-        bookings.map((booking) => {
+        bookings.map((booking, index) => {
+          let bookingPayment = 0;
+          for (let i = 0; i < booking.downPayments.length; i++) {
+            bookingPayment += parseFloat(booking.downPayments[i].total)
+          }
           const product = booking.product_no ? products.find(p => p.product_no === booking.product_no) : null;
           return (
             <Card key={booking.id} className="shadow-md">
@@ -54,15 +113,16 @@ function BookingList({
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="grid grid-cols-1 w-full gap-3">
-                <Button className="text-xs h-auto bg-brand hover:bg-brand/90">Confirm Payment</Button>
-                {/* <OpenModalButton
-                  view='review-view'
-                  variant='default'
-                >
-                  Write Reviews
-                </OpenModalButton> */}
-              </CardFooter>
+              {!bookingPayment &&
+                <CardFooter className="grid grid-cols-1 w-full gap-3">
+                  <Button
+                    onClick={() => handleConfirmPayment(index, booking.product_no as string)}
+                    className="text-xs h-auto bg-brand hover:bg-brand/90"
+                  >
+                    Confirm Payment
+                  </Button>
+                </CardFooter>
+              }
             </Card>
           )
         }) :

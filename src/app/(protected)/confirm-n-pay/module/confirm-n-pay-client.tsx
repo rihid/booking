@@ -25,6 +25,7 @@ import { CustomerFieldSchema, BookingFieldSchema } from '@/lib/schema';
 import { currency } from '@/lib/helper';
 import RiderInfoModal from './rider-info-modal';
 import { cn } from '@/assets/styles/utils';
+import { extendSessionData } from '@/lib/action/auth';
 
 function ConfirmNPayClient({
   user,
@@ -34,7 +35,7 @@ function ConfirmNPayClient({
   const router = useRouter();
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
-
+  // local state
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [index, setIndex] = React.useState<number>(0);
@@ -54,25 +55,24 @@ function ConfirmNPayClient({
     type: "individual",
     from: ""
   });
-
+  // calculation
   const totalRiders = React.useMemo(() => {
     const sum = bookingField.numbers.reduce((acc, val) => {
       const qty = parseInt(val.qty);
-      const variant = val.variant.toLowerCase();
-      if (variant.includes("couple") || variant.includes("double")) {
-        return acc + (qty * 2);
-      }
+      // const variant = val.variant.toLowerCase();
+      // if (variant.includes("couple") || variant.includes("double")) {
+      //   return acc + (qty * 2);
+      // }
       return acc + qty;
     }, 0);
     return sum;
   }, [bookingField.numbers]);
-
   const totalPrice = React.useMemo(() => {
     return bookingField.numbers.reduce((acc, val) => {
       return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
     }, 0);
   }, [bookingField.numbers]);
-
+  // functions
   const handdleCheckedChange = async (checked: boolean) => {
     const body = {
       customer_no: null,
@@ -154,7 +154,7 @@ function ConfirmNPayClient({
     }
     setIsAddRider(checked);
   }
-  const handleOpenModal = (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => {
+  const handleOpenRiderModal = (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => {
     setIndex(idx);
     setCustomer(customer);
     editCustomer(idx, {
@@ -162,6 +162,28 @@ function ConfirmNPayClient({
       ...customer
     })
   }
+  // midtrans options function
+  const handleClosePayment = (bookId: string) => {
+    axios.delete(bookingUrl + '/book/' + bookId, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + user.token
+      }
+    }).then(response => {
+      console.log(response.data)
+    }).catch(error => {
+      console.log(error);
+      throw error;
+    })
+    console.log('customer closed the popup without finishing the payment');
+  }
+  const handlePendingPayment = async(result: any, payload: any) => {
+    // await extendSessionData({
+    //   pending_payment: payload,
+    // });
+    console.log(result)
+  }
+
   const handleCheckout = async (body: any) => {
     try {
       const response = await fetch('/api/transaction', {
@@ -170,13 +192,24 @@ function ConfirmNPayClient({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
-      });
+      })
 
-      const responseData = await response.json();
+      const res = await response.json();
+      console.log('token:', res.token)
+      const pendingPayload = {
+        order_id: body.orderId,
+        snap_token: res.token,
+      }
       // @ts-ignore
-      window.snap.pay(responseData.token);
+      window.snap.pay(res.token, {
+        onSuccess: function (result: any) { console.log('success'); console.log(result); },
+        // onPending: (result: any) => { handlePendingPayment(result, pendingPayload) },
+        onError: function (result: any) { console.log('error'); console.log(result); },
+        onClose: () => { handleClosePayment(body.orderId) },
+      });
     } catch (error) {
       console.log(error);
+      throw error;
     }
   }
   const handleClickConfirm = async () => {
@@ -199,13 +232,14 @@ function ConfirmNPayClient({
       org_no: 'C0003'
       // org_no: user?.org_no
     }));
-    updateBookingField({
-      payments: paymentArr
-    });
+    // updateBookingField({
+    //   payments: []
+    // });
     const body = {
       ...bookingField,
-      payments: paymentArr
+      // payments: []
     }
+    console.log('body', body);
     setIsLoading(true);
     await axios.post(bookingUrl + '/book', body, {
       headers: {
@@ -216,7 +250,7 @@ function ConfirmNPayClient({
       .then(response => {
         console.log('data book:', response.data.data);
         const data = response.data.data;
-        bodyMidtrans.orderId = data.book_no;
+        bodyMidtrans.orderId = data.id;
         // setIsLoading(false);
       })
       .catch(error => {
@@ -229,7 +263,7 @@ function ConfirmNPayClient({
     await handleCheckout(bodyMidtrans);
     setIsLoading(false);
   }
-
+  // on mount
   React.useEffect(() => {
     if (productBooked) {
       const variants = productBooked.variants;
@@ -279,7 +313,7 @@ function ConfirmNPayClient({
       document.body.removeChild(scriptTag)
     }
   }, []);
-
+  // on update
   React.useEffect(() => {
     if (productBooked) {
       // riders
@@ -374,7 +408,7 @@ function ConfirmNPayClient({
                       view='rider-info-view'
                       variant='link'
                       className='border-none'
-                      onClickChange={() => handleOpenModal(idx, customer)}
+                      onClickChange={() => handleOpenRiderModal(idx, customer)}
                     >
                       <SquarePen className="w-5 h-5" />
                     </OpenModalButton>
@@ -383,7 +417,7 @@ function ConfirmNPayClient({
                       view='rider-detail-view'
                       variant='link'
                       className='border-none'
-                      onClickChange={() => handleOpenModal(idx, customer)}
+                      onClickChange={() => handleOpenRiderModal(idx, customer)}
                     >
                       <SquarePen className="w-5 h-5" />
                     </OpenModalButton>

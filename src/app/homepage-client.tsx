@@ -10,14 +10,12 @@ import { useRouter } from 'next/navigation';
 function HomePage() {
   const router = useRouter();
 
-  const [redirect, setRedirect] = React.useState(true)
-
   React.useEffect(() => {
     const timer = setTimeout(() => {
       router.push('/explore');
     }, 5000);
 
-    return () => clearTimeout(timer); // clear after unmount
+    return () => clearTimeout(timer);
   }, [router]);
 
   return (

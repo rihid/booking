@@ -3,12 +3,13 @@
 import axios from "axios";
 import { z } from "zod";
 import { productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl, customerListUrl } from "@/lib/data/endpoints";
-import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema, BookingSchema, BookByCustomerSchema, InvoiceByCustomerSchema } from "@/lib/schema";
+import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema, BookingSchema, BookByCustomerSchema, InvoiceByCustomerSchema, SingleBookingSchema } from "@/lib/schema";
 import { generateProductSlug } from '@/lib/helper';
 import moment from "moment";
 
 interface CustomerListBody {
-  user_id: string | null
+  user_id: string | null;
+  type: string;
 }
 interface BookByCustomer {
   customer_no: string;
@@ -43,7 +44,7 @@ export const getUserToken = async (token: any) => {
       }
     })
     const data = UserTokenSchema.parse(res.data.data);
-    const user = data
+    const user = data;
     return user;
   } catch (error) {
     console.log(error)
@@ -101,6 +102,22 @@ export const getAllBooking = async (token: any) => {
 
   return res;
 }
+export const getBooking = async (token: any, id: string) => {
+  const res = axios.get(bookingUrl + '/book/' + id, {
+    headers: {
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + token
+    }
+  }).then(response => {
+    const data = SingleBookingSchema.parse(response.data.data);
+    return data;
+  }).catch(error => {
+    console.log(error);
+    throw error;
+  })
+
+  return res;
+}
 export const getBookByCustomer = async (token: any, body: BookByCustomer) => {
   const res = await axios.post(bookingUrl + '/book/customer', body, {
     headers: {
@@ -131,7 +148,7 @@ export const getInvoiceByCustomer = async (token: any, body: BookByCustomer) => 
   })
   return res;
 }
-export const getCustomerList = async (token: any, body: CustomerListBody) => {
+export const getCustomerList = (token: any, body: CustomerListBody) => {
   const res = axios.post(customerListUrl, body, {
     headers: {
       Accept: 'application/json',

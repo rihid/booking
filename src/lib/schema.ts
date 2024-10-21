@@ -103,7 +103,8 @@ export const UserTokenSchema = z.object({
   role: z.array(z.string()).nullable(),
   permission: z.any().nullable(),
   customer_no: z.string().nullable(),
-  token: z.optional(z.any())
+  token: z.optional(z.any()),
+  pending_payment: z.optional(z.array(z.any()))
 });
 
 export const ProductSchema = z.object({
@@ -305,6 +306,49 @@ export const BookingSchema = z.array(
     on_the_spot: z.boolean()
   })
 )
+export const SingleBookingSchema = z.object({
+  id: z.string(),
+  type_id: z.string().nullable(),
+  book_date: z.string().nullable(),
+  book_no: z.string().nullable(),
+  book_no_short: z.string().nullable(),
+  waiver_no: z.string().nullable(),
+  waiver_no_short: z.string().nullable(),
+  customer_no: z.string().nullable(),
+  schedule_check_in_date: z.string().nullable(),
+  schedule_check_out_date: z.string().nullable(),
+  check_in_date: z.string().nullable(),
+  check_out_date: z.string().nullable(),
+  duration: z.string().nullable(),
+  notes: z.string().nullable(),
+  product_no: z.string().nullable(),
+  bill_no: z.string().nullable(),
+  create_by: z.string().nullable(),
+  org_no: z.string().nullable(),
+  branch_no: z.string().nullable(),
+  unit_qty: z.string().nullable(),
+  subtotal: z.string().nullable(),
+  discount: z.string().nullable(),
+  promo_id: z.string().nullable(),
+  tax: z.string().nullable(),
+  tax_id: z.string().nullable(),
+  total: z.string().nullable(),
+  status: z.string().nullable(),
+  lock: z.boolean().nullable(),
+  ref_no: z.string().nullable(),
+  ref_date: z.string().nullable(),
+  captain_no: z.string().nullable(),
+  customer_service_no: z.string().nullable(),
+  penalty: z.string().nullable(),
+  units: z.array(z.any()),
+  numbers: z.array(z.any()),
+  payment_dp: z.record(z.any()),
+  payment: z.array(z.any()),
+  customer: z.record(z.any()),
+  refunds: z.array(z.any()),
+  requests: z.array(z.any()),
+  riders: z.array(z.any())
+}) 
 export const BookByCustomerSchema = z.array(
   z.object({
     id: z.string(),

@@ -85,23 +85,23 @@ export const defaultInitState: BookState = {
       }
     ],
     payments: [
-      {
-        id: null,
-        payment_no: null,
-        book_no: null,
-        payment_date: "",
-        method_id: "",
-        amount: "",
-        promo_id: null,
-        round: null,
-        discount: "0",
-        total: "",
-        org_no: "",
-        payment_type: "down_payment",
-        note: null,
-        cash_id: null,
-        promo: []
-      }
+      // {
+      //   id: null,
+      //   payment_no: null,
+      //   book_no: null,
+      //   payment_date: "",
+      //   method_id: "",
+      //   amount: "",
+      //   promo_id: null,
+      //   round: null,
+      //   discount: "0",
+      //   total: "",
+      //   org_no: "",
+      //   payment_type: "down_payment",
+      //   note: null,
+      //   cash_id: null,
+      //   promo: []
+      // }
     ]
   },
   productBooked: null,

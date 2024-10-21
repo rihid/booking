@@ -32,15 +32,17 @@ async function Trips() {
   }
   const bookingData = await getBookByCustomer(token, bookingBody);
   const invoiceBody = {
-    customer_no: 'PSJ/CRM/00001976',
+    customer_no: customer_no as string,
     type: "invoice",
     begin: null,
     end: null
   }
   const invoiceData = await getInvoiceByCustomer(token, invoiceBody);
   const products = await getAllProductPublic();
+  console.log('test',bookingData);
   return (
     <div className="flex flex-col min-h-screen">
+      
       <Tabs defaultValue='on-progress'>
         <Container className="py-6 sticky top-0 z-30 bg-background w-full flex justify-between items-center shrink-0">
           {/* <button type="button">
@@ -58,7 +60,9 @@ async function Trips() {
         </Container>
         <div className="relative mt-6 mb-20">
           <TabsContent value='on-progress'>
-            <BookingList bookings={bookingData} products={products} />
+            <Container className="space-y-6">
+              <BookingList bookings={bookingData} products={products} user={session?.user} />
+            </Container>
           </TabsContent>
           <TabsContent value='history'>
             <Container className="space-y-6">

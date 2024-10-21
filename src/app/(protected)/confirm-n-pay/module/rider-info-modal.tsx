@@ -26,8 +26,6 @@ function RiderInfoModal({
 }: Props) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
   const [rider, setRider]  = React.useState<string>("");
-  console.log(customer)
-  console.log(user.token)
   const body = {
     user_id: user.id as string,
   }

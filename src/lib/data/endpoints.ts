@@ -7,6 +7,8 @@ export const loginUrl = authUrl + '/auth';
 export const userTokenUrl = authUrl + '/token';
 export const customerUserUrl = authUrl + '/store-customer';
 export const customerListUrl = authUrl + '/get-customer-list'
+// master service
+export const masterUrl = domain + '/safari/api/v1/master-service'
 // master public service
 export const productUrl = domain + '/safari/api/v2/master-service/product';
 // booking service
