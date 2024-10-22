@@ -106,9 +106,9 @@ async function Confirmation({
   const midtransPayment = await getPaymentStatus();
   if (midtransPayment.status_code === '200') {
     let methodVal;
-    if(midtransPayment.payment_type === 'bank_transfer') {
+    if (midtransPayment.payment_type === 'bank_transfer') {
       const midtransBankVal = midtransPayment.va_numbers[0].bank;
-      methodVal = paymentMethod.find( (pm: any) => pm.name.toLowerCase() === midtransBankVal);
+      methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
     }
     const body = {
       payment_no: null,
@@ -128,11 +128,11 @@ async function Confirmation({
       cash_id: null
     }
     await postPayment(body);
-  }else if (midtransPayment.status_code === '201') {
+  } else if (midtransPayment.status_code === '201') {
     let methodVal;
-    if(midtransPayment.payment_type === 'bank_transfer') {
+    if (midtransPayment.payment_type === 'bank_transfer') {
       const midtransBankVal = midtransPayment.va_numbers[0].bank;
-      methodVal = paymentMethod.find( (pm: any) => pm.name.toLowerCase() === midtransBankVal);
+      methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
     }
     const body = {
       payment_no: null,
@@ -258,7 +258,7 @@ async function Confirmation({
               </div>
             </div>
           </Card>
-          <ActionComp 
+          <ActionComp
             status={midtransPayment}
             booking={booking}
           />

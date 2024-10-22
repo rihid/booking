@@ -118,35 +118,6 @@ export const createBookStore = (
   initState: BookState = defaultInitState,
 ) => {
   return createStore<BookStore>()(
-    // (set) => ({
-    //   ...initState,
-    //   addBooking: (product: z.infer<typeof SingleProductSchema> | null) => set((state) => ({ productBooked: product })),
-    //   updateBookingField: (values: Partial<BookState['bookingField']>) => {
-    //     set((state => ({
-    //       bookingField: {
-    //         ...state.bookingField,
-    //         ...values
-    //       }
-    //     })))
-    //   },
-    //   addCustomer: (customer: z.infer<typeof CustomerFieldSchema>) => set((state) => ({
-    //     customers: [
-    //       ...state.customers,
-    //       customer
-    //     ]
-    //   })),
-    //   editCustomer: (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => set((state) => {
-    //     const customerArr = [...state.customers];
-    //     customerArr[idx] = customer;
-    //     return { customers: customerArr };
-    //   }),
-    //   updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => set((state) => ({
-    //     customers: customers
-    //   })),
-    //   setPaymentLink: (link: string | null) => set((state) => ({
-    //     paymentLink: link
-    //   })),
-    // }),
     persist(
       (set) => ({
         ...initState,

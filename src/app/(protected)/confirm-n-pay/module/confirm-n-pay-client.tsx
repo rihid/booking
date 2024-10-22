@@ -178,47 +178,6 @@ function ConfirmNPayClient({
     })
     console.log('customer closed the popup without finishing the payment');
   }
-  const handlePendingPayment = async (result: any, payToken: any, bookNo: string) => {
-    console.log('result', result)
-    const midtransPayment = await getPaymentStatus(result.order_id);
-    const paymentMethod = await getPaymentMethod(user.token);
-
-    let methodVal;
-    if (midtransPayment.payment_type === 'bank_transfer') {
-      const midtransBankVal = midtransPayment.va_numbers[0].bank;
-      methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
-    }
-    const body = {
-      payment_no: null,
-      book_no: bookNo,
-      payment_date: midtransPayment.settlement_time,
-      method_id: methodVal ? methodVal.id : 'ff314ecb5e2c44689055171a7938d449-AAA', // if undefined use bca
-      amount: midtransPayment.gross_amount.replace(/\.00$/, ''),
-      promo_id: null,
-      round: null,
-      discount: null,
-      total: midtransPayment.gross_amount.replace(/\.00$/, ''),
-      org_no: null,
-      branch_no: null,
-      payment_type: "down_payment",
-      note: null,
-      token: payToken || null,
-      cash_id: null
-    }
-    await axios.post(bookingUrl + '/book/payment', body, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + user.token
-      }
-    }).then(response => {
-      console.log('create payment',response.data);
-      const data = response.data;
-      return data;
-    }).catch(error => {
-      console.log(error);
-      throw error;
-    });
-  }
 
   const handleCheckout = async (body: any) => {
     try {
