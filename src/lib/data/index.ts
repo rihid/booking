@@ -2,9 +2,9 @@
 
 import axios from "axios";
 import { z } from "zod";
-import { productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl, customerListUrl } from "@/lib/data/endpoints";
+import { masterUrl, productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl, customerListUrl } from "@/lib/data/endpoints";
 import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema, BookingSchema, BookByCustomerSchema, InvoiceByCustomerSchema, SingleBookingSchema } from "@/lib/schema";
-import { generateProductSlug } from '@/lib/helper';
+import { generateProductSlug, generateBasicToken } from '@/lib/helper';
 import moment from "moment";
 
 interface CustomerListBody {
@@ -165,5 +165,38 @@ export const getCustomerList = (token: any, body: CustomerListBody) => {
       throw error;
     })
 
+  return res;
+}
+export const getPaymentMethod = (token: any) => {
+  const res = axios.get(masterUrl + '/payment-method', {
+    headers: {
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + token
+    }
+  }).then(response => {
+    console.log(response.data.data)
+    const data = response.data.data;
+    return data;
+  }).catch(error => {
+    console.log(error);
+    throw error;
+  })
+
+  return res;
+}
+export const getPaymentStatus = (orderId: string) => {
+  const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
+  const res = axios.get(process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + orderId + '/status', {
+    headers: {
+      accept: 'application/json',
+      authorization: 'Basic ' + encodeToken,
+    }
+  }).then(response => {
+    const data = response.data;
+    return data;
+  }).catch(error => {
+    console.log(error);
+    throw error;
+  })
   return res;
 }

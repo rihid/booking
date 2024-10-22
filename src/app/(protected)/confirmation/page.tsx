@@ -10,6 +10,7 @@ import { getSession } from '@/lib/session';
 import axios from 'axios';
 import { bookingUrl, masterUrl } from '@/lib/data/endpoints';
 import { getAllProductPublic, getBooking } from '@/lib/data';
+import ActionComp from './module/action-comp';
 
 export const metadata: Metadata = {
   title: 'Confirmation',
@@ -30,6 +31,7 @@ interface PaymentType {
   branch_no: string | null;
   payment_type: string | null;
   note: string | null;
+  token: string | null;
   cash_id: string | null;
 }
 
@@ -41,6 +43,7 @@ async function Confirmation({
   const session = await getSession();
   // @ts-ignore 
   const { token } = session.user
+  const source = searchParams['source'] || null;
   const orderId = searchParams['order_id'] || null;
   const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
   const midtransUrl = process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + orderId + '/status';
@@ -53,6 +56,7 @@ async function Confirmation({
       }
     }).then(response => {
       const data = response.data;
+      console.log('status', response.data)
       return data;
     }).catch(error => {
       console.log(error);
@@ -100,7 +104,6 @@ async function Confirmation({
   const productVal = products.find(p => p.product_no === booking.product_no);
   const paymentMethod = await getPaymentMethod();
   const midtransPayment = await getPaymentStatus();
-  
   if (midtransPayment.status_code === '200') {
     let methodVal;
     if(midtransPayment.payment_type === 'bank_transfer') {
@@ -111,7 +114,7 @@ async function Confirmation({
       payment_no: null,
       book_no: booking.book_no,
       payment_date: midtransPayment.settlement_time,
-      method_id: methodVal ? methodVal.id : 'ff314ecb5e2c44689055171a7938d449-AAA', // if undefined use bca
+      method_id: methodVal ? methodVal.id : 'ff314ecb5e2c44689055171a7938d449-AAA',
       amount: midtransPayment.gross_amount.replace(/\.00$/, ''),
       promo_id: null,
       round: null,
@@ -121,6 +124,31 @@ async function Confirmation({
       branch_no: null,
       payment_type: "down_payment",
       note: null,
+      token: null,
+      cash_id: null
+    }
+    await postPayment(body);
+  }else if (midtransPayment.status_code === '201') {
+    let methodVal;
+    if(midtransPayment.payment_type === 'bank_transfer') {
+      const midtransBankVal = midtransPayment.va_numbers[0].bank;
+      methodVal = paymentMethod.find( (pm: any) => pm.name.toLowerCase() === midtransBankVal);
+    }
+    const body = {
+      payment_no: null,
+      book_no: booking.book_no,
+      payment_date: '',
+      method_id: methodVal ? methodVal.id : 'ff314ecb5e2c44689055171a7938d449-AAA',
+      amount: '0',
+      promo_id: null,
+      round: null,
+      discount: null,
+      total: '0',
+      org_no: null,
+      branch_no: null,
+      payment_type: "down_payment",
+      note: null,
+      token: null,
       cash_id: null
     }
     await postPayment(body);
@@ -230,12 +258,10 @@ async function Confirmation({
               </div>
             </div>
           </Card>
-          <div className="mt-8 flex justify-center items-center">
-            <div className="flex flex-col items-center gap-4 w-auto">
-              <Button className="w-full bg-brand hover:bg-brand/90">Tract Order</Button>
-              <Button className="w-full">Back</Button>
-            </div>
-          </div>
+          <ActionComp 
+            status={midtransPayment}
+            booking={booking}
+          />
         </Container>
       }
       {!booking &&

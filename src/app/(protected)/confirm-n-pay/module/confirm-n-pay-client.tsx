@@ -25,7 +25,7 @@ import { CustomerFieldSchema, BookingFieldSchema } from '@/lib/schema';
 import { currency } from '@/lib/helper';
 import RiderInfoModal from './rider-info-modal';
 import { cn } from '@/assets/styles/utils';
-import { extendSessionData } from '@/lib/action/auth';
+import { getPaymentMethod, getPaymentStatus } from '@/lib/data';
 
 function ConfirmNPayClient({
   user,
@@ -34,7 +34,7 @@ function ConfirmNPayClient({
 }) {
   const router = useRouter();
   const { modalView } = useUiLayoutStore();
-  const { bookingField, productBooked, customers, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
+  const { bookingField, productBooked, customers, updateBookingField, addCustomer, editCustomer, updateCustomerList, setPaymentLink } = useBookStore((state) => state);
   // local state
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -162,6 +162,7 @@ function ConfirmNPayClient({
       ...customer
     })
   }
+
   // midtrans options function
   const handleClosePayment = (bookId: string) => {
     axios.delete(bookingUrl + '/book/' + bookId, {
@@ -177,11 +178,46 @@ function ConfirmNPayClient({
     })
     console.log('customer closed the popup without finishing the payment');
   }
-  const handlePendingPayment = async(result: any, payload: any) => {
-    // await extendSessionData({
-    //   pending_payment: payload,
-    // });
-    console.log(result)
+  const handlePendingPayment = async (result: any, payToken: any, bookNo: string) => {
+    console.log('result', result)
+    const midtransPayment = await getPaymentStatus(result.order_id);
+    const paymentMethod = await getPaymentMethod(user.token);
+
+    let methodVal;
+    if (midtransPayment.payment_type === 'bank_transfer') {
+      const midtransBankVal = midtransPayment.va_numbers[0].bank;
+      methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
+    }
+    const body = {
+      payment_no: null,
+      book_no: bookNo,
+      payment_date: midtransPayment.settlement_time,
+      method_id: methodVal ? methodVal.id : 'ff314ecb5e2c44689055171a7938d449-AAA', // if undefined use bca
+      amount: midtransPayment.gross_amount.replace(/\.00$/, ''),
+      promo_id: null,
+      round: null,
+      discount: null,
+      total: midtransPayment.gross_amount.replace(/\.00$/, ''),
+      org_no: null,
+      branch_no: null,
+      payment_type: "down_payment",
+      note: null,
+      token: payToken || null,
+      cash_id: null
+    }
+    await axios.post(bookingUrl + '/book/payment', body, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + user.token
+      }
+    }).then(response => {
+      console.log('create payment',response.data);
+      const data = response.data;
+      return data;
+    }).catch(error => {
+      console.log(error);
+      throw error;
+    });
   }
 
   const handleCheckout = async (body: any) => {
@@ -193,18 +229,25 @@ function ConfirmNPayClient({
         },
         body: JSON.stringify(body),
       })
-
       const res = await response.json();
-      console.log('token:', res.token)
-      const pendingPayload = {
-        order_id: body.orderId,
-        snap_token: res.token,
-      }
+
+      setPaymentLink({
+        book_id: body.orderId,
+        url_payment: res.data.redirect_url
+      }); // save redirect url
+      
       // @ts-ignore
-      window.snap.pay(res.token, {
-        onSuccess: function (result: any) { console.log('success'); console.log(result); },
-        // onPending: (result: any) => { handlePendingPayment(result, pendingPayload) },
-        onError: function (result: any) { console.log('error'); console.log(result); },
+      window.snap.pay(res.data.token, {
+        onSuccess: async function (result: any) {
+          console.log('res:',result);
+        },
+        onPending: (result: any) => {
+          console.log(result);
+        },
+        onError: function (result: any) {
+          console.log('error'); 
+          console.log(result);
+        },
         onClose: () => { handleClosePayment(body.orderId) },
       });
     } catch (error) {
@@ -223,42 +266,29 @@ function ConfirmNPayClient({
       customerEmail: user.email
     }
     // payment
-    const paymentArr = bookingField.payments.map((payment) => ({
-      ...payment,
-      payment_date: moment().format('YYYY-MM-DD h:mm:ss'),
-      method_id: "ff314ecb5e2c44689055171a7938d449-AAA",
-      amount: totalPrice.toString(),
-      total: totalPrice.toString(),
-      org_no: 'C0003'
-      // org_no: user?.org_no
-    }));
-    // updateBookingField({
-    //   payments: []
-    // });
     const body = {
       ...bookingField,
       // payments: []
     }
     console.log('body', body);
     setIsLoading(true);
+    let booking;
     await axios.post(bookingUrl + '/book', body, {
       headers: {
         Accept: 'application/json',
         Authorization: 'Bearer ' + user.token
       }
+    }).then(response => {
+      console.log('data book:', response.data.data);
+      const data = response.data.data;
+      booking = data;
+      bodyMidtrans.orderId = data.id;
+      // setIsLoading(false);
+    }).catch(error => {
+      // setIsLoading(false);
+      console.log(error);
+      throw error;
     })
-      .then(response => {
-        console.log('data book:', response.data.data);
-        const data = response.data.data;
-        bodyMidtrans.orderId = data.id;
-        // setIsLoading(false);
-      })
-      .catch(error => {
-        // setIsLoading(false);
-        console.log(error);
-        throw error;
-      })
-
     // midtrans
     await handleCheckout(bodyMidtrans);
     setIsLoading(false);

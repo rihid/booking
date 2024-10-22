@@ -3,6 +3,7 @@ import { snap } from '@/lib/config/payment';
 
 export async function POST(req: NextRequest) {
   try {
+    console.log('req:', req)
     const { orderId, itemId, productName, price, quantity, customer, customerEmail } = await req.json();
     const transactionParams = {
       transaction_details: {
@@ -20,8 +21,8 @@ export async function POST(req: NextRequest) {
         email: customerEmail,
       }
     }
-    const token = await snap.createTransactionToken(transactionParams);
-    return NextResponse.json({ token });
+    const data = await snap.createTransaction(transactionParams);
+    return NextResponse.json({ data });
   } catch (error) {
     console.error(error);
     console.log(error);

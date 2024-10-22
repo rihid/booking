@@ -10,17 +10,23 @@ import moment from 'moment';
 import { TypeOf, z } from 'zod';
 import { BookByCustomerSchema, ProductSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
+import axios from 'axios';
 import OpenModalButton from '@/components/ui/button/open-modal-button';
+import { useRouter } from 'next/navigation';
 
 function BookingList({
   user,
+  basicToken,
   bookings,
   products,
 }: {
   user: any;
+  basicToken: string;
   bookings: z.infer<typeof BookByCustomerSchema>;
   products: z.infer<typeof ProductSchema>[];
 }) {
+
+  const router = useRouter();
 
   const handleCheckout = async (body: any) => {
     try {
@@ -45,18 +51,52 @@ function BookingList({
       return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
     }, 0);
     const product = products.find(p => p.product_no === prodNo);
-    let bodyMidtrans = {
-      orderId: bookings[idx].id,
-      itemId: product?.id,
-      productName: product?.product_name,
-      price: totalPrice,
-      quantity: 1,
-      customer: user.name,
-      customerEmail: user.email
+    // let bodyMidtrans = {
+    //   orderId: bookings[idx].id,
+    //   itemId: product?.id,
+    //   productName: product?.product_name,
+    //   price: totalPrice,
+    //   quantity: 1,
+    //   customer: user.name,
+    //   customerEmail: user.email
+    // }
+    // await handleCheckout(bodyMidtrans);
+
+    const bodyPayment = {
+      transaction_details: {
+        order_id: bookings[idx].id,
+        gross_amount: totalPrice
+      },
+      item_details: [
+        {
+          id: product?.id,
+          name: product?.product_name,
+          price: totalPrice,
+          quantity: 1,
+        }
+      ],
+      customer_details: {
+        first_name: bookings[idx].customer.name,
+        email: bookings[idx].customer.email,
+        phone: bookings[idx].customer.phone,
+      },
+      callbacks: {
+        finish: `https://booking-safari.callistech.co.id/confirmation?order_id=${bookings[idx].id}&source=payment_link`
+      }
     }
-    console.log(bodyMidtrans)
-    await handleCheckout(bodyMidtrans);
-    // window.snap.pay('d2aebca0-291b-415c-9a7d-bfe9b98bf4df')
+    axios.post(process.env.NEXT_PUBLIC_MIDTRANS_API + '/v1/payment-links', bodyPayment, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Basic ' + basicToken,
+      }
+    }).then(response => {
+      console.log(response.data);
+      const data = response.data;
+      // setPaymentlink(data.payment_link);
+      router.push(data.payment_url);
+    }).catch(error => {
+      console.log(error)
+    })
   }
 
   React.useEffect(() => {
@@ -116,7 +156,6 @@ function BookingList({
               {!bookingPayment &&
                 <CardFooter className="grid grid-cols-1 w-full gap-3">
                   <Button
-                    onClick={() => handleConfirmPayment(index, booking.product_no as string)}
                     className="text-xs h-auto bg-brand hover:bg-brand/90"
                   >
                     Confirm Payment

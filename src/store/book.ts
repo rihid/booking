@@ -5,18 +5,23 @@ import { z } from 'zod';
 import { SingleProductSchema, BookingFieldSchema, CustomerFieldSchema } from "@/lib/schema";
 
 const initialDate = moment().format('YYYY-MM-DD');
-
+interface PaymentLink {
+  book_id: string | null;
+  url_payment: string | null;
+}
 export type BookState = {
   bookingField: z.infer<typeof BookingFieldSchema>;
   productBooked: z.infer<typeof SingleProductSchema> | null;
   customers: z.infer<typeof CustomerFieldSchema>[];
+  paymentLink: PaymentLink[]
 }
 export type BookActions = {
   addBooking: (product: z.infer<typeof SingleProductSchema> | null) => void;
   updateBookingField: (values: Partial<BookState['bookingField']>) => void;
   addCustomer: (customer: z.infer<typeof CustomerFieldSchema>) => void;
   editCustomer: (index: number, customer: z.infer<typeof CustomerFieldSchema>) => void;
-  updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => void
+  updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => void;
+  setPaymentLink: (link: PaymentLink) => void;
 }
 
 export type BookStore = BookState & BookActions
@@ -105,7 +110,8 @@ export const defaultInitState: BookState = {
     ]
   },
   productBooked: null,
-  customers: []
+  customers: [],
+  paymentLink: []
 }
 
 export const createBookStore = (
@@ -137,6 +143,9 @@ export const createBookStore = (
     //   updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => set((state) => ({
     //     customers: customers
     //   })),
+    //   setPaymentLink: (link: string | null) => set((state) => ({
+    //     paymentLink: link
+    //   })),
     // }),
     persist(
       (set) => ({
@@ -163,6 +172,12 @@ export const createBookStore = (
         }),
         updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => set((state) => ({
           customers: customers
+        })),
+        setPaymentLink: (data: PaymentLink) => set((state) => ({
+          paymentLink: [
+            ...state.paymentLink,
+            data
+          ]
         })),
       }),
       {

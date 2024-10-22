@@ -13,6 +13,7 @@ import ReviewFormModal from './module/review-form-modal';
 import { getSession } from '@/lib/session';
 import { getAllProductPublic, getBookByCustomer, getInvoiceByCustomer, getSingleProductPublic } from '@/lib/data';
 import moment from 'moment';
+import { generateBasicToken } from '@/lib/helper';
 import BookingList from './module/booking-list';
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
 
 async function Trips() {
   const session = await getSession();
+  const basictoken = await generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ';');
   // @ts-ignore
   const { token, customer_no } = session.user;
   const bookingBody = {
@@ -39,7 +41,6 @@ async function Trips() {
   }
   const invoiceData = await getInvoiceByCustomer(token, invoiceBody);
   const products = await getAllProductPublic();
-  console.log('test',bookingData);
   return (
     <div className="flex flex-col min-h-screen">
       
@@ -61,7 +62,12 @@ async function Trips() {
         <div className="relative mt-6 mb-20">
           <TabsContent value='on-progress'>
             <Container className="space-y-6">
-              <BookingList bookings={bookingData} products={products} user={session?.user} />
+              <BookingList 
+                bookings={bookingData} 
+                products={products} 
+                user={session?.user} 
+                basicToken={basictoken} 
+              />
             </Container>
           </TabsContent>
           <TabsContent value='history'>
