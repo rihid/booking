@@ -124,6 +124,7 @@ export const ProductSchema = z.object({
   uom_id: z.string().nullable(),
   uom: z.string(),
   org_no: z.string(),
+  branch_no: z.string().nullable(),
   is_variant: z.boolean(),
   can_be_sold: z.boolean(),
   cogs: z.boolean(),
@@ -165,6 +166,7 @@ export const SingleProductSchema = z.object({
   costing_evaluation: z.string().nullable(),
   uom_id: z.string().nullable(),
   org_no: z.string().nullable(),
+  branch_no: z.string().nullable(),
   prices: z.array(
     z.object({
       id: z.string(),
@@ -410,7 +412,7 @@ export const InvoiceByCustomerSchema = z.array(
     type: z.string().nullable(),
     type_id: z.string().nullable(),
     invoice_no: z.string(),
-    book_no: z.string(),
+    book_no: z.string().nullable(),
     book_date: z.string().nullable(),
     customer_no: z.string().nullable(),
     schedule_check_in_date: z.string().nullable(),
@@ -425,6 +427,7 @@ export const InvoiceByCustomerSchema = z.array(
     status: z.string().nullable(),
     lock: z.boolean().nullable(),
     org_no: z.string().nullable(),
+    branch_no: z.string().nullable(),
     unit_qty: z.string().nullable(),
     subtotal: z.string().nullable(),
     discount: z.string().nullable(),
@@ -457,5 +460,21 @@ export const InvoiceByCustomerSchema = z.array(
     refunds: z.array(z.any()),
     requests: z.array(z.any()),
     riders: z.array(z.any())
+  })
+)
+export const branchSchema = z.array(
+  z.object({
+    branch_no: z.string().nullable(),
+    org_no: z.string().nullable(),
+    alias: z.string().nullable(),
+    name: z.string().nullable(),
+    second_name: z.string().nullable(),
+    address: z.string().nullable(),
+    phone: z.string().nullable(),
+    email: z.string().nullable(),
+    api_id: z.string().nullable(),
+    ref_no: z.string().nullable(),
+    note: z.string().nullable(),
+    pic: z.string().nullable(),
   })
 )

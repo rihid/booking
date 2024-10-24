@@ -11,7 +11,7 @@ import Link from 'next/link';
 import OpenModalButton from '@/components/ui/button/open-modal-button';
 import ReviewFormModal from './module/review-form-modal';
 import { getSession } from '@/lib/session';
-import { getAllProductPublic, getBookByCustomer, getInvoiceByCustomer, getSingleProductPublic } from '@/lib/data';
+import { getAllProductPublic, getBookByCustomer, getBranchList, getInvoiceByCustomer, getSingleProductPublic } from '@/lib/data';
 import moment from 'moment';
 import { generateBasicToken } from '@/lib/helper';
 import BookingList from './module/booking-list';
@@ -41,6 +41,13 @@ async function Trips() {
   }
   const invoiceData = await getInvoiceByCustomer(token, invoiceBody);
   const products = await getAllProductPublic();
+  const branches = await getBranchList(token);
+  const formatDuration = (duration: any) => {
+    const hours = Math.floor((duration % 86400000) / 3600000)
+    const minutes = Math.round(((duration % 86400000) % 3600000) / 60000)
+    const seconds = Math.round((duration % 60000) / 1000)
+    return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2)
+  }
   return (
     <div className="flex flex-col min-h-screen">
       
@@ -60,6 +67,7 @@ async function Trips() {
           </TabsList>
         </Container>
         <div className="relative mt-6 mb-20">
+          {/* Tab on progress */}
           <TabsContent value='on-progress'>
             <Container className="space-y-6">
               <BookingList 
@@ -70,11 +78,14 @@ async function Trips() {
               />
             </Container>
           </TabsContent>
+          {/* Tab history */}
           <TabsContent value='history'>
             <Container className="space-y-6">
               {invoiceData.length > 0 ?
                 invoiceData.map((invoice) => {
                   const productVal = products.find(p => p.product_no === invoice.product_no)
+                  const branchVal = branches.find(p => p.branch_no === invoice?.branch_no)
+                  const durationTrip = formatDuration(invoice.duration)
                   return (
                     <Card key={invoice.id} className="shadow-md">
                       <CardHeader className="flex-row items-center justify-between">
@@ -87,19 +98,20 @@ async function Trips() {
                       <CardContent className="space-y-0.5">
                         <div className="flex items-center justify-between">
                           <div className="text-foreground/50">
-                            <span className="text-sm font-normal">#{invoice.book_no.split('/').pop()} - {moment(invoice.book_date).format('MMMM Do YYYY')}</span>
+                            <span className="text-sm font-bold text-slate-600"># {invoice.book_no === null ? null : invoice.book_no.split('/').pop()}</span>
+                            <p className='text-sm font-medium text-slate-400'>{moment(invoice.book_date).format('DD MMM YYYY')}</p>
                           </div>
                           <div className="flex items-center text-foreground/50 gap-x-2">
-                            <span className="text-xs font-normal">45 minutes</span>
+                            <span className="text-xs font-normal">{durationTrip}</span>
                             <Clock className="text-brand inline-block w-4 h-4" />
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="text-foreground/50">
-                            <span className="text-sm  uppercase text-green-500 font-normal">Finish</span>
+                            <span className="text-sm  uppercase text-green-500 font-normal">{invoice.status}</span>
                           </div>
                           <div className="flex items-center text-foreground/50 gap-x-2">
-                            <span className="text-xs font-normal">Marina</span>
+                            <span className="text-xs font-normal">{branchVal?.name}</span>
                             <MapPin className="text-brand inline-block w-4 h-4" />
                           </div>
                         </div>

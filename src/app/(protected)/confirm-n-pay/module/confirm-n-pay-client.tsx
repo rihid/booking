@@ -32,6 +32,8 @@ function ConfirmNPayClient({
 }: {
   user: any
 }) {
+  console.log("user:")
+  console.log(user)
   const router = useRouter();
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, updateBookingField, addCustomer, editCustomer, updateCustomerList, setPaymentLink } = useBookStore((state) => state);
@@ -194,17 +196,17 @@ function ConfirmNPayClient({
         book_id: body.orderId,
         url_payment: res.data.redirect_url
       }); // save redirect url
-      
+
       // @ts-ignore
       window.snap.pay(res.data.token, {
         onSuccess: async function (result: any) {
-          console.log('res:',result);
+          console.log('res:', result);
         },
         onPending: (result: any) => {
           console.log(result);
         },
         onError: function (result: any) {
-          console.log('error'); 
+          console.log('error');
           console.log(result);
         },
         onClose: () => { handleClosePayment(body.orderId) },
@@ -227,7 +229,7 @@ function ConfirmNPayClient({
     // payment
     const body = {
       ...bookingField,
-      // payments: []
+      // payments: []      
     }
     console.log('body', body);
     setIsLoading(true);
@@ -278,13 +280,20 @@ function ConfirmNPayClient({
       }))
       updateBookingField({
         customer_no: user?.customer_no,
-        schedule_check_in_date: moment().format('YYYY-MM-DD h:mm:ss'),
+        schedule_check_in_date: '',
         product_no: productBooked.product_no,
         // org_no: user?.org_no,
-        org_no: 'C0003',
+        org_no: user.org_no,
+        branch_no: productBooked.branch_no,
+        subtotal: '0',
+        tax: '0',
+        discount: '0',
+        tax_id: null,
         total: totalPrice.toString(),
         numbers: numberArr,
       });
+      console.log('updateBookingField')
+      console.log(updateBookingField)
     }
 
     // snap script midtrans here
@@ -318,6 +327,7 @@ function ConfirmNPayClient({
             book_unit_id: null,
             rating: null,
             rating_notes: null,
+            type: "rider"
           });
         }
       } else if (totalRiders < riderCount) {
@@ -332,6 +342,12 @@ function ConfirmNPayClient({
 
       updateBookingField({
         riders: riderArr,
+        branch_no: productBooked.branch_no,
+        subtotal: totalPrice.toString(),
+        tax: '0',
+        discount: '0',
+        tax_id: null,
+        total: totalPrice.toString(),
       });
 
       // customer
@@ -385,6 +401,7 @@ function ConfirmNPayClient({
                     <div className="text-foreground/75">
                       <h4 className="font-semibold text-sm">{customer.name}</h4>
                       <p className="text-xs font-normal text-foreground/50">ID Card - {customer.identity_number}</p>
+                      <pre>{}</pre>
                     </div>
                     :
                     <div className="text-foreground/75">
@@ -497,7 +514,7 @@ function ConfirmNPayClient({
           <div className="flex items-start justify-between w-full">
             <div className="text-foreground/75">
               <h4 className="font-semibold text-sm">Dates</h4>
-              <p className="text-xs font-normal text-foreground/50">{moment(bookingField.schedule_check_in_date).format('MMMM DD YYYY')}</p>
+              <p className="text-xs font-normal text-foreground/50">{bookingField.schedule_check_in_date == '' ? 'Select date' : moment(bookingField.schedule_check_in_date).format('DD MMM YYYY H:mm')}</p>
             </div>
             <OpenModalButton variant='link' view='dates-select-view'>Edit</OpenModalButton>
           </div>

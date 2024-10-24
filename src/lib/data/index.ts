@@ -2,8 +2,8 @@
 
 import axios from "axios";
 import { z } from "zod";
-import { masterUrl, productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl, customerListUrl } from "@/lib/data/endpoints";
-import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema, BookingSchema, BookByCustomerSchema, InvoiceByCustomerSchema, SingleBookingSchema } from "@/lib/schema";
+import { masterUrl, productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl, customerListUrl, branchUrl } from "@/lib/data/endpoints";
+import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema, BookingSchema, BookByCustomerSchema, InvoiceByCustomerSchema, SingleBookingSchema, branchSchema } from "@/lib/schema";
 import { generateProductSlug, generateBasicToken } from '@/lib/helper';
 import moment from "moment";
 
@@ -140,7 +140,9 @@ export const getInvoiceByCustomer = async (token: any, body: BookByCustomer) => 
       Authorization: 'Bearer ' + token
     }
   }).then(response => {
+    console.log(response.data.message)
     const data = InvoiceByCustomerSchema.parse(response.data.data);
+    console.log(data)
     return data;
   }).catch( error => {
     console.log(error)
@@ -196,6 +198,22 @@ export const getPaymentStatus = (orderId: string) => {
     return data;
   }).catch(error => {
     console.log(error);
+    throw error;
+  })
+  return res;
+}
+export const getBranchList = async (token: any) => {
+  const res = await axios.get(branchUrl, {
+    headers: {
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + token
+    }
+  }).then(response => {
+    const data = branchSchema.parse(response.data.data);
+    console.log(data)
+    return data;
+  }).catch( error => {
+    console.log(error)
     throw error;
   })
   return res;
