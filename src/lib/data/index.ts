@@ -2,8 +2,8 @@
 
 import axios from "axios";
 import { z } from "zod";
-import { masterUrl, productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl, customerListUrl, branchUrl } from "@/lib/data/endpoints";
-import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema, BookingSchema, BookByCustomerSchema, InvoiceByCustomerSchema, SingleBookingSchema, branchSchema } from "@/lib/schema";
+import { masterUrl, productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl, customerListUrl, branchUrl, userUrl } from "@/lib/data/endpoints";
+import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema, BookingSchema, BookByCustomerSchema, InvoiceByCustomerSchema, SingleBookingSchema, branchSchema, CustomerFieldSchema } from "@/lib/schema";
 import { generateProductSlug, generateBasicToken } from '@/lib/helper';
 import moment from "moment";
 
@@ -44,10 +44,64 @@ export const getUserToken = async (token: any) => {
       }
     })
     const data = UserTokenSchema.parse(res.data.data);
-    const user = data;
-    return user;
+    return data;
   } catch (error) {
     console.log(error)
+    throw error;
+  }
+}
+export const checkUserCustomer = async (token: any, user: any) => {
+  const body = {
+    id: user.id
+  }
+  try {
+    const res = await axios.post(userUrl + '/check-user-customer', body, {
+      headers: { Accept: 'application/json', Authorization: 'Bearer ' + token }, timeout: 50000
+    })
+    return res.data
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+export const getUserCustomerList = async (token: any, user: any) => {
+  const body = {
+    id: user.id
+  }
+  try {
+    const res = await axios.post(userUrl + '/get-customer-list', body, {
+      headers: { Accept: 'application/json', Authorization: 'Bearer ' + token },
+      timeout: 50000
+    })
+    return res.data.data
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+export const getCustomerByNo = async (token: any, customerNo: any) => {
+  try {
+    const res = await axios.post(customerUrl + '/get-by-no', { customer_no: customerNo }, {
+      headers: { Accept: 'application/json', Authorization: 'Bearer ' + token },
+      timeout: 30000
+    })
+    return res.data.data
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export const getCustomerByNoMulti = async (token: any, customerNo: any) => {
+  try {
+    // ArrAY
+    const res = await axios.post(customerUrl + '/get-multi', { customer_no: customerNo }, {
+      headers: { Accept: 'application/json', Authorization: 'Bearer ' + token },
+      timeout: 30000
+    })
+    return res.data.data
+  } catch (error) {
+    console.log(error);
     throw error;
   }
 }
@@ -87,7 +141,7 @@ export const getAllBooking = async (token: any) => {
   const startDate = moment(date).subtract(30, 'days').format('YYYY-MM-DD');
   const endDate = moment(date).format('YYYY-MM-DD');
 
-  const res = axios.get(bookingUrl + '/book' + '?begin=' + startDate + '&end=' + endDate + '&type=book', {
+  const res =  axios.get(bookingUrl + '/book' + '?begin=' + startDate + '&end=' + endDate + '&type=book', {
     headers: {
       Accept: 'application/json',
       Authorization: 'Bearer ' + token

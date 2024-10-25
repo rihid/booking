@@ -18,17 +18,17 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { CustomerFieldSchema, CustomerSchema } from '@/lib/schema';
 import axios from 'axios';
-import { customerUrl } from '@/lib/data/endpoints';
+import { customerUrl, userUrl } from '@/lib/data/endpoints';
 import { useBookStore } from '@/providers/store-providers/book-provider';
 import { Loader2 } from 'lucide-react';
 
 type Props = {
-  token: any;
+  user?: any;
   idx: number;
   customer: any;
 }
 function RiderDetailFormModal({
-  token,
+  user,
   idx,
   customer
 }: Props) {
@@ -46,7 +46,7 @@ function RiderDetailFormModal({
         await axios.post(customerUrl, values, {
           headers: {
             Accept: 'application/json',
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + user.token
           }
         })
           .then(response => {
@@ -56,16 +56,31 @@ function RiderDetailFormModal({
               ...customers[idx],
               ...data,
             })
+            // update user customer
+            const body = {
+              user_id: user.id,
+              customer_no: response.data.data.customer_no,
+              type: 'child'
+            }
+            axios.post(userUrl + '/store-customer', body, {
+              headers: {
+                Accept: 'application/json',
+                Authorization: 'Bearer ' + user.token
+              }
+            })
+            
           })
           .catch(error => {
             console.log(error);
             throw error
           })
       } else {
-        await axios.put(customerUrl + '/' + customer.id, values, {
+        console.log('customer')
+        console.log(customer)
+        await axios.put(customerUrl + '/' + customer.customer_id, values, {
           headers: {
             Accept: 'application/json',
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + user.token
           }
         })
           .then(response => {
@@ -85,11 +100,7 @@ function RiderDetailFormModal({
     })
   }
   return (
-    <Modal
-      open={showModal}
-      onClose={() => closeModal()}
-      variant='bottom'
-    >
+    <Modal open={showModal} onClose={() => closeModal()} variant='bottom'>
       <div className="w-full h-full pb-10">
         <Container className="relative flex flex-col justify-center w-full mx-auto mt-5">
           <div className="flex justify-end mt-4 mb-2">
@@ -209,10 +220,10 @@ function RiderDetailFormModal({
                   <div className="flex flex-col space-y-2">
                     <FormField
                       control={form.control}
-                      name="type"
+                      name="rider_type"
                       render={({ field }) => (
                         <FormItem>
-                          <Label className="text-xs text-muted-foreground">Select</Label>
+                          <Label className="text-xs text-muted-foreground">Type</Label>
                           <Select 
                             onValueChange={field.onChange}
                             // @ts-ignore
@@ -239,7 +250,7 @@ function RiderDetailFormModal({
                     {isPending &&
                       <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
                     }
-                    Submit
+                    Select
                   </Button>
                 </div>
               </form>

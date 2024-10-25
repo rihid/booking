@@ -74,7 +74,8 @@ export const CustomerFieldSchema = z.object({
   age: z.string().nullable(),
   org_no: z.string().nullable(),
   type: z.string().nullable(),
-  from: z.optional(z.string().nullable())
+  from: z.optional(z.string().nullable()),
+  rider_type: z.string().nullable()
 })
 
 // api response Schema
@@ -103,8 +104,10 @@ export const UserTokenSchema = z.object({
   role: z.array(z.string()).nullable(),
   permission: z.any().nullable(),
   customer_no: z.string().nullable(),
+  customer: z.any(),
+  customers: z.any(),
   token: z.optional(z.any()),
-  pending_payment: z.optional(z.array(z.any()))
+  pending_payment: z.optional(z.array(z.any())),
 });
 
 export const ProductSchema = z.object({
@@ -144,6 +147,7 @@ export const ProductSchema = z.object({
     notes: z.string().nullable(),
     org_no: z.string(),
     active: z.boolean(),
+    total_rider: z.number().nullable(),
     created_at: z.string().nullable(),
     updated_at: z.string().nullable(),
     branch_no: z.string().nullable(),

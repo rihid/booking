@@ -29,43 +29,45 @@ import { getPaymentMethod, getPaymentStatus } from '@/lib/data';
 
 function ConfirmNPayClient({
   user,
+  userCustomer,
 }: {
-  user: any
+  user: any;
+  userCustomer: any;
 }) {
-  console.log("user:")
-  console.log(user)
   const router = useRouter();
   const { modalView } = useUiLayoutStore();
-  const { bookingField, productBooked, customers, updateBookingField, addCustomer, editCustomer, updateCustomerList, setPaymentLink } = useBookStore((state) => state);
+  const { bookingField, productBooked, customers, customer, setCustomer, updateBookingField, addCustomer, editCustomer, updateCustomerList, setPaymentLink } = useBookStore((state) => state);
   // local state
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [index, setIndex] = React.useState<number>(0);
-  const [customer, setCustomer] = React.useState<z.infer<typeof CustomerFieldSchema>>({
-    id: null,
-    customer_no: null,
-    name: "",
-    address: null,
-    phone: null,
-    email: "",
-    identity_number: null,
-    vat: null,
-    rating: null,
-    birthday: null,
-    age: null,
-    org_no: "",
-    type: "individual",
-    from: ""
-  });
+  // const [customer, setCustomer] = React.useState<z.infer<typeof CustomerFieldSchema>>({
+  //   id: null,
+  //   customer_no: null,
+  //   name: "",
+  //   address: null,
+  //   phone: null,
+  //   email: "",
+  //   identity_number: null,
+  //   vat: null,
+  //   rating: null,
+  //   birthday: null,
+  //   age: null,
+  //   org_no: "",
+  //   type: "individual",
+  //   from: "",
+  //   rider_type: ""
+  // });
   // calculation
   const totalRiders = React.useMemo(() => {
     const sum = bookingField.numbers.reduce((acc, val) => {
       const qty = parseInt(val.qty);
+      const totalRider = parseInt(val.total_rider)
       // const variant = val.variant.toLowerCase();
       // if (variant.includes("couple") || variant.includes("double")) {
       //   return acc + (qty * 2);
       // }
-      return acc + qty;
+      return acc + (qty * totalRider);
     }, 0);
     return sum;
   }, [bookingField.numbers]);
@@ -76,62 +78,31 @@ function ConfirmNPayClient({
   }, [bookingField.numbers]);
   // functions
   const handdleCheckedChange = async (checked: boolean) => {
-    const body = {
-      customer_no: null,
-      name: user.name,
-      address: null,
-      phone: null,
-      email: user.email,
-      identity_number: null,
-      vat: null,
-      rating: null,
-      birthday: null,
-      age: null,
-      org_no: 'C0003',
-      type: "individual",
-      from: "user"
-    }
-    let custNo;
     if (checked) {
-      // crete customer
-      await axios.post(customerUrl, body, {
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer ' + user.token
-        }
-      })
-        .then(response => {
-          const data = response.data.data;
-          custNo = data.customer_no;
-          console.log('create customer', data)
-          editCustomer(0, {
-            ...customers[0],
-            ...data,
-          })
-        })
-        .catch(error => {
-          console.log(error);
-          throw error;
-        })
-      // crete customer user
-      const bodyObj = {
-        user_id: user.id,
-        customer_no: custNo,
-        type: 'main',
+      const crm = user.customer;
+      const data = {
+        id: crm.id,
+        customer_no: crm.customer_no,
+        name: crm.name,
+        address: crm.address,
+        phone: crm.phone,
+        email: crm.email,
+        identity_number: crm.identity_number,
+        vat: crm.vat,
+        rating: crm.rating,
+        birthday: crm.birthday,
+        age: crm.age,
+        org_no: crm.org_no,
+        type: crm.type,
+        from: crm.from,
+        rider_type: 'rider'
       }
-      await axios.post(customerUserUrl, bodyObj, {
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer ' + user.token
-        }
+      console.log(data)
+      editCustomer(0, {
+        ...customers[0],
+        ...data
       })
-        .then(response => {
-          console.log('user customer:', response.data.data)
-        })
-        .catch(error => {
-          console.log(error);
-          throw error;
-        })
+      console.log(customers[0])
     } else {
       const initialData = {
         id: null,
@@ -148,15 +119,19 @@ function ConfirmNPayClient({
         org_no: "",
         type: "",
         from: "",
+        rider_type: ""
       }
       editCustomer(0, {
         ...customers[0],
         ...initialData,
       })
+      console.log(customers[0])
     }
     setIsAddRider(checked);
   }
-  const handleOpenRiderModal = (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => {
+  const handleOpenRiderModal = async (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => {
+    console.log('customer in open rider modal')
+    console.log(customer)
     setIndex(idx);
     setCustomer(customer);
     editCustomer(idx, {
@@ -257,6 +232,8 @@ function ConfirmNPayClient({
   // on mount
   React.useEffect(() => {
     if (productBooked) {
+      console.log("productBooked:")
+      console.log(productBooked)
       const variants = productBooked.variants;
       const numberArr = variants.map((variant, i) => ({
         id: null,
@@ -276,8 +253,10 @@ function ConfirmNPayClient({
         ref_no: null,
         check: false,
         uom_id: "",
-        description: productBooked.product_description
+        description: productBooked.product_description,
+        total_rider: variant.total_rider
       }))
+      console.log(numberArr)
       updateBookingField({
         customer_no: user?.customer_no,
         schedule_check_in_date: '',
@@ -368,18 +347,16 @@ function ConfirmNPayClient({
           org_no: "",
           type: "",
           from: "",
+          rider_type: ""
         };
 
         addCustomer(customerObj);
-      }
-      else if (totalRiders < customerArr.length) {
+      } else if (totalRiders < customerArr.length) {
         const updatedCustomerArr = customerArr.slice(0, totalRiders);
         updateCustomerList(updatedCustomerArr);
       }
-
     }
   }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList]);
-
   const RiderDetailComp = () => {
     return (
       <Container className="border-t-4 border-slate-100 bg-background py-8">
@@ -393,7 +370,7 @@ function ConfirmNPayClient({
           />
         </div>
         <div className="space-y-6">
-          {customers.map((customer, idx) => {
+        {customers.map((customer, idx) => {
             return (
               <React.Fragment key={idx}>
                 <div className="flex items-start justify-between w-full">
@@ -401,12 +378,14 @@ function ConfirmNPayClient({
                     <div className="text-foreground/75">
                       <h4 className="font-semibold text-sm">{customer.name}</h4>
                       <p className="text-xs font-normal text-foreground/50">ID Card - {customer.identity_number}</p>
+                      <p className="text-xs font-normal text-foreground/50">{customer.rider_type}</p>
                       <pre>{}</pre>
                     </div>
                     :
                     <div className="text-foreground/75">
                       <h4 className="font-semibold text-sm">Your name here</h4>
                       <p className="text-xs font-normal text-foreground/50">ID Card - 0000</p>
+                      <p className="text-xs font-normal text-foreground/50"></p>
                     </div>
                   }
                   {customer.id !== null ?
@@ -445,7 +424,6 @@ function ConfirmNPayClient({
           <dl className="space-y-4">
             {bookingField.numbers.map((number, idx) => {
               const subTotal = number.price.replace(/\./g, '') * number.qty;
-
               return (
                 <React.Fragment key={idx}>
                   {number.qty > 0 &&
@@ -630,7 +608,7 @@ function ConfirmNPayClient({
       {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.schedule_check_in_date as string} />}
       {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
       {modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} user={user} />}
-      {modalView === 'rider-detail-view' && <RiderDetailFormModal token={user.token} idx={index} customer={customer} />}
+      {modalView === 'rider-detail-view' && <RiderDetailFormModal user={user} idx={index} customer={customer} />}
     </div>
   )
 }

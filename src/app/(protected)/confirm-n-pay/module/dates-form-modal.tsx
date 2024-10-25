@@ -31,7 +31,8 @@ function DatesFormModal({
     return dateSetHours;
   }
   const handleSave = () => {
-    const newDate = moment(dateWithHours()).format('YYYY-MM-DD h:mm:ss')
+    const newDate = moment(dateWithHours()).format('YYYY-MM-DD H:mm:ss')
+    console.log(newDate)
     updateBookingField({
       schedule_check_in_date: newDate
     });
@@ -89,7 +90,7 @@ function DatesFormModal({
               type='button'
               className="bg-brand hover:bg-brand/90"
               onClick={handleSave}
-            >Save</Button>
+            >Select</Button>
           </div>
         </Container>
       </form>

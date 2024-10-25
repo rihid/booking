@@ -17,6 +17,7 @@ function ReserveButton({
 
   const { productBooked, addBooking } = useBookStore((state) => state);
   const handleAddBooking = () => {
+    console.log(product)
     addBooking(product);
     router.push('/confirm-n-pay');
   }

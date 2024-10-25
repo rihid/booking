@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { createSession, deleteSession, getSession, encrypt } from "../session";
 import { redirect } from "next/navigation";
-import { getUserToken } from "../data";
+import { getCustomerByNo, getUserToken } from "../data";
 
 export async function login(token: string) {
   
@@ -11,6 +11,9 @@ export async function login(token: string) {
   if (token) {
     user = await getUserToken(token);
     user.token = token
+    const userCustomer = await getCustomerByNo(token, user?.customer_no)
+    console.log(userCustomer)
+    user.customer = userCustomer
   }
   await createSession(user)
   redirect('/explore')

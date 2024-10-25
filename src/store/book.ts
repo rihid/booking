@@ -13,6 +13,7 @@ export type BookState = {
   bookingField: z.infer<typeof BookingFieldSchema>;
   productBooked: z.infer<typeof SingleProductSchema> | null;
   customers: z.infer<typeof CustomerFieldSchema>[];
+  customer: any;
   paymentLink: PaymentLink[]
 }
 export type BookActions = {
@@ -22,6 +23,7 @@ export type BookActions = {
   editCustomer: (index: number, customer: z.infer<typeof CustomerFieldSchema>) => void;
   updateCustomerList: (customers: z.infer<typeof CustomerFieldSchema>[]) => void;
   setPaymentLink: (link: PaymentLink) => void;
+  setCustomer: (customer: any) => void;
 }
 
 export type BookStore = BookState & BookActions
@@ -56,39 +58,17 @@ export const defaultInitState: BookState = {
     captain_no: null,
     customer_service_no: null,
     penalty: null,
-    numbers: [
-      // {
-      //   id: null,
-      //   book_no: null,
-      //   type: "product",
-      //   qty: "1",
-      //   product_no: "",
-      //   product_sku: "",
-      //   variant: null,
-      //   price: "0",
-      //   subtotal: "0",
-      //   discount: "0",
-      //   tax: "0",
-      //   tax_id: null,
-      //   total: "",
-      //   is_guided: false,
-      //   ref_no: null,
-      //   check: false,
-      //   uom_id: "",
-      //   description: null
-      // }
-    ],
-    riders: [
-      {
-        book_no: null,
-        unit_no: null,
-        customer_no: "",
-        notes: null,
-        book_unit_id: null,
-        rating: null,
-        rating_notes: null
-      }
-    ],
+    numbers: [],
+    riders: [{
+      book_no: null,
+      unit_no: null,
+      customer_no: "",
+      notes: null,
+      book_unit_id: null,
+      rating: null,
+      rating_notes: null,
+      type: ''
+    }],
     payments: [
       // {
       //   id: null,
@@ -111,7 +91,24 @@ export const defaultInitState: BookState = {
   },
   productBooked: null,
   customers: [],
-  paymentLink: []
+  paymentLink: [],
+  customer: {
+    id: null,
+    customer_no: null,
+    name: "",
+    address: null,
+    phone: null,
+    email: "",
+    identity_number: null,
+    vat: null,
+    rating: null,
+    birthday: null,
+    age: null,
+    org_no: "",
+    type: "individual",
+    from: "",
+    rider_type: ""
+  }
 }
 
 export const createBookStore = (
@@ -149,6 +146,9 @@ export const createBookStore = (
             ...state.paymentLink,
             data
           ]
+        })),
+        setCustomer: (customer) => set((state) => ({
+          customer: customer
         })),
       }),
       {

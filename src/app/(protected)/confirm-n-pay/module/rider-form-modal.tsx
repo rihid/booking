@@ -100,7 +100,7 @@ function RiderFormModal({
               return (
                 <Card key={idx} className='flex items-center justify-between py-3 px-8'>
                   <div>
-                    <Heading variant='sm' className="text-muted-foreground">{number.variant} Riders</Heading>
+                    <Heading variant='sm' className="text-muted-foreground">{number.variant} Riders ({number.total_rider})</Heading>
                     <div className="font-normal text-xs text-foreground/50">
                       <span>Aged 13+</span>
                     </div>
