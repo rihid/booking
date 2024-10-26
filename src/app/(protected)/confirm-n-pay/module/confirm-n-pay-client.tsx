@@ -60,13 +60,15 @@ function ConfirmNPayClient({
   // });
   // calculation
   const totalRiders = React.useMemo(() => {
-    const sum = bookingField.numbers.reduce((acc, val) => {
+    const bn = bookingField.numbers;
+    console.log('bn', bn)
+    const sum = bn.reduce((acc, val) => {
       const qty = parseInt(val.qty);
       const totalRider = parseInt(val.total_rider)
-      // const variant = val.variant.toLowerCase();
-      // if (variant.includes("couple") || variant.includes("double")) {
-      //   return acc + (qty * 2);
-      // }
+      const variant = val.variant.toLowerCase();
+      if (variant.includes("couple") || variant.includes("double")) {
+        return acc + (qty * 2);
+      }
       return acc + (qty * totalRider);
     }, 0);
     return sum;
@@ -254,14 +256,13 @@ function ConfirmNPayClient({
         check: false,
         uom_id: "",
         description: productBooked.product_description,
-        total_rider: variant.total_rider
+        total_rider: variant.total_rider || 1,
       }))
       console.log(numberArr)
       updateBookingField({
         customer_no: user?.customer_no,
         schedule_check_in_date: '',
         product_no: productBooked.product_no,
-        // org_no: user?.org_no,
         org_no: user.org_no,
         branch_no: productBooked.branch_no,
         subtotal: '0',
@@ -271,8 +272,8 @@ function ConfirmNPayClient({
         total: totalPrice.toString(),
         numbers: numberArr,
       });
-      console.log('updateBookingField')
-      console.log(updateBookingField)
+      console.log('bookingFIeld:')
+      console.log(bookingField)
     }
 
     // snap script midtrans here
@@ -370,7 +371,7 @@ function ConfirmNPayClient({
           />
         </div>
         <div className="space-y-6">
-        {customers.map((customer, idx) => {
+          {customers.map((customer, idx) => {
             return (
               <React.Fragment key={idx}>
                 <div className="flex items-start justify-between w-full">
@@ -379,7 +380,7 @@ function ConfirmNPayClient({
                       <h4 className="font-semibold text-sm">{customer.name}</h4>
                       <p className="text-xs font-normal text-foreground/50">ID Card - {customer.identity_number}</p>
                       <p className="text-xs font-normal text-foreground/50">{customer.rider_type}</p>
-                      <pre>{}</pre>
+                      <pre>{ }</pre>
                     </div>
                     :
                     <div className="text-foreground/75">
