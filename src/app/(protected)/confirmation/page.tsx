@@ -272,7 +272,7 @@ async function Confirmation({
           </div>
           <div className="mt-8 flex justify-center items-center">
             <div className="flex flex-col items-center gap-4 w-auto">
-              <Button className="w-full bg-brand hover:bg-brand/90">Tract Order</Button>
+              <Button className="w-full bg-brand hover:bg-brand/90">Track Order</Button>
               <Button className="w-full">Back</Button>
             </div>
           </div>

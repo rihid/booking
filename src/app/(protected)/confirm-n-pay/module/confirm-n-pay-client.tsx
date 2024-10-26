@@ -204,9 +204,10 @@ function ConfirmNPayClient({
       customerEmail: user.email
     }
     // payment
+    const arrNumber = bookingField.numbers.filter(d => parseFloat(d.qty) > 0)
     const body = {
       ...bookingField,
-      // payments: []      
+      numbers: arrNumber
     }
     console.log('body', body);
     setIsLoading(true);
@@ -389,26 +390,14 @@ function ConfirmNPayClient({
                       <p className="text-xs font-normal text-foreground/50"></p>
                     </div>
                   }
-                  {customer.id !== null ?
-                    <OpenModalButton
-                      view='rider-info-view'
-                      variant='link'
-                      className='border-none'
-                      onClickChange={() => handleOpenRiderModal(idx, customer)}
-                    >
-                      <SquarePen className="w-5 h-5" />
-                    </OpenModalButton>
-                    :
-                    <OpenModalButton
-                      view='rider-detail-view'
-                      variant='link'
-                      className='border-none'
-                      onClickChange={() => handleOpenRiderModal(idx, customer)}
-                    >
-                      <SquarePen className="w-5 h-5" />
-                    </OpenModalButton>
-
-                  }
+                  <OpenModalButton
+                    view='rider-info-view'
+                    variant='link'
+                    className='border-none'
+                    onClickChange={() => handleOpenRiderModal(idx, customer)}
+                  >
+                    <SquarePen className="w-5 h-5" />
+                  </OpenModalButton>
                 </div>
               </React.Fragment>
             )
