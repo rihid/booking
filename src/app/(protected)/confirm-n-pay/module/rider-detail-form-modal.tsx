@@ -42,6 +42,8 @@ function RiderDetailFormModal({
   })
   const onSubmit = (values: z.infer<typeof CustomerFieldSchema>) => {
     startTransition(async () => {
+      console.log('on submit')
+      console.log(values)
       if (customer.id === null) {
         await axios.post(customerUrl, values, {
           headers: {
@@ -52,6 +54,7 @@ function RiderDetailFormModal({
           .then(response => {
             const data = CustomerSchema.parse(response.data.data);
             // console.log(data)
+            customers[idx].rider_type = values.rider_type
             editCustomer(idx, {
               ...customers[idx],
               ...data,
@@ -86,6 +89,7 @@ function RiderDetailFormModal({
           .then(response => {
             const data = CustomerSchema.parse(response.data.data);
             // console.log(data)
+            customers[idx].rider_type = values.rider_type
             editCustomer(idx, {
               ...customers[idx],
               ...data,

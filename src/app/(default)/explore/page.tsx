@@ -47,8 +47,8 @@ async function Explore() {
           </ul> */}
           <TabsList className="flex gap-6 justify-start bg-background text-muted-foreground">
             <TabsTrigger value='trip' className="font-bold">Trip</TabsTrigger>
-            <TabsTrigger value='coastal' className="font-bold">Coastal</TabsTrigger>
-            <TabsTrigger value='rental' className="font-bold">Rental</TabsTrigger>
+            {/* <TabsTrigger value='coastal' className="font-bold">Coastal</TabsTrigger> */}
+            {/* <TabsTrigger value='rental' className="font-bold">Rental</TabsTrigger> */}
           </TabsList>
         </Container>
         <div className="relative mt-6 mb-20">

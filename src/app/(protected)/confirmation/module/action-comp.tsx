@@ -4,6 +4,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useBookStore } from '@/providers/store-providers/book-provider';
+import { useRouter } from 'next/navigation';
 
 function ActionComp({
   status,
@@ -14,6 +15,10 @@ function ActionComp({
 }) {
   const { paymentLink } = useBookStore((state) => state);
   const paymentVal = paymentLink.find(p => p.book_id === booking.id);
+  const router = useRouter();
+  const handleBack = () => {
+    router.push('/explore')
+  }
   return (
     <div className="mt-8 flex justify-center items-center">
       <div className="flex flex-col items-center gap-4 w-auto">
@@ -24,7 +29,7 @@ function ActionComp({
             <Button className="w-full bg-brand hover:bg-brand/90">Pay Now</Button>
           </Link>
         }
-        <Button className="w-full">Back</Button>
+        <Button className="w-full" onClick={() => handleBack()}>Back</Button>
       </div>
     </div>
   )

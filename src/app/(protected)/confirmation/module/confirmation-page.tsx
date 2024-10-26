@@ -7,7 +7,7 @@ import { Badge, BadgeCheck } from 'lucide-react';
 import Container from '@/components/ui/container';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button/button';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 
 function ConfirmationPage({
@@ -15,6 +15,7 @@ function ConfirmationPage({
 }: {
   basicToken: string;
 }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const orderId = searchParams.get('order_id');
@@ -52,6 +53,13 @@ function ConfirmationPage({
   React.useEffect(() => {
     // getTransactionStatus();
   }, [])
+  const handleTrackOrder = () => {
+    router.push('/history');
+  }
+  const handleToRoot = () => {
+    alert('to root')
+    router.push('/explore');
+  }
   return (
     <div className="flex flex-col min-h-screen">
       <Card className="flex flex-col items-center justify-center border-none p-8 shadow">
@@ -99,8 +107,18 @@ function ConfirmationPage({
         </Card>
         <div className="mt-8 flex justify-center items-center">
           <div className="flex flex-col items-center gap-4 w-auto">
-            <Button className="w-full bg-brand hover:bg-brand/90">Tract Order</Button>
-            <Button className="w-full">Back</Button>
+            <Button
+             className="w-full bg-brand hover:bg-brand/90"
+             onClick={() => handleTrackOrder()}
+            >
+              Track Order
+            </Button>
+            <Button 
+              className="w-full"
+              onClick={() => handleToRoot()}
+            >
+                Back
+            </Button>
           </div>
         </div>
       </Container>
