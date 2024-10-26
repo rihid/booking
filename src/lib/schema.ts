@@ -180,7 +180,8 @@ export const SingleProductSchema = z.object({
       uom_id: z.string().nullable(),
       amount: z.string(),
       notes: z.string().nullable()
-    })),
+    })
+  ),
   is_variant: z.boolean(),
   is_guided: z.boolean(),
   can_be_sold: z.boolean(),
@@ -211,6 +212,7 @@ export const SingleProductSchema = z.object({
       notes: z.string().nullable(),
       org_no: z.string().nullable(),
       active: z.boolean(),
+      total_rider: z.any(),
       price: z.string().nullable(),
       prices: z.array(
         z.object({

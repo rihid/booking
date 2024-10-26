@@ -132,7 +132,7 @@ function RiderInfoModal({
                     <ToggleGroupItem key={idx} value={uc} className="w-full justify-start border border-muted-foreground rounded px-4 py-3 text-xs text-start font-normal font-foreground/50">{uc.name}</ToggleGroupItem>
                     }
                     {isLoading && 
-                      <div>Loading...</div>
+                      <div></div>
                     }
                     </>
                   )
