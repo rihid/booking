@@ -2,6 +2,8 @@
 
 import React from 'react';
 import Modal from '@/components/ui/modal';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import Container from '@/components/ui/container';
 import { Calendar } from '@/components/ui/calendar';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -23,6 +25,56 @@ function DatesFormModal({
   const [date, setDate] = React.useState<Date | undefined>(new Date(dates));
   const [time, setTime] = React.useState<number>(6)
 
+  const toggleItems = [
+    {
+      label: "6:00AM",
+      value: "6"
+    },
+    {
+      label: "7:00AM",
+      value: "7"
+    },
+    {
+      label: "8:00AM",
+      value: "8"
+    },
+    {
+      label: "9:00AM",
+      value: "9"
+    },
+    {
+      label: "10:00AM",
+      value: "10"
+    },
+    {
+      label: "11:00AM",
+      value: "11"
+    },
+    {
+      label: "12:00AM",
+      value: "12"
+    },
+    {
+      label: "1:00AM",
+      value: "13"
+    },
+    {
+      label: "2:00AM",
+      value: "14"
+    },
+    {
+      label: "3:00AM",
+      value: "15"
+    },
+    {
+      label: "4:00AM",
+      value: "16"
+    },
+    {
+      label: "5:00AM",
+      value: "17"
+    }
+  ];
   const handleValueChange = (val: string) => {
     setTime(parseInt(val));
   }
@@ -39,62 +91,59 @@ function DatesFormModal({
     closeModal();
   }
   return (
-    <Modal
+    <Sheet
       open={showModal}
-      onClose={() => closeModal()}
-      variant='bottom'
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          closeModal();
+        }
+      }}
     >
-      <form className="w-full h-full pb-10">
-        <Container className="relative flex flex-col justify-center w-full mx-auto mt-5">
-          <div className="flex justify-end mt-4 mb-2">
-            <CloseButton />
-          </div>
-          <Heading variant='lg' className="text-center text-foreground/75">Dates</Heading>
-          <div className="mt-6 w-full">
-            <h4 className="text-sm font-semibold truncate">
-              Select Date
-            </h4>
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="mt-4 rounded-md border border-slate-200"
-            />
-          </div>
-          <div className="mt-6 w-full">
-            <h4 className="text-sm font-semibold truncate">
-              Select Time
-            </h4>
-            <ToggleGroup
-              type="single"
-              variant="outline"
-              className="flex-wrap justify-start mt-4 gap-2 text-xs text-foregorund/50 rounded-sm"
-              onValueChange={value => handleValueChange(value)}
-            >
-              <ToggleGroupItem value="6">6:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="7">7:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="8">8:00Am</ToggleGroupItem>
-              <ToggleGroupItem value="9">9:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="10">10:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="11">11:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="12">12:00AM</ToggleGroupItem>
-              <ToggleGroupItem value="13">1:00PM</ToggleGroupItem>
-              <ToggleGroupItem value="14">2:00PM</ToggleGroupItem>
-              <ToggleGroupItem value="15">3:00PM</ToggleGroupItem>
-              <ToggleGroupItem value="16">4:00PM</ToggleGroupItem>
-              <ToggleGroupItem value="17">5:00PM</ToggleGroupItem>
-            </ToggleGroup>
-          </div>
-          <div className="flex items-center justify-center mt-6 w-full">
-            <Button
-              type='button'
-              className="bg-brand hover:bg-brand/90"
-              onClick={handleSave}
-            >Select</Button>
-          </div>
-        </Container>
-      </form>
-    </Modal>
+      <SheetContent side="bottom" className="wrapper flex flex-col justify-between w-full h-3/4 rounded-t-2xl">
+        <SheetHeader>
+          <SheetTitle className="text-center text-foreground/75">Dates</SheetTitle>
+        </SheetHeader>
+        <ScrollArea className="">
+          <form className="pb-10 px-4">
+            <div className="relative flex flex-col justify-center w-full mx-auto">
+              <div className="mt-6 w-full">
+                <h4 className="text-sm font-semibold truncate">
+                  Select Date
+                </h4>
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  className="mt-4 rounded-md border border-slate-200"
+                />
+              </div>
+              <div className="mt-6 w-full">
+                <h4 className="text-sm font-semibold truncate">
+                  Select Time
+                </h4>
+                <ToggleGroup
+                  type="single"
+                  variant="outline"
+                  className="flex-wrap justify-start mt-4 gap-2 text-xs text-foregorund/50 rounded-sm"
+                  onValueChange={value => handleValueChange(value)}
+                >
+                  {toggleItems.map((item, idx) => (
+                    <ToggleGroupItem key={idx} value={item.value}>{item.label}</ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
+              <div className="flex items-center justify-center mt-6 w-full">
+                <Button
+                  type='button'
+                  className="bg-brand hover:bg-brand/90"
+                  onClick={handleSave}
+                >Select</Button>
+              </div>
+            </div>
+          </form>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   )
 }
 
