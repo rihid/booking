@@ -3,6 +3,8 @@
 import React from 'react';
 import { cn } from '@/assets/styles/utils';
 import Modal from '@/components/ui/modal';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import Container from '@/components/ui/container';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -71,7 +73,7 @@ function RiderDetailFormModal({
                 Authorization: 'Bearer ' + user.token
               }
             })
-            
+
           })
           .catch(error => {
             console.log(error);
@@ -104,16 +106,21 @@ function RiderDetailFormModal({
     })
   }
   return (
-    <Modal open={showModal} onClose={() => closeModal()} variant='bottom'>
-      <div className="w-full h-full pb-10">
-        <Container className="relative flex flex-col justify-center w-full mx-auto mt-5">
-          <div className="flex justify-end mt-4 mb-2">
-            <CloseButton />
-          </div>
-          <Heading variant='lg' className="text-center text-foreground/75">Rider Detail</Heading>
-          <div className="mt-6 w-full space-y-6">
+    <Sheet open={showModal}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          closeModal();
+        }
+      }}
+    >
+      <SheetContent side="bottom" className="wrapper flex flex-col justify-between w-full h-3/4 rounded-t-2xl">
+        <SheetHeader>
+          <SheetTitle className="text-center text-foreground/75">Rider Detail</SheetTitle>
+        </SheetHeader>
+        <ScrollArea className="flex-grow w-full">
+          <div className="pb-10 px-4 mt-5">
             <Form {...form}>
-              <form // inputan dicustom menerima nilai 'null' di interface InputHTMLAttributes, kembalikan jika perlu
+              <form // inputan dicustom menerima nilai 'null' di interface InputHTMLAttributes
                 action="post"
                 className="w-full mx-auto"
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -228,7 +235,7 @@ function RiderDetailFormModal({
                       render={({ field }) => (
                         <FormItem>
                           <Label className="text-xs text-muted-foreground">Type</Label>
-                          <Select 
+                          <Select
                             onValueChange={field.onChange}
                             // @ts-ignore
                             defaultValue={field.value}
@@ -260,9 +267,9 @@ function RiderDetailFormModal({
               </form>
             </Form>
           </div>
-        </Container>
-      </div>
-    </Modal>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   )
 }
 

@@ -31,3 +31,6 @@ export const product = {
   price: 1567870,
   quantity: 1
 }
+
+export const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
+export const midtransServerKey = process.env.MIDTRANS_SERVER_KEY;

@@ -26,6 +26,9 @@ import { currency } from '@/lib/helper';
 import RiderInfoModal from './rider-info-modal';
 import { cn } from '@/assets/styles/utils';
 import { getPaymentMethod, getPaymentStatus } from '@/lib/data';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { midtransClientKey } from '@/lib/constants';
 
 function ConfirmNPayClient({
   user,
@@ -58,6 +61,10 @@ function ConfirmNPayClient({
   //   from: "",
   //   rider_type: ""
   // });
+
+  // form
+  const { control, register, handleSubmit, formState: { errors } } = useForm();
+  const [data, setData] = React.useState<any>(null);
   // calculation
   const totalRiders = React.useMemo(() => {
     const bn = bookingField.numbers;
@@ -143,7 +150,7 @@ function ConfirmNPayClient({
   }
 
   // midtrans options function
-  const handleClosePayment = (bookId: string) => {
+  const closePayment = (bookId: string) => {
     axios.delete(bookingUrl + '/book/' + bookId, {
       headers: {
         Accept: 'application/json',
@@ -169,24 +176,13 @@ function ConfirmNPayClient({
       })
       const res = await response.json();
 
-      setPaymentLink({
-        book_id: body.orderId,
-        url_payment: res.data.redirect_url
-      }); // save redirect url
-
       // @ts-ignore
       window.snap.pay(res.data.token, {
-        onSuccess: async function (result: any) {
-          console.log('res:', result);
-        },
         onPending: (result: any) => {
-          console.log(result);
+          console.log('result', result);
+          router.push(`/confirmation?order_id=${body.orderId}&status_code=${result.status_code}&payment_token=${res.data.token}`)
         },
-        onError: function (result: any) {
-          console.log('error');
-          console.log(result);
-        },
-        onClose: () => { handleClosePayment(body.orderId) },
+        onClose: () => { closePayment(body.orderId) },
       });
     } catch (error) {
       console.log(error);
@@ -232,7 +228,36 @@ function ConfirmNPayClient({
     await handleCheckout(bodyMidtrans);
     setIsLoading(false);
   }
-  // on mount
+  const onSubmitConfirm = async () => {
+    let bodyMidtrans = {
+      orderId: bookingField.book_no,
+      itemId: productBooked?.id,
+      productName: productBooked?.product_name,
+      price: totalPrice,
+      quantity: 1,
+      customer: user.name,
+      customerEmail: user.email
+    }
+    setIsLoading(true);
+    await axios.post(bookingUrl + '/book', bookingField, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + user.token
+      }
+    }).then(response => {
+      console.log('data book:', response.data.data);
+      const data = response.data.data;
+      bodyMidtrans.orderId = data.id;
+    }).catch(error => {
+      // setIsLoading(false);
+      console.log(error);
+      throw error;
+    })
+    // midtrans
+    await handleCheckout(bodyMidtrans);
+    setIsLoading(false);
+  }
+  // onmount
   React.useEffect(() => {
     if (productBooked) {
       console.log("productBooked:")
@@ -292,7 +317,7 @@ function ConfirmNPayClient({
       document.body.removeChild(scriptTag)
     }
   }, []);
-  // on update
+  // onupdate
   React.useEffect(() => {
     if (productBooked) {
       // riders
@@ -359,6 +384,7 @@ function ConfirmNPayClient({
       }
     }
   }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList]);
+
   const RiderDetailComp = () => {
     return (
       <Container className="border-t-4 border-slate-100 bg-background py-8">
@@ -476,125 +502,204 @@ function ConfirmNPayClient({
         <div></div>
       </Container>
       <ProductSummary product={productBooked} />
-      <Container className="border-t-4 border-slate-100 bg-background py-8">
-        <h3 className="font-bold text-base text-foreground/75 mb-3">Your Trip</h3>
-        <div className="space-y-6">
-          <div className="flex items-start justify-between w-full">
-            <div className="text-foreground/75">
-              <h4 className="font-semibold text-sm">Dates</h4>
-              <p className="text-xs font-normal text-foreground/50">{bookingField.schedule_check_in_date == '' ? 'Select date' : moment(bookingField.schedule_check_in_date).format('DD MMM YYYY H:mm')}</p>
-            </div>
-            <OpenModalButton variant='link' view='dates-select-view'>Edit</OpenModalButton>
-          </div>
-          <div className="flex items-start justify-between w-full">
-            <div className="text-foreground/75">
-              <h4 className="font-semibold text-sm">Riders</h4>
-              <p className="text-xs font-normal text-foreground/50">{totalRiders} Riders</p>
-            </div>
-            <OpenModalButton variant='link' view='rider-select-view'>Edit</OpenModalButton>
-          </div>
-          <div className="flex flex-wrap items-start justify-between w-full">
-            <div className="text-foreground/75 w-full flex-grow">
-              <h4 className="font-semibold text-sm">Add Ons</h4>
-            </div>
-            <ToggleGroup type="multiple" className="mt-3 gap-4">
-              <ToggleGroupItem
-                value="drone"
-                className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
-              >
-                Drone
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="food"
-                className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
-              >
-                Food
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="profesional-photos"
-                className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
-              >
-                Profesional Photos
-              </ToggleGroupItem>
-            </ToggleGroup>
-          </div>
-        </div>
-      </Container>
-      <RiderDetailComp />
-      <PriceDetailComp />
-      <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
-        <div>
-          <h3 className="font-bold text-base text-foreground/75 mb-3">Pay With</h3>
+      <form
+        action=""
+        onSubmit={handleSubmit(onSubmitConfirm)}
+      >
+        <Container className="border-t-4 border-slate-100 bg-background py-8">
+          <h3 className="font-bold text-base text-foreground/75 mb-3">Your Trip</h3>
           <div className="space-y-6">
-            <ToggleGroup type="single" className="flex flex-col w-full gap-5">
-              <ToggleGroupItem
-                value="credit-debit"
-                className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
-              >
-                <CreditCard className="w-5 h-5 mr-2 inline-block" />
-                Cashless
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="gopay"
-                className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
-              >
-                <Wallet className="w-5 h-5 mr-2 inline-block" />
-                Cash
-              </ToggleGroupItem>
-            </ToggleGroup>
+            <div className="flex items-start justify-between w-full">
+              <div className="text-foreground/75">
+                <h4 className="font-semibold text-sm">Dates</h4>
+                <p className="text-xs font-normal text-foreground/50">{bookingField.schedule_check_in_date == '' ? 'Select date' : moment(bookingField.schedule_check_in_date).format('DD MMM YYYY H:mm')}</p>
+              </div>
+              <OpenModalButton variant='link' view='dates-select-view'>Edit</OpenModalButton>
+            </div>
+            <div className="flex items-start justify-between w-full">
+              <div className="text-foreground/75">
+                <h4 className="font-semibold text-sm">Riders</h4>
+                <p className="text-xs font-normal text-foreground/50">{totalRiders} Riders</p>
+              </div>
+              <OpenModalButton variant='link' view='rider-select-view'>Edit</OpenModalButton>
+            </div>
+            <div className="flex flex-wrap items-start justify-between w-full">
+              <div className="text-foreground/75 w-full flex-grow">
+                <h4 className="font-semibold text-sm">Add Ons</h4>
+              </div>
+              <ToggleGroup type="multiple" className="mt-3 gap-4">
+                <ToggleGroupItem
+                  value="drone"
+                  className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
+                >
+                  Drone
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="food"
+                  className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
+                >
+                  Food
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="profesional-photos"
+                  className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
+                >
+                  Profesional Photos
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
           </div>
-        </div>
-        <div>
-          <h3 className="font-bold text-base text-foreground/75 mb-3">Rules</h3>
-          <div className="text-foreground/50 text-xs font-normal ">
-            <p>We ask every customer to remember a few simple things
-              about what makes a great customer.</p>
-            <ul className="mt-1 space-y-1">
-              <li>
-                <Check className="w-3 h-3 mr-2 inline-block" />
-                Customer Ages
-              </li>
-              <li>
-                <Check className="w-3 h-3 mr-2 inline-block" />
-                Safety
-              </li>
-              <li>
-                <Check className="w-3 h-3 mr-2 inline-block" />
-                Life vest is a must
-              </li>
-            </ul>
+        </Container>
+        {/* <RiderDetailComp /> */}
+        <Container className="border-t-4 border-slate-100 bg-background py-8">
+          <h3 className="font-bold text-base text-foreground/75 mb-3">Riders Details</h3>
+          <div className="flex items-center justify-between mb-6">
+            <Label htmlFor="add-as-rider" className="text-sm font-normal text-muted-foreground">Add as riders</Label>
+            <Switch
+              id="add-as-rider"
+              checked={isAddRider}
+              onCheckedChange={handdleCheckedChange}
+            />
           </div>
-        </div>
-      </Container>
-      <Container className="border-t-4 border-slate-100 bg-background py-8">
-        <h3 className="font-bold text-base text-foreground/75 mb-3">Cancellation Pollicy</h3>
-        <div className="space-y-6">
-          <div className="text-foreground/50 font-normal text-xs">
-            <p>This reservation is non-refundable. Learn More
-              <button type="button" className="inline-block ml-1 text-brand hover:underline hover:underline-offset-1">learn More</button></p>
+          <div className="space-y-6">
+            {customers.map((customer, idx) => {
+              const inputName = 'rider' + idx;
+              return (
+                <React.Fragment key={idx}>
+                  <div className="flex items-start justify-between w-full">
+                    {customer.id !== null ?
+                      <div className="text-foreground/75">
+                        <h4 className="font-semibold text-sm">{customer.name}</h4>
+                        <p className="text-xs font-normal text-foreground/50">ID Card - {customer.identity_number}</p>
+                        <p className="text-xs font-normal text-foreground/50">{customer.rider_type}</p>
+                        <pre>{ }</pre>
+                      </div>
+                      :
+                      <div className="text-foreground/75">
+                        <h4 className="font-semibold text-sm">Your name here</h4>
+                        <p className="text-xs font-normal text-foreground/50">ID Card - 0000</p>
+                        <p className="text-xs font-normal text-foreground/50"></p>
+                        <input
+                          type="text"
+                          id={inputName}
+                          value={customer.id}
+                          aria-invalid={errors.inputName ? "true" : "false"}
+                          {...register(inputName, { required: true })}
+                          className="hidden"
+                        />
+                        {errors[inputName] && errors[inputName].type === "required" && (
+                          <span role="alert" className="text-xs font-normal text-destructive">Riders details cannot be empty</span>
+                        )}
+                      </div>
+                    }
+                    <OpenModalButton
+                      view='rider-info-view'
+                      variant='link'
+                      className='border-none'
+                      onClickChange={() => handleOpenRiderModal(idx, customer)}
+                    >
+                      <SquarePen className="w-5 h-5" />
+                    </OpenModalButton>
+                  </div>
+                </React.Fragment>
+              )
+            })}
           </div>
-        </div>
-      </Container>
-      <Container el="article" className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
-        <div className="text-foreground/50 text-xs font-normal space-y-4">
-          <p>By selecting the button below, I agree to Seadoo Safari rules.</p>
-          <p>I also agree to the updated Terms of Service, Payments Terms
-            Of Service, and I acknowledge the Privacy Policy.</p>
-        </div>
-        <div className="flex items-center justify-center">
-          <Button
-            type='button'
-            onClick={handleClickConfirm}
-            disabled={isLoading}
-            className="bg-brand hover:bg-brand/90"
-          >
-            {isLoading &&
-              <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
-            }
-            Confirm & pay
-          </Button>
-        </div>
-      </Container>
+        </Container>
+        <PriceDetailComp />
+        <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
+          <div>
+            <h3 className="font-bold text-base text-foreground/75 mb-3">Pay With</h3>
+            <div className="space-y-6">
+              <Controller
+                name='payment_select'
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => {
+                  return (
+                    <ToggleGroup
+                      id="payment_select"
+                      type="single"
+                      className="flex flex-col w-full gap-5"
+                      value={field.value || null}
+                      onValueChange={field.onChange}
+                      aria-invalid={errors.payment_select ? "true" : "false"}
+                    >
+                      <ToggleGroupItem
+                        value="credit-debit"
+                        className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
+                      >
+                        <CreditCard className="w-5 h-5 mr-2 inline-block" />
+                        Cashless
+                      </ToggleGroupItem>
+                      <ToggleGroupItem
+                        value="cash"
+                        className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
+                      >
+                        <Wallet className="w-5 h-5 mr-2 inline-block" />
+                        Cash
+                      </ToggleGroupItem>
+                    </ToggleGroup>
+                  )
+                }}
+              />
+              {errors.payment_select && errors.payment_select.type === "required" && (
+                <span role="alert" className="text-xs font-normal text-destructive">Payment method is required</span>
+              )}
+            </div>
+          </div>
+          <div>
+            <h3 className="font-bold text-base text-foreground/75 mb-3">Rules</h3>
+            <div className="text-foreground/50 text-xs font-normal ">
+              <p>We ask every customer to remember a few simple things
+                about what makes a great customer.</p>
+              <ul className="mt-1 space-y-1">
+                <li>
+                  <Check className="w-3 h-3 mr-2 inline-block" />
+                  Customer Ages
+                </li>
+                <li>
+                  <Check className="w-3 h-3 mr-2 inline-block" />
+                  Safety
+                </li>
+                <li>
+                  <Check className="w-3 h-3 mr-2 inline-block" />
+                  Life vest is a must
+                </li>
+              </ul>
+            </div>
+          </div>
+        </Container>
+        <Container className="border-t-4 border-slate-100 bg-background py-8">
+          <h3 className="font-bold text-base text-foreground/75 mb-3">Cancellation Pollicy</h3>
+          <div className="space-y-6">
+            <div className="text-foreground/50 font-normal text-xs">
+              <p>This reservation is non-refundable. Learn More
+                <button type="button" className="inline-block ml-1 text-brand hover:underline hover:underline-offset-1">learn More</button></p>
+            </div>
+          </div>
+        </Container>
+        <Container el="article" className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
+          <div className="text-foreground/50 text-xs font-normal space-y-4">
+            <p>By selecting the button below, I agree to Seadoo Safari rules.</p>
+            <p>I also agree to the updated Terms of Service, Payments Terms
+              Of Service, and I acknowledge the Privacy Policy.</p>
+          </div>
+          <p>{data}</p>
+          <div className="flex items-center justify-center">
+            <Button
+              type='submit'
+              disabled={isLoading}
+              className="bg-brand hover:bg-brand/90"
+            >
+              {isLoading &&
+                <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
+              }
+              Confirm & pay
+            </Button>
+          </div>
+        </Container>
+      </form>
       {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.schedule_check_in_date as string} />}
       {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
       {modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} user={user} />}

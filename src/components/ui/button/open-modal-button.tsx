@@ -35,6 +35,7 @@ function OpenModalButton({
     case 'default':
       return (
         <Button
+          type='button'
           variant="default"
           onClick={handleClick}
           className={cn(
@@ -49,6 +50,7 @@ function OpenModalButton({
     case 'link':
       return (
         <Button
+          type='button'
           variant="link"
           onClick={handleClick}
           className={cn(
@@ -63,6 +65,7 @@ function OpenModalButton({
     case 'outline':
       return (
         <Button
+          type='button'
           variant="outline"
           onClick={handleClick}
           className={cn(

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Modal from '@/components/ui/modal';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import Container from '@/components/ui/container';
 import { Card } from '@/components/ui/card';
 import { Plus, Minus } from 'lucide-react';
@@ -9,6 +10,7 @@ import CloseButton from '@/components/ui/button/close-button';
 import Heading from '@/components/ui/heading';
 import { useUiLayoutStore } from '@/store/ui-layout';
 import { useBookStore } from '@/providers/store-providers/book-provider';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type Props = {
   numbers: any;
@@ -72,17 +74,19 @@ function RiderFormModal({
 }: Props) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
   return (
-    <Modal
+    <Sheet
       open={showModal}
-      onClose={() => closeModal()}
-      variant='bottom'
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          closeModal();
+        }
+      }}
     >
-      <div className="w-full h-full pb-10">
-        <Container className="relative flex flex-col justify-center w-full mx-auto mt-5">
-          <div className="flex justify-end mt-4 mb-2">
-            <CloseButton />
-          </div>
-          <Heading variant='lg' className="text-center text-foreground/75">Riders</Heading>
+      <SheetContent side="bottom" className="wrapper flex flex-col justify-between w-full h-3/4 rounded-t-2xl">
+        <SheetHeader>
+          <SheetTitle className="text-center text-foreground/75">Riders</SheetTitle>
+        </SheetHeader>
+        <ScrollArea className="flex-grow w-full">
           <div className="mt-6 w-full space-y-6">
             {numbers.map((number: any, idx: number) => {
               const { bookingField, updateBookingField } = useBookStore(state => state);
@@ -110,9 +114,9 @@ function RiderFormModal({
               )
             })}
           </div>
-        </Container>
-      </div>
-    </Modal>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   )
 }
 
