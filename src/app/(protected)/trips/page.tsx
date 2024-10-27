@@ -69,12 +69,11 @@ async function Trips() {
         <div className="relative mt-6 mb-20">
           {/* Tab on progress */}
           <TabsContent value='on-progress'>
-            <Container className="space-y-6">
+            <Container>
               <BookingList 
                 bookings={bookingData} 
                 products={products} 
-                user={session?.user} 
-                basicToken={basictoken} 
+                user={session?.user}
               />
             </Container>
           </TabsContent>

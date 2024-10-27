@@ -4,32 +4,32 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useBookStore } from '@/providers/store-providers/book-provider';
-import { useRouter } from 'next/navigation';
 
 function ActionComp({
   status,
   booking,
+  paymentToken,
 }: {
   status: any;
   booking: any;
+  paymentToken?: any;
 }) {
-  const { paymentLink } = useBookStore((state) => state);
-  const paymentVal = paymentLink.find(p => p.book_id === booking.id);
-  const router = useRouter();
-  const handleBack = () => {
-    router.push('/explore')
-  }
+  const midtransPaymentLink = 'https://app.sandbox.midtrans.com/snap/v4/redirection/' + paymentToken;
   return (
     <div className="mt-8 flex justify-center items-center">
       <div className="flex flex-col items-center gap-4 w-auto">
         {status.status_code === '201' &&
           <Link
-          href={paymentVal?.url_payment || '#'}
+            href={midtransPaymentLink || '#'}
           >
             <Button className="w-full bg-brand hover:bg-brand/90">Pay Now</Button>
           </Link>
         }
-        <Button className="w-full" onClick={() => handleBack()}>Back</Button>
+        <Link
+          href="/"
+        >
+          <Button className="w-full">Back to home</Button>
+        </Link>
       </div>
     </div>
   )

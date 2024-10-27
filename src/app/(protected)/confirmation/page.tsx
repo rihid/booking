@@ -10,6 +10,7 @@ import { getSession } from '@/lib/session';
 import axios from 'axios';
 import { bookingUrl, masterUrl } from '@/lib/data/endpoints';
 import { getAllProductPublic, getBooking } from '@/lib/data';
+import { midtransServerKey } from '@/lib/constants';
 import ActionComp from './module/action-comp';
 
 export const metadata: Metadata = {
@@ -31,7 +32,7 @@ interface PaymentType {
   branch_no: string | null;
   payment_type: string | null;
   note: string | null;
-  token: string | null;
+  token_payment: string | null;
   cash_id: string | null;
 }
 
@@ -43,9 +44,9 @@ async function Confirmation({
   const session = await getSession();
   // @ts-ignore 
   const { token } = session.user
-  const source = searchParams['source'] || null;
   const orderId = searchParams['order_id'] || null;
-  const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
+  const paymentToken = searchParams['payment_token'] || null;
+  const encodeToken = generateBasicToken(midtransServerKey + ':');
   const midtransUrl = process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + orderId + '/status';
   // actions
   const getPaymentStatus = () => {
@@ -103,41 +104,43 @@ async function Confirmation({
   const booking = await getBooking(token, orderId as string);
   const productVal = products.find(p => p.product_no === booking.product_no);
   const paymentMethod = await getPaymentMethod();
-  const midtransPayment = await getPaymentStatus();
-  if (midtransPayment.status_code === '200') {
+  const paymentStatus = await getPaymentStatus();
+
+  if (paymentStatus.status_code === '200') {
     let methodVal;
-    if (midtransPayment.payment_type === 'bank_transfer') {
-      const midtransBankVal = midtransPayment.va_numbers[0].bank;
+    if (paymentStatus.payment_type === 'bank_transfer') {
+      const midtransBankVal = paymentStatus.va_numbers[0].bank;
       methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
     }
+    const paymentDp = booking.payment_dp;
     const body = {
-      payment_no: null,
+      payment_no: paymentDp.token_payment || null,
       book_no: booking.book_no,
-      payment_date: midtransPayment.settlement_time,
+      payment_date: paymentStatus.settlement_time,
       method_id: methodVal ? methodVal.id : 'ff314ecb5e2c44689055171a7938d449-AAA',
-      amount: midtransPayment.gross_amount.replace(/\.00$/, ''),
-      promo_id: null,
-      round: null,
-      discount: null,
-      total: midtransPayment.gross_amount.replace(/\.00$/, ''),
+      amount: paymentStatus.gross_amount.replace(/\.00$/, ''),
+      promo_id: paymentDp.promo_id,
+      round: paymentDp.round,
+      discount: paymentDp.discount,
+      total: paymentStatus.gross_amount.replace(/\.00$/, ''),
       org_no: null,
       branch_no: null,
       payment_type: "down_payment",
       note: null,
-      token: null,
+      token_payment: paymentDp.token_payment || null,
       cash_id: null
     }
     await postPayment(body);
-  } else if (midtransPayment.status_code === '201') {
+  } else if (paymentStatus.status_code === '201') {
     let methodVal;
-    if (midtransPayment.payment_type === 'bank_transfer') {
-      const midtransBankVal = midtransPayment.va_numbers[0].bank;
+    if (paymentStatus.payment_type === 'bank_transfer') {
+      const midtransBankVal = paymentStatus.va_numbers[0].bank;
       methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
     }
     const body = {
       payment_no: null,
       book_no: booking.book_no,
-      payment_date: '',
+      payment_date: paymentStatus.transaction_time,
       method_id: methodVal ? methodVal.id : 'ff314ecb5e2c44689055171a7938d449-AAA',
       amount: '0',
       promo_id: null,
@@ -148,14 +151,15 @@ async function Confirmation({
       branch_no: null,
       payment_type: "down_payment",
       note: null,
-      token: null,
+      token_payment: paymentToken as string,
       cash_id: null
     }
     await postPayment(body);
   }
+  
   // chunk
   function StatusCard() {
-    const { status_code } = midtransPayment;
+    const { status_code } = paymentStatus;
     switch (status_code) {
       case '404':
         return (
@@ -165,7 +169,7 @@ async function Confirmation({
             </div>
             <Heading variant='xl' className="text-muted-foreground my-2.5">Sorry</Heading>
             <div className="mt-1 text-foreground/50 text-sm font-normal text-center w-full max-w-[220px]">
-              <span>{midtransPayment.status_message}</span>
+              <span>{paymentStatus.status_message}</span>
             </div>
           </Card>
         );
@@ -253,14 +257,15 @@ async function Confirmation({
               <div>
                 <Heading variant='xs' className="text-muted-foreground">Amout</Heading>
                 <div className="font-bold text-sm text-foreground/50">
-                  <span>{midtransPayment.gross_amount || null}</span>
+                  <span>{paymentStatus.gross_amount || null}</span>
                 </div>
               </div>
             </div>
           </Card>
           <ActionComp
-            status={midtransPayment}
+            status={paymentStatus}
             booking={booking}
+            paymentToken={paymentToken}
           />
         </Container>
       }
@@ -272,7 +277,7 @@ async function Confirmation({
           </div>
           <div className="mt-8 flex justify-center items-center">
             <div className="flex flex-col items-center gap-4 w-auto">
-              <Button className="w-full bg-brand hover:bg-brand/90">Track Order</Button>
+              <Button className="w-full bg-brand hover:bg-brand/90">Tract Order</Button>
               <Button className="w-full">Back</Button>
             </div>
           </div>
@@ -281,5 +286,86 @@ async function Confirmation({
     </div>
   )
 }
+
+// async function Confirmation2({
+//   searchParams,
+// }: {
+//   searchParams: { [key: string]: string | string[] | null };
+// }) {
+//   const session = await getSession();
+//   // @ts-ignore 
+//   const { token } = session.user
+//   const orderId = searchParams['order_id'] || null;
+//   const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
+//   const midtransUrl = process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + orderId + '/status';
+//   // actions
+//   const getPaymentStatus = () => {
+//     const res = axios.get(midtransUrl, {
+//       headers: {
+//         accept: 'application/json',
+//         authorization: 'Basic ' + encodeToken,
+//       }
+//     }).then(response => {
+//       const data = response.data;
+//       console.log('status', response.data)
+//       return data;
+//     }).catch(error => {
+//       console.log(error);
+//       throw error;
+//     })
+
+//     return res;
+//   }
+//   const getPaymentMethod = () => {
+//     const res = axios.get(masterUrl + '/payment-method', {
+//       headers: {
+//         Accept: 'application/json',
+//         Authorization: 'Bearer ' + token
+//       }
+//     }).then(response => {
+//       console.log(response.data.data)
+//       const data = response.data.data;
+//       return data;
+//     }).catch(error => {
+//       console.log(error);
+//       throw error;
+//     })
+
+//     return res;
+//   }
+//   const postPayment = (body: PaymentType) => {
+//     const res = axios.post(bookingUrl + '/book/payment', body, {
+//       headers: {
+//         Accept: 'application/json',
+//         Authorization: 'Bearer ' + token
+//       }
+//     }).then(response => {
+//       console.log(response.data);
+//       const data = response.data;
+//       return data;
+//     }).catch(error => {
+//       console.log(error);
+//       throw error;
+//     })
+//     return res;
+//   }
+//   // data
+//   const products = await getAllProductPublic();
+//   const booking = await getBooking(token, orderId as string);
+//   const productVal = products.find(p => p.product_no === booking.product_no);
+//   const paymentMethod = await getPaymentMethod();
+//   const paymentStatus = await getPaymentStatus();
+
+//   return (
+//     <ConfirmationPage
+//       user={session?.user}
+//       product={productVal}
+//       booking={booking}
+//       paymentMethod={paymentMethod}
+//       paymentStatus={paymentStatus}
+//     />
+
+//   )
+// }
 
 export default Confirmation;

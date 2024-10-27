@@ -16,107 +16,19 @@ import { useRouter } from 'next/navigation';
 
 function BookingList({
   user,
-  basicToken,
   bookings,
   products,
 }: {
   user: any;
-  basicToken: string;
   bookings: z.infer<typeof BookByCustomerSchema>;
   products: z.infer<typeof ProductSchema>[];
 }) {
 
   const router = useRouter();
+  const midtransRedirectUrl = 'https://app.sandbox.midtrans.com/snap/v4/redirection/';
 
-  const handleCheckout = async (body: any) => {
-    try {
-      const response = await fetch('/api/transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-
-      const responseData = await response.json();
-      console.log('respontoken', responseData);
-      // @ts-ignore
-      window.snap.pay(responseData.token);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  const handleConfirmPayment = async (idx: number, prodNo: string) => {
-    const totalPrice = bookings[idx].numbers.reduce((acc, val) => {
-      return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
-    }, 0);
-    const product = products.find(p => p.product_no === prodNo);
-    // let bodyMidtrans = {
-    //   orderId: bookings[idx].id,
-    //   itemId: product?.id,
-    //   productName: product?.product_name,
-    //   price: totalPrice,
-    //   quantity: 1,
-    //   customer: user.name,
-    //   customerEmail: user.email
-    // }
-    // await handleCheckout(bodyMidtrans);
-
-    const bodyPayment = {
-      transaction_details: {
-        order_id: bookings[idx].id,
-        gross_amount: totalPrice
-      },
-      item_details: [
-        {
-          id: product?.id,
-          name: product?.product_name,
-          price: totalPrice,
-          quantity: 1,
-        }
-      ],
-      customer_details: {
-        first_name: bookings[idx].customer.name,
-        email: bookings[idx].customer.email,
-        phone: bookings[idx].customer.phone,
-      },
-      callbacks: {
-        finish: `https://booking-safari.callistech.co.id/confirmation?order_id=${bookings[idx].id}&source=payment_link`
-      }
-    }
-    axios.post(process.env.NEXT_PUBLIC_MIDTRANS_API + '/v1/payment-links', bodyPayment, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Basic ' + basicToken,
-      }
-    }).then(response => {
-      console.log(response.data);
-      const data = response.data;
-      // setPaymentlink(data.payment_link);
-      router.push(data.payment_url);
-    }).catch(error => {
-      console.log(error)
-    })
-  }
-
-  React.useEffect(() => {
-    // snap script midtrans here
-    const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
-    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ''
-
-    let scriptTag = document.createElement('script');
-    scriptTag.src = midtransScriptUrl
-
-    scriptTag.setAttribute("data-client-key", clientKey)
-    scriptTag.async = true
-
-    document.body.appendChild(scriptTag)
-    return () => {
-      document.body.removeChild(scriptTag)
-    }
-  }, []);
   return (
-    <Container className="space-y-6">
+    <div className="space-y-6">
       {bookings.length > 0 ?
         bookings.map((booking, index) => {
           let bookingPayment = 0;
@@ -124,6 +36,15 @@ function BookingList({
             bookingPayment += parseFloat(booking.downPayments[i].total)
           }
           const product = booking.product_no ? products.find(p => p.product_no === booking.product_no) : null;
+          let paymentLink = '/';
+          if (booking.downPayments.length > 0) {
+            const link = midtransRedirectUrl + booking.downPayments[0].token;
+            if (link !== null) {
+              paymentLink = link;
+            } else {
+              paymentLink = '/'
+            }
+          }
           return (
             <Card key={booking.id} className="shadow-md">
               <CardHeader className="flex-row items-center justify-between">
@@ -155,11 +76,14 @@ function BookingList({
               </CardContent>
               {!bookingPayment &&
                 <CardFooter className="grid grid-cols-1 w-full gap-3">
-                  <Button
-                    className="text-xs h-auto bg-brand hover:bg-brand/90"
+                  <Link
+                    href={paymentLink}
+                    className=""
                   >
-                    Confirm Payment
-                  </Button>
+                    <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
+                      Confirm Payment
+                    </Button>
+                  </Link>
                 </CardFooter>
               }
             </Card>
@@ -191,7 +115,7 @@ function BookingList({
           </div>
         )
       }
-    </Container>
+    </div>
   )
 }
 
