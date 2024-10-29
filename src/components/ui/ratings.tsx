@@ -25,6 +25,7 @@ interface RatingsProps extends React.HTMLAttributes<HTMLDivElement> {
   fill?: boolean
   Icon?: React.ReactElement
   variant?: keyof typeof ratingVariants
+  disabled?: boolean
   onRatingChange?: (rating: number) => void
 }
 
@@ -35,6 +36,7 @@ export const Ratings = ({
   fill = true,
   Icon = <Star />,
   variant = "default",
+  disabled = false,
   onRatingChange,
   ...props
 }: RatingsProps) => {
@@ -43,6 +45,7 @@ export const Ratings = ({
   const [isHovering, setIsHovering] = useState(false)
 
   const handleMouseEnter = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled) return
     setIsHovering(true)
     const starIndex = parseInt(
       (event.currentTarget as HTMLDivElement).dataset.starIndex || "0"
@@ -51,11 +54,13 @@ export const Ratings = ({
   }
 
   const handleMouseLeave = () => {
+    if (disabled) return
     setIsHovering(false)
     setHoverRating(null)
   }
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled) return
     const starIndex = parseInt(
       (event.currentTarget as HTMLDivElement).dataset.starIndex || "0"
     )

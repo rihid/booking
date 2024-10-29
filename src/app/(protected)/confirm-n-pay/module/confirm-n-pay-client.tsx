@@ -523,7 +523,7 @@ function ConfirmNPayClient({
               </div>
               <OpenModalButton variant='link' view='rider-select-view'>Edit</OpenModalButton>
             </div>
-            <div className="flex flex-wrap items-start justify-between w-full">
+            {/* <div className="flex flex-wrap items-start justify-between w-full">
               <div className="text-foreground/75 w-full flex-grow">
                 <h4 className="font-semibold text-sm">Add Ons</h4>
               </div>
@@ -547,7 +547,7 @@ function ConfirmNPayClient({
                   Profesional Photos
                 </ToggleGroupItem>
               </ToggleGroup>
-            </div>
+            </div> */}
           </div>
         </Container>
         {/* <RiderDetailComp /> */}

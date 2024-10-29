@@ -15,6 +15,7 @@ import { getAllProductPublic, getBookByCustomer, getBranchList, getInvoiceByCust
 import moment from 'moment';
 import { generateBasicToken } from '@/lib/helper';
 import BookingList from './module/booking-list';
+import Heading from '@/components/ui/heading';
 
 export const metadata: Metadata = {
   title: 'Trips',
@@ -34,7 +35,8 @@ async function Trips() {
   }
   const bookingData = await getBookByCustomer(token, bookingBody);
   const invoiceBody = {
-    customer_no: customer_no as string,
+    // customer_no: customer_no as string,
+    customer_no: "PSJ/CRM/00002287",
     type: "invoice",
     begin: null,
     end: null
@@ -50,14 +52,14 @@ async function Trips() {
   }
   return (
     <div className="flex flex-col min-h-screen">
-      
+
       <Tabs defaultValue='on-progress'>
         <Container className="py-6 sticky top-0 z-30 bg-background w-full flex justify-between items-center shrink-0">
           {/* <button type="button">
             <ChevronLeft className="w-5 h-5" />
           </button> */}
           <div></div>
-          <h3 className="font-bold text-sm text-foreground/75">Trips</h3>
+          <Heading variant="sm" className="text-foreground ml-4">Trips</Heading>
           <div></div>
         </Container>
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-3 pt-1 border-b shadow-sm rounded-3xl">
@@ -70,9 +72,9 @@ async function Trips() {
           {/* Tab on progress */}
           <TabsContent value='on-progress'>
             <Container>
-              <BookingList 
-                bookings={bookingData} 
-                products={products} 
+              <BookingList
+                bookings={bookingData}
+                products={products}
                 user={session?.user}
               />
             </Container>
@@ -115,7 +117,12 @@ async function Trips() {
                           </div>
                         </div>
                       </CardContent>
-                      <CardFooter className="grid grid-cols-2 w-full gap-3">
+                      <CardFooter>
+                        <Link href={`/invoice/${invoice.invoice_no === null ? "#" : invoice.invoice_no.split('/').pop()}`}>
+                          <span className="text-sm font-bold text-slate-600"># {invoice.invoice_no === null ? null : invoice.invoice_no.split('/').pop()}</span>
+                        </Link>
+                      </CardFooter>
+                      {/* <CardFooter className="grid grid-cols-2 w-full gap-3">
                         <Button variant="secondary" className="text-xs h-auto">Re-Book</Button>
                         <OpenModalButton
                           view='review-view'
@@ -123,7 +130,7 @@ async function Trips() {
                         >
                           Write Reviews
                         </OpenModalButton>
-                      </CardFooter>
+                      </CardFooter> */}
                     </Card>
                   )
                 }) :
@@ -157,7 +164,6 @@ async function Trips() {
           </TabsContent>
         </div>
       </Tabs>
-
       <ReviewFormModal />
     </div>
   )
