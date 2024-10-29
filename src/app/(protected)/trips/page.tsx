@@ -88,41 +88,39 @@ async function Trips() {
                   const branchVal = branches.find(p => p.branch_no === invoice?.branch_no)
                   const durationTrip = formatDuration(invoice.duration)
                   return (
-                    <Card key={invoice.id} className="shadow-md">
-                      <CardHeader className="flex-row items-center justify-between">
-                        <CardTitle className="text-foreground/75">{productVal?.product_name}</CardTitle>
-                        <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
-                          <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-                          <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-0.5">
-                        <div className="flex items-center justify-between">
-                          <div className="text-foreground/50">
-                            <span className="text-sm font-bold text-slate-600"># {invoice.book_no === null ? null : invoice.book_no.split('/').pop()}</span>
-                            <p className='text-sm font-medium text-slate-400'>{moment(invoice.book_date).format('DD MMM YYYY')}</p>
+                    <Link
+                      href={`/invoice/${invoice.invoice_no === null ? "#" : invoice.invoice_no.split('/').pop()}`}
+                    >
+                      <Card key={invoice.id} className="shadow-md">
+                        <CardHeader className="flex-row items-center justify-between">
+                          <CardTitle className="text-foreground/75">{productVal?.product_name}</CardTitle>
+                          <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
+                            <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
+                            <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
                           </div>
-                          <div className="flex items-center text-foreground/50 gap-x-2">
-                            <span className="text-xs font-normal">{durationTrip}</span>
-                            <Clock className="text-brand inline-block w-4 h-4" />
+                        </CardHeader>
+                        <CardContent className="space-y-0.5">
+                          <div className="flex items-center justify-between">
+                            <div className="text-foreground/50">
+                              <span className="text-sm font-bold text-slate-600"># {invoice.book_no === null ? null : invoice.book_no.split('/').pop()}</span>
+                              <p className='text-sm font-medium text-slate-400'>{moment(invoice.book_date).format('DD MMM YYYY')}</p>
+                            </div>
+                            <div className="flex items-center text-foreground/50 gap-x-2">
+                              <span className="text-xs font-normal">{durationTrip}</span>
+                              <Clock className="text-brand inline-block w-4 h-4" />
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="text-foreground/50">
-                            <span className="text-sm  uppercase text-green-500 font-normal">{invoice.status}</span>
+                          <div className="flex items-center justify-between">
+                            <div className="text-foreground/50">
+                              <span className="text-sm  uppercase text-green-500 font-normal">{invoice.status}</span>
+                            </div>
+                            <div className="flex items-center text-foreground/50 gap-x-2">
+                              <span className="text-xs font-normal">{branchVal?.name}</span>
+                              <MapPin className="text-brand inline-block w-4 h-4" />
+                            </div>
                           </div>
-                          <div className="flex items-center text-foreground/50 gap-x-2">
-                            <span className="text-xs font-normal">{branchVal?.name}</span>
-                            <MapPin className="text-brand inline-block w-4 h-4" />
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter>
-                        <Link href={`/invoice/${invoice.invoice_no === null ? "#" : invoice.invoice_no.split('/').pop()}`}>
-                          <span className="text-sm font-bold text-slate-600"># {invoice.invoice_no === null ? null : invoice.invoice_no.split('/').pop()}</span>
-                        </Link>
-                      </CardFooter>
-                      {/* <CardFooter className="grid grid-cols-2 w-full gap-3">
+                        </CardContent>
+                        {/* <CardFooter className="grid grid-cols-2 w-full gap-3">
                         <Button variant="secondary" className="text-xs h-auto">Re-Book</Button>
                         <OpenModalButton
                           view='review-view'
@@ -131,7 +129,8 @@ async function Trips() {
                           Write Reviews
                         </OpenModalButton>
                       </CardFooter> */}
-                    </Card>
+                      </Card>
+                    </Link>
                   )
                 }) :
                 (
