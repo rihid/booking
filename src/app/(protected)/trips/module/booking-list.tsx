@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import Container from '@/components/ui/container';
 import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
@@ -10,27 +8,30 @@ import moment from 'moment';
 import { TypeOf, z } from 'zod';
 import { BookByCustomerSchema, ProductSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
-import axios from 'axios';
-import OpenModalButton from '@/components/ui/button/open-modal-button';
-import { useRouter } from 'next/navigation';
+import { getBookByCustomer } from '@/lib/data';
 
-function BookingList({
+async function BookingList({
   user,
-  bookings,
   products,
 }: {
   user: any;
-  bookings: z.infer<typeof BookByCustomerSchema>;
   products: z.infer<typeof ProductSchema>[];
 }) {
 
-  const router = useRouter();
+  const bookingBody = {
+    customer_no: user?.customer_no as string,
+    type: "booking",
+    begin: null,
+    end: null
+  }
+  const bookingData = await getBookByCustomer(user?.token, bookingBody);
+
   const midtransRedirectUrl = 'https://app.sandbox.midtrans.com/snap/v4/redirection/';
 
   return (
-    <div className="space-y-6">
-      {bookings.length > 0 ?
-        bookings.map((booking, index) => {
+    <Container className="space-y-6">
+      {bookingData.length > 0 ?
+        bookingData.map((booking, index) => {
           let bookingPayment = 0;
           for (let i = 0; i < booking.downPayments.length; i++) {
             bookingPayment += parseFloat(booking.downPayments[i].total)
@@ -115,7 +116,7 @@ function BookingList({
           </div>
         )
       }
-    </div>
+    </Container>
   )
 }
 

@@ -1,7 +1,10 @@
 import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Container from '@/components/ui/container';
+
+const shimmer =
+  'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
 
 export function UserAvatarLoader() {
   return (
@@ -132,9 +135,55 @@ export function ProductSummaryLoader() {
         </div>
 
         <div className="flex items-center">
-        <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-3 w-24" />
         </div>
       </div>
+    </Container>
+  )
+}
+export function BookingCardLoader() {
+  return (
+    <Card className="shadow-md space-y-5 p-4">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-4 w-44" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-3 w-52" />
+          <Skeleton className="h-3 w-24" />
+        </div>
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-3 w-24" />
+        </div>
+      </div>
+    </Card>
+  )
+}
+export default function DashboardSkeleton() {
+  return (
+    <>
+      <div
+        className={`${shimmer} relative mb-4 h-8 w-36 overflow-hidden rounded-md bg-gray-100`}
+      />
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <Skeleton className="h-4 w-44" />
+      </div>
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
+        <div>test</div>
+        <div>test</div>
+      </div>
+    </>
+  );
+}
+export function BookingListLoader() {
+  return (
+    <Container className="space-y-6">
+      <BookingCardLoader />
+      <BookingCardLoader />
+      <BookingCardLoader />
+      <BookingCardLoader />
     </Container>
   )
 }

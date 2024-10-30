@@ -1,5 +1,6 @@
 import React from 'react';
 import { Spinner } from '@/components/ui/spinner';
+import DashboardSkeleton from '@/components/partial/loader';
 
 function Loading() {
   return (
