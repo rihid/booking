@@ -102,9 +102,9 @@ async function InvoiceDetail({
   return (
     <div className="flex flex-col min-h-screen mb-20">
       <Container className="py-6 sticky top-0 z-30 bg-background w-full border-b border-foreground-muted flex justify-between items-center shrink-0">
-        <button type="button">
+        <Link href="/trips">
           <ChevronLeft className="w-5 h-5" />
-        </button>
+        </Link>
         <Heading variant="sm" className="text-foreground ml-4">Invoice</Heading>
         <div></div>
       </Container>
