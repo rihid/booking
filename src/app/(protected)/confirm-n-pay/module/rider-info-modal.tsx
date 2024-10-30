@@ -76,7 +76,6 @@ function RiderInfoModal({
       let customerNo = []
       for (let i = 0; i < data.length; i++) {
         customerNo.push(data[i].customer_no)
-
       }
       const customers = await getCustomerByNoMulti(user.token, customerNo);
       console.log(customers)
@@ -109,9 +108,6 @@ function RiderInfoModal({
     }
     getData();
   }, [])
-  React.useEffect(() => {
-    console.log(isLoading)
-  }, [isLoading])
   return (
     <Sheet
       open={showModal}
@@ -129,20 +125,17 @@ function RiderInfoModal({
           <div className="px-4 mt-5 pb-10">
             <div className="mt-6 space-y-4">
               <ToggleGroup type="single" className="flex flex-col w-full gap-4" onValueChange={(value) => handleAddRider(value)}>
-                <>
-                  {customerList.map((uc: any, idx: number) => {
-                    return (
-                      <>
-                        {!isLoading &&
-                          <ToggleGroupItem key={idx} value={uc} className="w-full justify-start border border-muted-foreground rounded px-4 py-3 text-xs text-start font-normal font-foreground/50">{uc.name}</ToggleGroupItem>
-                        }
-                        {isLoading &&
-                          <div></div>
-                        }
-                      </>
-                    )
-                  })}
-                </>
+                {isLoading ?
+                  <div>loading...</div>
+                  :
+                  <>
+                    {customerList.map((uc: any, idx: number) => {
+                      return (
+                        <ToggleGroupItem key={idx} value={uc} className="w-full justify-start border border-muted-foreground rounded px-4 py-3 text-xs text-start font-normal font-foreground/50">{uc.name}</ToggleGroupItem>
+                      )
+                    })}
+                  </>
+                }
               </ToggleGroup>
             </div>
             <div className="flex-shrink flex flex-col w-full mt-6 gap-4">

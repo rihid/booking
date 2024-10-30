@@ -56,7 +56,7 @@ async function Profile() {
         </button>
       </Container>
       <Container className="bg-background">
-        <h3 className="font-semibold text-sm text-foreground/75">Settings</h3>
+        <h3 className="font-semibold text-sm text-foreground/75">Menu</h3>
         <div className="flex flex-col px-0 text-foreground/50 h-full">
           <ul className="bg-background border-b border-b-foreground-muted">
             <li className="border-b border-foreground/50">
@@ -64,52 +64,10 @@ async function Profile() {
                 <div className="flex items-center gap-2">
                   <CircleUserRound className="w-5 h-5" />
                   <Link
-                    href="/"
+                    href="/profile/customer-list"
                     className="block tracking-tight font-normal text-xs"
                   >
-                    Personal Infromation
-                  </Link>
-                </div>
-                <ChevronRight className="w-5 h-5 text-foreground" />
-              </button>
-            </li>
-            <li className="border-b border-foreground/50">
-              <button type='button' className="flex items-center justify-between h-full w-full py-3">
-                <div className="flex items-center gap-2">
-                  <CircleUserRound className="w-5 h-5" />
-                  <Link
-                    href="/"
-                    className="block tracking-tight font-normal text-xs"
-                  >
-                    Payments and payou
-                  </Link>
-                </div>
-                <ChevronRight className="w-5 h-5 text-foreground" />
-              </button>
-            </li>
-            <li className="border-b border-foreground/50">
-              <button type='button' className="flex items-center justify-between h-full w-full py-3">
-                <div className="flex items-center gap-2">
-                  <CircleUserRound className="w-5 h-5" />
-                  <Link
-                    href="/"
-                    className="block tracking-tight font-normal text-xs"
-                  >
-                    Privacy & sharing
-                  </Link>
-                </div>
-                <ChevronRight className="w-5 h-5 text-foreground" />
-              </button>
-            </li>
-            <li className="border-b border-foreground/50">
-              <button type='button' className="flex items-center justify-between h-full w-full py-3">
-                <div className="flex items-center gap-2">
-                  <CircleUserRound className="w-5 h-5" />
-                  <Link
-                    href="/"
-                    className="block tracking-tight font-normal text-xs"
-                  >
-                    Accesibility
+                    Customer List
                   </Link>
                 </div>
                 <ChevronRight className="w-5 h-5 text-foreground" />

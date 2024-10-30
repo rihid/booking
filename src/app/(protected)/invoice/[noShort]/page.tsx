@@ -10,6 +10,7 @@ import RatingForm from './module/rating-form';
 import { getAllProductPublic, getBooking, getInvoiceByCustomer } from '@/lib/data';
 import { getSession } from '@/lib/session';
 import { currency } from '@/lib/helper';
+import { Ratings } from '@/components/ui/ratings';
 
 export const metadata: Metadata = {
   title: 'Invoice',
@@ -25,8 +26,8 @@ async function InvoiceDetail({
   // @ts-ignore
   const { token, customer_no } = session.user;
   const invoiceBody = {
-    // customer_no: customer_no as string,
-    customer_no: "PSJ/CRM/00002287",
+    customer_no: customer_no as string,
+    // customer_no: "PSJ/CRM/00002287",
     type: "invoice",
     begin: null,
     end: null
@@ -34,6 +35,10 @@ async function InvoiceDetail({
   const invoices = await getInvoiceByCustomer(token, invoiceBody);
   const invoice = invoices.find(inv => inv.invoice_no.split('/').pop() === params.noShort);
   const products = await getAllProductPublic();
+  let booking = null;
+  if(invoice) {
+    booking = await getBooking(token, invoice.id);
+  }
 
   const totalPrice = invoice?.numbers.reduce((acc, val) => {
     return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
@@ -106,6 +111,19 @@ async function InvoiceDetail({
       <Container>
         {invoice?.numbers.map(invNumber => {
           const productVal = products.find(p => p.product_no === invNumber.product_no);
+
+          let ratingVal = {
+            rating: null,
+            rating_notes: null
+          }
+          if (booking) {
+            const numberVal = booking.numbers.find(bn => bn.id === invNumber.id);
+            ratingVal = {
+              rating: numberVal.rating,
+              rating_notes: numberVal.rating_notes,
+            }
+          }
+
           return (
             <React.Fragment key={invNumber.id}>
               <div
@@ -142,7 +160,26 @@ async function InvoiceDetail({
                   </div>
                 </div>
               </div>
-              <RatingForm invoiceId={invoice?.id} numberId={invNumber.id} user={session?.user} />
+              {ratingVal?.rating !== null ?
+                <div className="flex flex-col gap-4 justify-center items-center mb-8">
+                  <Heading variant='base' className="font-semibold">How&apos;s Your Experience</Heading>
+                  <div className="flex flex-col items-center">
+                    <Ratings
+                      rating={parseInt(ratingVal.rating)}
+                      variant='yellow'
+                      size={32}
+                      disabled
+                    />
+                  </div>
+                  <div className="w-full">
+                    <blockquote className="text-sm italic text-muted-foreground">
+                      <p>"{ratingVal.rating_notes}".</p>
+                    </blockquote>
+                  </div>
+                </div>
+                :
+                <RatingForm invoiceId={invoice?.id} numberId={invNumber.id} user={session?.user} />
+              }
             </React.Fragment>
           )
         })}

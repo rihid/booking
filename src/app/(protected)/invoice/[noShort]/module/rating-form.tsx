@@ -78,67 +78,46 @@ function RatingForm({
     getBookingData();
   }, []);
   return (
-    <>
       <form action="" onSubmit={handleSubmit(onSubmit)}>
-        {ratingValue.rating !== null ?
-          <div className="flex flex-col gap-4 justify-center items-center mb-8">
-            <Heading variant='base' className="font-semibold">How&apos;s Your Experience</Heading>
-            <div className="flex flex-col items-center">
-              <Ratings
-                rating={parseInt(ratingValue.rating)}
-                variant='yellow'
-                size={32}
-                disabled
-              />
-            </div>
-            <div className="w-full">
-              <blockquote className="text-sm italic text-muted-foreground">
-                <p>"{ratingValue.rating_notes}".</p>
-              </blockquote>
-            </div>
-          </div>
-          :
-          <div className="flex flex-col gap-4 justify-center items-center mb-8">
-            <Heading variant='base' className="font-semibold">How&apos;s Your Experience</Heading>
-            <div className="flex flex-col items-center">
-              <Controller
-                name='rating'
-                control={control}
-                render={({ field }) => (
-                  <Ratings
-                    {...field}
-                    rating={parseInt(field.value) || 0}
-                    onRatingChange={(value) => setValue('rating', value.toString())}
-                    variant='yellow'
-                    size={32}
-                  />
-                )}
-              />
-              {errors.rating && (
-                <span role="alert" className="text-xs font-normal text-destructive">Rating is required</span>
+        <div className="flex flex-col gap-4 justify-center items-center mb-8">
+          <Heading variant='base' className="font-semibold">How&apos;s Your Experience</Heading>
+          <div className="flex flex-col items-center">
+            <Controller
+              name='rating'
+              control={control}
+              render={({ field }) => (
+                <Ratings
+                  {...field}
+                  rating={parseInt(field.value) || 0}
+                  onRatingChange={(value) => setValue('rating', value.toString())}
+                  variant='yellow'
+                  size={32}
+                />
               )}
-            </div>
-            <div className="w-full">
-              <Textarea
-                placeholder="Type your feedback here."
-                {...register('rating_notes')}
-              />
-            </div>
-
-            <div className="w-full flex items-center justify-center">
-              <Button
-                type='submit'
-                disabled={isLoading}
-                className="w-full bg-brand hover:bg-brand/90"
-              >
-                {isLoading && <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />}
-                Submit
-              </Button>
-            </div>
+            />
+            {errors.rating && (
+              <span role="alert" className="text-xs font-normal text-destructive">Rating is required</span>
+            )}
           </div>
-        }
+          <div className="w-full">
+            <Textarea
+              placeholder="Type your feedback here."
+              {...register('rating_notes')}
+            />
+          </div>
+
+          <div className="w-full flex items-center justify-center">
+            <Button
+              type='submit'
+              disabled={isLoading}
+              className="w-full bg-brand hover:bg-brand/90"
+            >
+              {isLoading && <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />}
+              Submit
+            </Button>
+          </div>
+        </div>
       </form>
-    </>
   );
 }
 
