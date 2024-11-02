@@ -10,6 +10,7 @@ export type OpenModalButtonProps = {
   onClickChange?: () => void;
   variant?: string;
   className?: string;
+  disabled?: boolean;
   children: React.ReactNode
 }
 
@@ -19,6 +20,7 @@ function OpenModalButton({
   variant = 'link',
   className,
   children,
+  disabled =false,
   ...props
 }: OpenModalButtonProps) {
   const { openModal, setModalView } = useUiLayoutStore(state => state);
@@ -38,6 +40,7 @@ function OpenModalButton({
           type='button'
           variant="default"
           onClick={handleClick}
+          disabled={disabled}
           className={cn(
             "bg-brand text-xs h-auto hover:bg-brand/90",
             className
@@ -53,6 +56,7 @@ function OpenModalButton({
           type='button'
           variant="link"
           onClick={handleClick}
+          disabled={disabled}
           className={cn(
             "p-0 h-auto font-medium",
             className
@@ -68,6 +72,7 @@ function OpenModalButton({
           type='button'
           variant="outline"
           onClick={handleClick}
+          disabled={disabled}
           className={cn(
             "p-0 h-auto font-medium",
             className

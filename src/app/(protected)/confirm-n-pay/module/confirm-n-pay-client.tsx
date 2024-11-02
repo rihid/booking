@@ -343,8 +343,12 @@ function ConfirmNPayClient({
         const updatedCustomerArr = customerArr.slice(0, totalRiders);
         updateCustomerList(updatedCustomerArr);
       }
+      // isAddrider
+    if (customers[0].id !== null) {
+      setIsAddRider(true)
     }
-  }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList]);
+    }
+  }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList, isAddRider]);
 
   const PriceDetailComp = () => {
     return (

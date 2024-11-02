@@ -45,6 +45,7 @@ function LoginForm() {
 
         if (response.status === 200) {
           login(data.token);
+          toast.success('Success!');
         }
       })
       .catch(error => {

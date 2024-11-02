@@ -13,6 +13,7 @@ import { useUiLayoutStore } from '@/store/ui-layout';
 import { getCustomerByNoMulti, getUserCustomerList } from '@/lib/data';
 import { useBookStore } from '@/providers/store-providers/book-provider';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Props = {
   idx: number;
@@ -42,7 +43,9 @@ function RiderInfoModal({
     setCustomer(value);
     setSelectedUserCustomer(value)
   }
+  const filterCustomer = () => {
 
+  }
   const handleAddRiderType = (type: string, user: any) => {
     const data = {
       id: user.id,
@@ -77,11 +80,11 @@ function RiderInfoModal({
       for (let i = 0; i < data.length; i++) {
         customerNo.push(data[i].customer_no)
       }
-      const customers = await getCustomerByNoMulti(user.token, customerNo);
-      console.log(customers)
+      const getCustomers = await getCustomerByNoMulti(user.token, customerNo);
+      console.log(getCustomers)
       const customerArr = [];
       for (let j = 0; j < data.length; j++) {
-        const dataCustomers = customers.find((c: any) => c.customer_no === data[j].customer_no);
+        const dataCustomers = getCustomers.find((c: any) => c.customer_no === data[j].customer_no);
         customerArr.push({
           id: data[j].id,
           user_id: data[j].user_id,
@@ -126,12 +129,21 @@ function RiderInfoModal({
             <div className="mt-6 space-y-4">
               <ToggleGroup type="single" className="flex flex-col w-full gap-4" onValueChange={(value) => handleAddRider(value)}>
                 {isLoading ?
-                  <div>loading...</div>
+                  <>
+                    <Skeleton className="w-full h-10" />
+                    <Skeleton className="w-full h-10" />
+                  </>
                   :
                   <>
                     {customerList.map((uc: any, idx: number) => {
+                      let isDisabled = false;
+                      for (let i = 0; i < customers.length; i++) {
+                        if (customers[i].id === uc.customer_id && customers[i].id !== null) {
+                          isDisabled = true;
+                        }
+                      }
                       return (
-                        <ToggleGroupItem key={idx} value={uc} className="w-full justify-start border border-muted-foreground rounded px-4 py-3 text-xs text-start font-normal font-foreground/50">{uc.name}</ToggleGroupItem>
+                        <ToggleGroupItem key={idx} value={uc} disabled={isDisabled} className="w-full justify-start border border-muted-foreground rounded px-4 py-3 text-xs text-start font-normal font-foreground/50">{uc.name}</ToggleGroupItem>
                       )
                     })}
                   </>
@@ -139,7 +151,7 @@ function RiderInfoModal({
               </ToggleGroup>
             </div>
             <div className="flex-shrink flex flex-col w-full mt-6 gap-4">
-              <OpenModalButton view='rider-detail-view' className='h-10 px-4 py-2 text-background bg-brand hover:bg-brand/90'>Add New</OpenModalButton>
+              <OpenModalButton disabled={isLoading} view='rider-detail-view' variant='default' className='h-10 px-4 py-2'>Add New</OpenModalButton>
             </div>
           </div>
         </ScrollArea>

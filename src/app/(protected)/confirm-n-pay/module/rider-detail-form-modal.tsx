@@ -106,7 +106,8 @@ function RiderDetailFormModal({
     })
   }
   return (
-    <Sheet open={showModal}
+    <Sheet
+      open={showModal}
       onOpenChange={(isOpen) => {
         if (!isOpen) {
           closeModal();

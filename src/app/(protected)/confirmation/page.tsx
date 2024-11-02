@@ -73,7 +73,7 @@ async function Confirmation({
         Authorization: 'Bearer ' + token
       }
     }).then(response => {
-      console.log(response.data.data)
+      // console.log(response.data.data)
       const data = response.data.data;
       return data;
     }).catch(error => {
@@ -156,7 +156,6 @@ async function Confirmation({
     }
     await postPayment(body);
   }
-  
   // chunk
   function StatusCard() {
     const { status_code } = paymentStatus;
