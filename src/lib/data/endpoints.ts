@@ -2,7 +2,7 @@ import axios from "axios";
 // endpoints
 export const domain = process.env.NEXT_PUBLIC_API_URL;
 // auth service
-export const authUrl = domain + '/safari/api/v1/auth-service'
+export const authUrl = domain + '/safari/api/v1/auth-service';
 export const loginUrl = authUrl + '/user/auth';
 export const userUrl = authUrl + '/user';
 export const userTokenUrl = authUrl + '/user/token';

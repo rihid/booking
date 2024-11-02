@@ -189,45 +189,6 @@ function ConfirmNPayClient({
       throw error;
     }
   }
-  const handleClickConfirm = async () => {
-    let bodyMidtrans = {
-      orderId: bookingField.book_no,
-      itemId: productBooked?.id,
-      productName: productBooked?.product_name,
-      price: totalPrice,
-      quantity: 1,
-      customer: user.name,
-      customerEmail: user.email
-    }
-    // payment
-    const arrNumber = bookingField.numbers.filter(d => parseFloat(d.qty) > 0)
-    const body = {
-      ...bookingField,
-      numbers: arrNumber
-    }
-    console.log('body', body);
-    setIsLoading(true);
-    let booking;
-    await axios.post(bookingUrl + '/book', body, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + user.token
-      }
-    }).then(response => {
-      console.log('data book:', response.data.data);
-      const data = response.data.data;
-      booking = data;
-      bodyMidtrans.orderId = data.id;
-      // setIsLoading(false);
-    }).catch(error => {
-      // setIsLoading(false);
-      console.log(error);
-      throw error;
-    })
-    // midtrans
-    await handleCheckout(bodyMidtrans);
-    setIsLoading(false);
-  }
   const onSubmitConfirm = async () => {
     let bodyMidtrans = {
       orderId: bookingField.book_no,
@@ -385,53 +346,6 @@ function ConfirmNPayClient({
     }
   }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList]);
 
-  const RiderDetailComp = () => {
-    return (
-      <Container className="border-t-4 border-slate-100 bg-background py-8">
-        <h3 className="font-bold text-base text-foreground/75 mb-3">Riders Details</h3>
-        <div className="flex items-center justify-between mb-6">
-          <Label htmlFor="add-as-rider" className="text-sm font-normal text-muted-foreground">Add as riders</Label>
-          <Switch
-            id="add-as-rider"
-            checked={isAddRider}
-            onCheckedChange={handdleCheckedChange}
-          />
-        </div>
-        <div className="space-y-6">
-          {customers.map((customer, idx) => {
-            return (
-              <React.Fragment key={idx}>
-                <div className="flex items-start justify-between w-full">
-                  {customer.id !== null ?
-                    <div className="text-foreground/75">
-                      <h4 className="font-semibold text-sm">{customer.name}</h4>
-                      <p className="text-xs font-normal text-foreground/50">ID Card - {customer.identity_number}</p>
-                      <p className="text-xs font-normal text-foreground/50">{customer.rider_type}</p>
-                      <pre>{ }</pre>
-                    </div>
-                    :
-                    <div className="text-foreground/75">
-                      <h4 className="font-semibold text-sm">Your name here</h4>
-                      <p className="text-xs font-normal text-foreground/50">ID Card - 0000</p>
-                      <p className="text-xs font-normal text-foreground/50"></p>
-                    </div>
-                  }
-                  <OpenModalButton
-                    view='rider-info-view'
-                    variant='link'
-                    className='border-none'
-                    onClickChange={() => handleOpenRiderModal(idx, customer)}
-                  >
-                    <SquarePen className="w-5 h-5" />
-                  </OpenModalButton>
-                </div>
-              </React.Fragment>
-            )
-          })}
-        </div>
-      </Container>
-    )
-  }
   const PriceDetailComp = () => {
     return (
       <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
@@ -550,7 +464,6 @@ function ConfirmNPayClient({
             </div> */}
           </div>
         </Container>
-        {/* <RiderDetailComp /> */}
         <Container className="border-t-4 border-slate-100 bg-background py-8">
           <h3 className="font-bold text-base text-foreground/75 mb-3">Riders Details</h3>
           <div className="flex items-center justify-between mb-6">

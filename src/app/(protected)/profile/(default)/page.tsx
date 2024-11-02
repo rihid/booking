@@ -60,18 +60,17 @@ async function Profile() {
         <div className="flex flex-col px-0 text-foreground/50 h-full">
           <ul className="bg-background border-b border-b-foreground-muted">
             <li className="border-b border-foreground/50">
-              <button type='button' className="flex items-center justify-between h-full w-full py-3">
+              <Link href="/profile/customer-list" className="flex items-center justify-between h-full w-full py-3">
                 <div className="flex items-center gap-2">
                   <CircleUserRound className="w-5 h-5" />
-                  <Link
-                    href="/profile/customer-list"
+                  <span
                     className="block tracking-tight font-normal text-xs"
                   >
                     Customer List
-                  </Link>
+                  </span>
                 </div>
                 <ChevronRight className="w-5 h-5 text-foreground" />
-              </button>
+              </Link>
             </li>
             <li className="border-b border-foreground/50">
               <form action={async () => {

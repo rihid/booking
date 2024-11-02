@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { z } from "zod";
-import { masterUrl, productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl, customerListUrl, branchUrl, userUrl } from "@/lib/data/endpoints";
+import { masterUrl, productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl, customerListUrl, branchUrl, userUrl, authUrl } from "@/lib/data/endpoints";
 import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema, BookingSchema, BookByCustomerSchema, InvoiceByCustomerSchema, SingleBookingSchema, branchSchema, CustomerFieldSchema } from "@/lib/schema";
 import { generateProductSlug, generateBasicToken } from '@/lib/helper';
 import moment from "moment";
@@ -20,6 +20,18 @@ interface BookByCustomer {
 
 const date = new Date();
 
+export const createUser = async (values: any) => {
+  try {
+    const res = await axios.post(authUrl + '/user', values,  {
+      headers: { Accept: 'application/json' },
+    })
+    const data = res.data.data;
+    return data;
+  } catch (error) {
+    console.log(error)
+    throw error;
+  }
+}
 export const postAuth = async (body: z.infer<typeof LoginFormSchema>) => {
   try {
     const res = await axios.post(loginUrl, body, {
@@ -28,7 +40,6 @@ export const postAuth = async (body: z.infer<typeof LoginFormSchema>) => {
       }
     });
     const data = AuthSchema.parse(res.data)
-
     return data;
   } catch (error) {
     console.log(error);
@@ -91,7 +102,6 @@ export const getCustomerByNo = async (token: any, customerNo: any) => {
     throw error;
   }
 }
-
 export const getCustomerByNoMulti = async (token: any, customerNo: any) => {
   try {
     // ArrAY

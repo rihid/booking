@@ -20,6 +20,7 @@ function HomepageSearch() {
     }
     replace(`${pathname}?${params.toString()}`);
   }, 300);
+
   return (
     <div className="relative">
       <Search className="absolute w-6 h-6 top-1/2 left-2 transform -translate-y-1/2" />

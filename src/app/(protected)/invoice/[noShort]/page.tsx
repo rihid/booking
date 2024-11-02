@@ -11,6 +11,7 @@ import { getAllProductPublic, getBooking, getInvoiceByCustomer } from '@/lib/dat
 import { getSession } from '@/lib/session';
 import { currency } from '@/lib/helper';
 import { Ratings } from '@/components/ui/ratings';
+import TopTitle from './module/top-title';
 
 export const metadata: Metadata = {
   title: 'Invoice',
@@ -34,9 +35,11 @@ async function InvoiceDetail({
   }
   const invoices = await getInvoiceByCustomer(token, invoiceBody);
   const invoice = invoices.find(inv => inv.invoice_no.split('/').pop() === params.noShort);
+  const numbers = invoice?.numbers.filter((number: any) => number.qty !== '0');
+  console.log('invoice: ', invoice)
   const products = await getAllProductPublic();
   let booking = null;
-  if(invoice) {
+  if (invoice) {
     booking = await getBooking(token, invoice.id);
   }
 
@@ -101,15 +104,9 @@ async function InvoiceDetail({
 
   return (
     <div className="flex flex-col min-h-screen mb-20">
-      <Container className="py-6 sticky top-0 z-30 bg-background w-full border-b border-foreground-muted flex justify-between items-center shrink-0">
-        <Link href="/trips">
-          <ChevronLeft className="w-5 h-5" />
-        </Link>
-        <Heading variant="sm" className="text-foreground ml-4">Invoice</Heading>
-        <div></div>
-      </Container>
+      <TopTitle label='Invoice' />
       <Container>
-        {invoice?.numbers.map(invNumber => {
+        {numbers?.map((invNumber: any) => {
           const productVal = products.find(p => p.product_no === invNumber.product_no);
 
           let ratingVal = {
@@ -123,7 +120,6 @@ async function InvoiceDetail({
               rating_notes: numberVal.rating_notes,
             }
           }
-
           return (
             <React.Fragment key={invNumber.id}>
               <div
@@ -160,26 +156,12 @@ async function InvoiceDetail({
                   </div>
                 </div>
               </div>
-              {ratingVal?.rating !== null ?
-                <div className="flex flex-col gap-4 justify-center items-center mb-8">
-                  <Heading variant='base' className="font-semibold">How&apos;s Your Experience</Heading>
-                  <div className="flex flex-col items-center">
-                    <Ratings
-                      rating={parseInt(ratingVal.rating)}
-                      variant='yellow'
-                      size={32}
-                      disabled
-                    />
-                  </div>
-                  <div className="w-full">
-                    <blockquote className="text-sm italic text-muted-foreground">
-                      <p>"{ratingVal.rating_notes}".</p>
-                    </blockquote>
-                  </div>
-                </div>
-                :
-                <RatingForm invoiceId={invoice?.id} numberId={invNumber.id} user={session?.user} />
-              }
+              <RatingForm
+                invoiceId={invoice?.id as string}
+                numberId={invNumber.id}
+                user={session?.user}
+                ratingVal={ratingVal}
+              />
             </React.Fragment>
           )
         })}

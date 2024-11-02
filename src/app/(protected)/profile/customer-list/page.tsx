@@ -1,10 +1,12 @@
 import React from 'react';
 import Container from '@/components/ui/container';
 import Heading from '@/components/ui/heading';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Phone } from 'lucide-react';
+import { ChevronLeft, Mail, Phone } from 'lucide-react';
 import { getSession } from '@/lib/session';
 import { getCustomerByNoMulti, getUserCustomerList } from '@/lib/data';
+import CustomerListClient from './module/customer-list-client';
 
 async function CustomerList() {
   const session = await getSession();
@@ -16,10 +18,10 @@ async function CustomerList() {
     customerNo.push(userCustomers[i].customer_no)
   }
   const customers = await getCustomerByNoMulti(user.token, customerNo);
-  const costumerList = [];
+  const customerList = [];
   for (let j = 0; j < userCustomers.length; j++) {
     const dataCustomers = customers.find((c: any) => c.customer_no === userCustomers[j].customer_no);
-    costumerList.push({
+    customerList.push({
       id: userCustomers[j].id,
       user_id: userCustomers[j].user_id,
       customer_no: userCustomers[j].customer_no,
@@ -40,36 +42,23 @@ async function CustomerList() {
       books: dataCustomers.books,
     })
   }
-  console.log(costumerList)
+  console.log(customerList)
   return (
-    <div className="flex flex-col min-h-screen py-6 gap-6">
-      <Container>
-        {costumerList.map((customer, index) => {
-          return (
-            <Card className="mb-4">
-              <CardContent className="p-0 flex flex-col divide-y">
-                <div className="flex flex-col space-y-1.5 p-4">
-                  <Heading variant='base' className="font-semibold leading-none tracking-tight">{customer.name}</Heading>
-                  <p className="text-sm text-muted-foreground">{customer.customer_no}</p>
-                </div>
-                <div className="grid grid-cols-2 divide-x items-center justify-center">
-                  <div className="flex items-center justify-center p-4">
-                    <span>
-                      <Mail className="h-4 w-4 mr-2" />
-                    </span>
-                    <span>Email</span>
-                  </div>
-                  <div className="flex items-center justify-center p-4">
-                    <span>
-                      <Phone className="h-4 w-4 mr-2" />
-                    </span>
-                    <span>Phone</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+    <div className="flex flex-col min-h-screen mb-20">
+      <Container className="py-6 sticky top-0 z-30 bg-background w-full border-b border-foreground-muted flex justify-between items-center shrink-0">
+        <button
+          type="button"
+        // onClick={() => router.back()}
+        >
+          <span>
+            <ChevronLeft className="w-5 h-5" />
+          </span>
+        </button>
+        <h3 className="font-bold text-sm text-foreground/75">Customer List</h3>
+        <div></div>
+      </Container>
+      <Container className="mt-4">
+        <CustomerListClient customerList={customerList} />
       </Container>
     </div>
   )

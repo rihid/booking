@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { ProductSchema } from '@/lib/schema';
 import { z } from 'zod';
 import { getBranchList, getInvoiceByCustomer } from '@/lib/data';
+import { msToTime } from '@/lib/helper';
 import moment from 'moment';
 
 async function InvoiceList({
@@ -32,18 +33,21 @@ async function InvoiceList({
     const seconds = Math.round((duration % 60000) / 1000)
     return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2)
   }
+  console.log(invoiceData)
   return (
     <Container className="space-y-6">
       {invoiceData.length > 0 ?
         invoiceData.map((invoice) => {
           const productVal = products.find(p => p.product_no === invoice.product_no)
           const branchVal = branches.find(p => p.branch_no === invoice?.branch_no)
-          const durationTrip = formatDuration(invoice.duration)
+          const durationTrip = msToTime(parseFloat(invoice.duration as string))
           return (
             <Link
+              key={invoice.id}
               href={`/invoice/${invoice.invoice_no === null ? "#" : invoice.invoice_no.split('/').pop()}`}
+              className="block"
             >
-              <Card key={invoice.id} className="shadow-md">
+              <Card className="shadow-md">
                 <CardHeader className="flex-row items-center justify-between">
                   <CardTitle className="text-foreground/75">{productVal?.product_name}</CardTitle>
                   <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
