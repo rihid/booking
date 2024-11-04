@@ -37,7 +37,7 @@ async function ProductList({
               <ProductCarousel slug={product.slug} pictures={product.pictures} />
               <div className="space-y-0.5 mt-3">
                 <div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center pb-3">
                     <Link
                       href={`/p/${encodeURIComponent(product.slug)}`}
                       className="truncate mr-8"
@@ -45,11 +45,11 @@ async function ProductList({
                       <Heading variant='base' className="text-brand truncate">{product.product_name}</Heading>
                     </Link>
                     <div className="flex items-center text-xs font-normal text-muted-foreground">
-                      <span className="mr-1">Marina</span>
                       <MapPin className="inline-block text-brand w-4 h-4" />
+                      <span className="ml-1">{product.location}</span>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground font-normal truncate">Lorem ipsum dolor sit amet.</p>
+                  <p className="text-xs text-muted-foreground font-normal truncate">{product.product_description}</p>
                 </div>
 
                 <div className="flex items-center text-muted-foreground">

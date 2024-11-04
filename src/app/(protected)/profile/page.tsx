@@ -67,7 +67,7 @@ async function Profile() {
                     href="/profile/customer-list"
                     className="block tracking-tight font-normal text-xs"
                   >
-                    Customer List
+                    Rider List
                   </Link>
                 </div>
                 <ChevronRight className="w-5 h-5 text-foreground" />
