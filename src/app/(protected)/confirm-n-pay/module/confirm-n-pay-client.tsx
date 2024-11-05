@@ -32,7 +32,6 @@ import { midtransClientKey } from '@/lib/constants';
 
 function ConfirmNPayClient({
   user,
-  userCustomer,
 }: {
   user: any;
   userCustomer: any;
@@ -64,7 +63,7 @@ function ConfirmNPayClient({
 
   // form
   const { control, register, handleSubmit, formState: { errors } } = useForm();
-  const [data, setData] = React.useState<any>(null);
+  const [form, setForm] = React.useState<any>(null);
   // calculation
   const totalRiders = React.useMemo(() => {
     const bn = bookingField.numbers;
@@ -106,7 +105,6 @@ function ConfirmNPayClient({
         from: crm.from,
         rider_type: 'rider'
       }
-      console.log(data)
       editCustomer(0, {
         ...customers[0],
         ...data
@@ -134,7 +132,6 @@ function ConfirmNPayClient({
         ...customers[0],
         ...initialData,
       })
-      console.log(customers[0])
     }
     setIsAddRider(checked);
   }
@@ -190,6 +187,7 @@ function ConfirmNPayClient({
     }
   }
   const onSubmitConfirm = async () => {
+    setIsLoading(true);
     let bodyMidtrans = {
       orderId: bookingField.book_no,
       itemId: productBooked?.id,
@@ -199,8 +197,14 @@ function ConfirmNPayClient({
       customer: user.name,
       customerEmail: user.email
     }
-    setIsLoading(true);
-    await axios.post(bookingUrl + '/book', bookingField, {
+    // filter numbers
+    const numberValue = bookingField.numbers.filter(number => number.qty !== '0');
+    const body = {
+      ...bookingField,
+      numbers: numberValue
+    }
+    console.log(body);
+    await axios.post(bookingUrl + '/book', body, {
       headers: {
         Accept: 'application/json',
         Authorization: 'Bearer ' + user.token
@@ -344,9 +348,11 @@ function ConfirmNPayClient({
         updateCustomerList(updatedCustomerArr);
       }
       // isAddrider
-    if (customers[0].id !== null) {
-      setIsAddRider(true)
-    }
+      if (customers.length > 0) {
+        if (customers[0].id !== null) {
+          setIsAddRider(true)
+        }
+      }
     }
   }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList, isAddRider]);
 
@@ -602,7 +608,6 @@ function ConfirmNPayClient({
             <p>I also agree to the updated Terms of Service, Payments Terms
               Of Service, and I acknowledge the Privacy Policy.</p>
           </div>
-          <p>{data}</p>
           <div className="flex items-center justify-center">
             <Button
               type='submit'

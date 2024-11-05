@@ -28,7 +28,6 @@ async function InvoiceDetail({
   const { token, customer_no } = session.user;
   const invoiceBody = {
     customer_no: customer_no as string,
-    // customer_no: "PSJ/CRM/00002287",
     type: "invoice",
     begin: null,
     end: null
@@ -36,7 +35,7 @@ async function InvoiceDetail({
   const invoices = await getInvoiceByCustomer(token, invoiceBody);
   const invoice = invoices.find(inv => inv.invoice_no.split('/').pop() === params.noShort);
   const numbers = invoice?.numbers.filter((number: any) => number.qty !== '0');
-  console.log('invoice: ', invoice)
+
   const products = await getAllProductPublic();
   let booking = null;
   if (invoice) {
@@ -54,7 +53,7 @@ async function InvoiceDetail({
           <h3 className="font-bold text-base text-foreground/75 mb-3">Price Details</h3>
           <dl className="space-y-4">
             {invoice?.numbers.map((number, idx) => {
-              // const subTotal = number.price.replace(/\./g, '') * number.qty;
+              const subTotal = number.price.replace(/\./g, '') * number.qty;
               return (
                 <React.Fragment key={idx}>
                   {number.qty > 0 &&
@@ -63,7 +62,7 @@ async function InvoiceDetail({
                         {currency(parseInt(number.price.replace(/\./g, '')))} x {number.qty} {number.variant} Ride
                       </dt>
                       <dd className="text-foreground/50 text-sm">
-                        {currency(parseFloat(number.subtotal))}
+                        {currency(subTotal)}
                       </dd>
                     </div>
                   }
@@ -122,14 +121,12 @@ async function InvoiceDetail({
           }
           return (
             <React.Fragment key={invNumber.id}>
-              <div
-                className="flex items-start bg-background py-6 gap-x-6"
-              >
+              <div className="flex items-start bg-background py-6 gap-x-6">
                 <div className="w-32 flex-shrink-0 overflow-hidden rounded-md">
                   <Link href={"#"}>
                     <div className="aspect-w-6 aspect-h-4 w-full h-full">
                       <Image
-                        src="/images/img-grid-2.png"
+                        src="/images/sea-doo.svg"
                         alt="image"
                         width={0}
                         height={0}
@@ -142,14 +139,11 @@ async function InvoiceDetail({
                 </div>
                 <div className="flex flex-col space-y-3 flex-grow min-w-0">
                   <div className="min-w-0">
-                    <Link href={`/d`}>
-                      <h4 className="text-base font-semibold text-foreground/75 truncate">
-                        {productVal?.product_name}
-                      </h4>
-                    </Link>
+                    <h4 className="text-base font-semibold text-foreground/75 truncate">
+                      {productVal?.product_name}
+                    </h4>
                     <p className="text-xs text-foreground/50 font-normal mt-1 truncate">{productVal?.product_description}</p>
                   </div>
-
                   <div className="flex items-center text-foreground/50 gap-x-2">
                     <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
                     <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
