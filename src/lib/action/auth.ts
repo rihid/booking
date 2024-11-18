@@ -6,7 +6,6 @@ import { redirect } from "next/navigation";
 import { getCustomerByNo, getUserToken } from "../data";
 
 export async function login(token: string) {
-  
   let user;
   if (token) {
     user = await getUserToken(token);

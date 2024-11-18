@@ -51,7 +51,6 @@ async function ConfirmNPay() {
       })
     }
   }
-
   
   return <ConfirmNPayClient user={user} userCustomer={customerArr} />;
 }

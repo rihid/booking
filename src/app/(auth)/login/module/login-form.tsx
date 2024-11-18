@@ -15,11 +15,16 @@ import { Loader2 } from 'lucide-react';
 import { postAuth } from '@/lib/data';
 import { useRouter } from 'next/navigation';
 import { login } from '@/lib/action/auth';
+import axios from 'axios';
+import { loginUrl } from '@/lib/data/endpoints';
+import { AuthSchema } from '@/lib/schema';
+import { toast } from 'sonner';
 import { cn } from '@/assets/styles/utils';
 
 function LoginForm() {
   const router = useRouter()
-  const [isPending, startTransition] = React.useTransition();
+  // const [isPending, startTransition] = React.useTransition();
+  const [isPending, setIspending] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | undefined>("");
   const [success, setSuccess] = React.useState<string | undefined>("");
 
@@ -32,17 +37,38 @@ function LoginForm() {
   });
 
   const onSubmit = async (values: z.infer<typeof LoginFormSchema>) => {
-    startTransition(() => {
-      postAuth(values)
-        .then(response => {
-          if (response)
-            login(response.token);
-        })
-        .catch(error => {
-          setError(error.message);
-          throw error
-        });
-    })
+    setIspending(true);
+    axios.post(loginUrl, values)
+      .then((response) => {
+        console.log(response)
+        const data = response.data;
+
+        if (response.status === 200) {
+          login(data.token);
+          toast.success('Success!');
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        toast.error(error.response.data.message);
+      })
+      .finally(() => {
+        setIspending(false)
+      })
+
+    // startTransition(() => {
+    //   postAuth(values)
+    //     .then(response => {
+    //       console.log(response)
+    //       if (response) {
+    //         login(response.token);
+    //       }
+    //     })
+    //     .catch(error => {
+    //       setError(error.message);
+    //       console.log(error)
+    //     });
+    // })
   }
 
   return (
@@ -71,23 +97,6 @@ function LoginForm() {
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    disabled={isPending}
-                    placeholder="Password"
-                    type="password"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
           <FormField
             control={form.control}
             name="password"

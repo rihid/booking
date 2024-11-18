@@ -21,6 +21,7 @@ import ModalDrawer from './drawer';
 import { useUiLayoutStore } from '@/store/ui-layout';
 import { Ratings } from '@/components/ui/ratings';
 import { BookingCardLoader, BookingListLoader } from '@/components/partial/loader';
+import { toast } from "sonner"
 
 function Testing() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -34,6 +35,9 @@ function Testing() {
     setModalView('rc-drawer-view');
     openModal('rc-drawer-view');
   }
+  const handleClick = () => {
+    toast.success("Event has been created")
+  }
   return (
     <div>
       <Calendar
@@ -44,13 +48,16 @@ function Testing() {
         className="rounded-md border shadow"
       />
       <div>
-        <BookingCardLoader />
-        <BookingListLoader />
-      </div>
-      <div>
         <Button onClick={handleOpenModal}>Open</Button>
       </div>
-      <div className="h-[600px] bg-blue-200">test</div>
+      <div>
+        <Button
+          variant="outline"
+          onClick={handleClick}
+        >
+          Show Toast
+        </Button>
+      </div>
       {modalView === 'rc-drawer-view' && <ModalDrawer />}
     </div>
   )

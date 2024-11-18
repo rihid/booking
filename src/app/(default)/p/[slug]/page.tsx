@@ -183,13 +183,6 @@ async function Detail({
               <div className="text-foreground/50 font-normal text-xs">
                 <p className="">
                   {product.product_description}
-                  <OpenModalButton
-                    view='about-product-detail-view'
-                    variant='link'
-                    className="ml-1 text-xs text-brand hover:underline hover:underline-offset-2"
-                  >
-                    Show more
-                  </OpenModalButton>
                 </p>
               </div>
               <div className="bg-background mt-6">

@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import { cn } from "@/assets/styles/utils";
 import { fontSans } from "@/assets/styles/fonts";
 import { Toaster } from "@/components/ui/sonner";
-import ManagedModal from "@/components/ui/modal/managed-modal";
 
 // style
 import "@/assets/styles/globals.css";
