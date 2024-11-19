@@ -63,10 +63,8 @@ async function Profile() {
               <Link href="/profile/customer-list" className="flex items-center justify-between h-full w-full py-3">
                 <div className="flex items-center gap-2">
                   <CircleUserRound className="w-5 h-5" />
-                  <span
-                    className="block tracking-tight font-normal text-xs"
-                  >
-                    Customer List
+                  <span className="block tracking-tight font-normal text-xs">
+                    Rider List
                   </span>
                 </div>
                 <ChevronRight className="w-5 h-5 text-foreground" />

@@ -117,7 +117,7 @@ export const getCustomerByNoMulti = async (token: any, customerNo: any) => {
 }
 export const getAllProductPublic = async () => {
   try {
-    const res = await axios.get(productUrl, {
+    const res = await axios.get(productUrl + "?category=Trip", {
       headers: {
         Accept: 'application/json',
       }
