@@ -73,6 +73,7 @@ function RiderFormModal({
   numbers,
 }: Props) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
+  const { bookingField, updateBookingField } = useBookStore(state => state);
   return (
     <Sheet
       open={showModal}
@@ -89,8 +90,6 @@ function RiderFormModal({
         <ScrollArea className="flex-grow w-full">
           <div className="mt-6 w-full space-y-6">
             {numbers.map((number: any, idx: number) => {
-              const { bookingField, updateBookingField } = useBookStore(state => state);
-
               const handleCountChange = (countVal: number) => {
                 console.log(countVal)
                 const numberArr = [...bookingField.numbers];

@@ -189,7 +189,7 @@ async function Detail({
               <h3 className="font-semibold text-sm text-foreground/75">Riding Route</h3>
               <div className="mt-2">
                 <ol className="relative text-gray-500 ms-2 border-s-2 border-dashed border-muted-foreground">
-                  {product.routes.map(route => (
+                  {product.routes.map((route: any) => (
                     <li key={route.id} className="mb-5 ms-6">
                       <span className="absolute flex items-center justify-center w-4 h-4 border-2 border-muted-foreground bg-background rounded-full -start-2 ring-2 ring-background" />
                       <p className="text-xs tracking-tight">{route.name}</p>

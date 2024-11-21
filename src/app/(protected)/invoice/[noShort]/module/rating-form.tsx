@@ -99,7 +99,7 @@ function RatingForm({
             </div>
             <div className="w-full">
               <blockquote className="text-sm italic text-muted-foreground">
-                <p>"{ratingValue.rating_notes}".</p>
+                <p>&quot;{ratingValue.rating_notes}&quot;.</p>
               </blockquote>
             </div>
           </div>
