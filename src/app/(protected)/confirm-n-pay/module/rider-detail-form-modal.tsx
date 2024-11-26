@@ -178,6 +178,7 @@ function RiderDetailFormModal({
                           <div>
                             <DatePicker
                               {...field}
+                              yearRange={80}
                               granularity='day'
                               value={field.value}
                               onChange={field.onChange}
