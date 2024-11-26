@@ -43,23 +43,6 @@ function ConfirmNPayClient({
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [index, setIndex] = React.useState<number>(0);
-  // const [customer, setCustomer] = React.useState<z.infer<typeof CustomerFieldSchema>>({
-  //   id: null,
-  //   customer_no: null,
-  //   name: "",
-  //   address: null,
-  //   phone: null,
-  //   email: "",
-  //   identity_number: null,
-  //   vat: null,
-  //   rating: null,
-  //   birthday: null,
-  //   age: null,
-  //   org_no: "",
-  //   type: "individual",
-  //   from: "",
-  //   rider_type: ""
-  // });
 
   // form
   const { control, register, handleSubmit, formState: { errors } } = useForm();
@@ -496,7 +479,7 @@ function ConfirmNPayClient({
                         <p className="text-xs font-normal text-foreground/50">ID Card - {customer.identity_number}</p>
                         <p className="text-xs font-normal text-foreground/50">{customer.rider_type}</p>
                         <pre>{ }</pre>
-                      </div>
+                      </div> 
                       :
                       <div className="text-foreground/75">
                         <h4 className="font-semibold text-sm">Your name here</h4>

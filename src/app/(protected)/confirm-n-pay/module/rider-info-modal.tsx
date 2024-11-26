@@ -14,6 +14,7 @@ import { getCustomerByNoMulti, getUserCustomerList } from '@/lib/data';
 import { useBookStore } from '@/providers/store-providers/book-provider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+import { TriangleAlert } from 'lucide-react';
 
 type Props = {
   idx: number;
@@ -34,17 +35,19 @@ function RiderInfoModal({
   const [customerList, setCustomerList] = React.useState<any>([]);
   const [selectedUserCustomer, setSelectedUserCustomer] = React.useState<any>({})
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  console.log('customer User', selectedUserCustomer)
+  const [isSelected, setIsSelected] = React.useState<boolean>(false)
 
   const handleAddRider = (value: any) => {
     value.rider_type = customer.rider_type;
-    console.log('customer value', value)
-    openModal('rider-detail-view')
+    const customerVal = customers.find(d => d.id === value.customer_id)
+    if (customers[idx].id === null && customerVal) {
+      setIsSelected(true)
+    } else {
+      openModal('rider-detail-view')
+      setIsSelected(false)
+    }
     setCustomer(value);
     setSelectedUserCustomer(value)
-  }
-  const filterCustomer = () => {
-
   }
   const handleAddRiderType = (type: string, user: any) => {
     const data = {
@@ -64,13 +67,10 @@ function RiderInfoModal({
       from: user.from,
       rider_type: type
     }
-    console.log(data)
     editCustomer(idx, {
       ...customers[idx],
       ...data
     })
-    console.log('customers')
-    console.log(customers)
   }
   React.useEffect(() => {
     const getData = async () => {
@@ -81,6 +81,7 @@ function RiderInfoModal({
         customerNo.push(data[i].customer_no)
       }
       const getCustomers = await getCustomerByNoMulti(user.token, customerNo);
+      console.log('getCustomer:')
       console.log(getCustomers)
       const customerArr = [];
       for (let j = 0; j < data.length; j++) {
@@ -107,6 +108,8 @@ function RiderInfoModal({
         })
       }
       setCustomerList(customerArr)
+      console.log('customerArr:')
+      console.log(customerArr)
       setIsLoading(false)
     }
     getData();
@@ -127,6 +130,12 @@ function RiderInfoModal({
         <ScrollArea className="flex-grow w-full">
           <div className="px-4 mt-5 pb-10">
             <div className="mt-6 space-y-4">
+              {isSelected &&
+                <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-xs text-destructive">
+                  <TriangleAlert className="h-3 w-3" />
+                  <p>The Selected rider is not available, select other rider!</p>
+                </div>
+              }
               <ToggleGroup type="single" className="flex flex-col w-full gap-4" onValueChange={(value) => handleAddRider(value)}>
                 {isLoading ?
                   <>
@@ -135,23 +144,28 @@ function RiderInfoModal({
                   </>
                   :
                   <>
-                    {customerList.map((uc: any, idx: number) => {
-                      let isDisabled = false;
-                      for (let i = 0; i < customers.length; i++) {
-                        if (customers[i].id === uc.customer_id && customers[i].id !== null) {
-                          isDisabled = true;
-                        }
-                      }
-                      return (
-                        <ToggleGroupItem key={idx} value={uc} disabled={isDisabled} className="w-full justify-start border border-muted-foreground rounded px-4 py-3 text-xs text-start font-normal font-foreground/50">{uc.name}</ToggleGroupItem>
-                      )
-                    })}
+                    {customerList.map((uc: any, idx: number) => (
+                      <ToggleGroupItem
+                        key={idx}
+                        value={uc}
+                        className="w-full justify-start border border-muted-foreground rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
+                      >
+                        {uc.name}
+                      </ToggleGroupItem>
+                    ))}
                   </>
                 }
               </ToggleGroup>
             </div>
-            <div className="flex-shrink flex flex-col w-full mt-6 gap-4">
-              <OpenModalButton disabled={isLoading} view='rider-detail-view' variant='default' className='h-10 px-4 py-2'>Add New</OpenModalButton>
+            <div className="flex-shrink flex flex-col w-full mt-6 gap-2">
+              <OpenModalButton
+                disabled={isLoading}
+                view="rider-detail-view"
+                variant='default'
+                className='h-10 px-4 py-2'
+              >
+                Add New
+              </OpenModalButton>
             </div>
           </div>
         </ScrollArea>

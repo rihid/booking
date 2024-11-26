@@ -1,13 +1,18 @@
+"use client"
+
 import React from 'react';
 import { Drawer } from '@/components/ui/drawer';
 import { useUiLayoutStore } from '@/store/ui-layout';
 import motionProps from './motion';
 import { cn } from '@/assets/styles/utils';
+import { toast } from "sonner"
 
 function ModalDrawer() {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
   const contentWrapperCSS = { bottom: 0 };
+  const handleClick = () => {
 
+  }
   return (
     <div>
       <Drawer
@@ -30,6 +35,19 @@ function ModalDrawer() {
           )}>
             <div className="wrapper bg-background">
               <button type="button" onClick={() => closeModal()}>close</button>
+              <button       
+                onClick={() =>
+                  toast("Event has been created", {
+                    description: "Sunday, December 03, 2023 at 9:00 AM",
+                    action: {
+                      label: "Undo",
+                      onClick: () => console.log("Undo"),
+                    },
+                  })
+                }
+              >
+                testing
+              </button>
               <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam amet atque deserunt minima magni similique?</p>
             </div>
           </div>
