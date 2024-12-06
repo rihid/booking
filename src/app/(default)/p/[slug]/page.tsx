@@ -17,6 +17,7 @@ import { ReserveButtonLoader, ProductDetailContentLoader } from '@/components/pa
 import ReserveButton from './module/reserve-button';
 import AboutDetailModal from './module/about-detail-modal';
 import ShareButton from './module/share-button';
+import Icon from '@/components/ui/icon';
 
 type Props = {
   params: { slug: string }
@@ -52,6 +53,7 @@ async function Detail({
     )
   }
   const product = await getSingleProductPublic(selectedProd.id);
+  console.log(product)
   const validTripDuration = product.duration_trip !== null ? product.duration_trip : '0';
 
   return (
@@ -126,7 +128,8 @@ async function Detail({
                     <React.Fragment key={pa.id}>
                       <div className="flex items-start gap-x-6 gap-y-4">
                         <dt className="text-sm font-medium text-foreground/50">
-                          <Camera className="w-5 h-5" />
+                          {/* <CupSoda className="w-5 h-5" /> */}
+                          <Icon name={pa.icon} className="w-5 h-5"/>
                         </dt>
                         <dd className="text-foreground/75 mt-0 pt-0">
                           <h3 className="text-sm font-normal tracking-tight">{pa.amenity}</h3>

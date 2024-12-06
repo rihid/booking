@@ -36,7 +36,7 @@ function HomePage() {
         </div>
         <div className="flex items-center mt-4">
           <div className="w-2.5 self-stretch bg-transparent"></div>
-          <Link href="/login" className="block">
+          <Link href="/explore" className="block">
             <Button className="bg-brand hover:bg-brand/90 font-semibold text-[15px] ml-4 rounded">Get Started</Button>
           </Link>
         </div>
