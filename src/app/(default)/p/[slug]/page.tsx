@@ -16,6 +16,7 @@ import { Suspense } from 'react';
 import { ReserveButtonLoader, ProductDetailContentLoader } from '@/components/partial/loader';
 import ReserveButton from './module/reserve-button';
 import AboutDetailModal from './module/about-detail-modal';
+import ShareButton from './module/share-button';
 
 type Props = {
   params: { slug: string }
@@ -29,7 +30,7 @@ export async function generateMetadata(
   const prodArr = await getAllProductPublic();
   const selectedProd = prodArr.find(product => product.slug === params.slug);
 
-  if(!selectedProd) {
+  if (!selectedProd) {
     throw new Error("Product not found")
   }
   const product = await getSingleProductPublic(selectedProd.id);
@@ -45,7 +46,7 @@ async function Detail({
 }: Props) {
   const prodArr = await getAllProductPublic();
   const selectedProd = prodArr.find(product => product.slug === params.slug);
-  if(!selectedProd) {
+  if (!selectedProd) {
     return (
       <div>Product not found</div>
     )
@@ -69,16 +70,7 @@ async function Detail({
                 <ChevronLeft className="w-5 h-5 text-muted-foreground" />
               </Link>
             </Button>
-            <Button
-              type='button'
-              variant="outline"
-              size="icon"
-              className="bg-background/50 rounded-full h-7 w-7 p-1"
-            >
-              <Link href="#">
-                <Share2 className="w-4 h-4 text-muted-foreground" />
-              </Link>
-            </Button>
+            <ShareButton />
           </div>
         </div>
         <div className="flex-1 w-full py-7 mb-20">
@@ -186,18 +178,18 @@ async function Detail({
                 </p>
               </div>
               <div className="bg-background mt-6">
-              <h3 className="font-semibold text-sm text-foreground/75">Riding Route</h3>
-              <div className="mt-2">
-                <ol className="relative text-gray-500 ms-2 border-s-2 border-dashed border-muted-foreground">
-                  {product.routes.map((route: any) => (
-                    <li key={route.id} className="mb-5 ms-6">
-                      <span className="absolute flex items-center justify-center w-4 h-4 border-2 border-muted-foreground bg-background rounded-full -start-2 ring-2 ring-background" />
-                      <p className="text-xs tracking-tight">{route.name}</p>
-                    </li>
-                  ))}
-                </ol>
+                <h3 className="font-semibold text-sm text-foreground/75">Riding Route</h3>
+                <div className="mt-2">
+                  <ol className="relative text-gray-500 ms-2 border-s-2 border-dashed border-muted-foreground">
+                    {product.routes.map((route: any) => (
+                      <li key={route.id} className="mb-5 ms-6">
+                        <span className="absolute flex items-center justify-center w-4 h-4 border-2 border-muted-foreground bg-background rounded-full -start-2 ring-2 ring-background" />
+                        <p className="text-xs tracking-tight">{route.name}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
               </div>
-            </div>
             </Container>
           </Suspense>
         </div>

@@ -21,6 +21,14 @@ function HomepageSearch() {
     replace(`${pathname}?${params.toString()}`);
   }, 300);
 
+  React.useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (params.has('query')) {
+      params.delete('query');
+      replace(pathname);
+    }
+  }, []);
+
   return (
     <div className="relative">
       <Search className="absolute w-6 h-6 top-1/2 left-2 transform -translate-y-1/2" />
