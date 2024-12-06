@@ -10,6 +10,8 @@ import ProductList from './module/product-list';
 import { ProductListLoader, UserAvatarLoader } from '@/components/partial/loader';
 import UserAvatar from './module/user-avatar';
 import HomepageSearch from '@/components/partial/homepage-search';
+import axios from 'axios';
+import { productUrl } from '@/lib/data/endpoints';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -24,9 +26,26 @@ async function Explore({
   }
 }) {
   const query = searchParams?.query || '';
+  const getProductType = async () => {
+    try {
+      const res = await axios.get(productUrl + "/category", {
+        headers: {
+          Accept: 'application/json',
+        }
+      });
+      const data = res.data.data;
+      return data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+  const categories = await getProductType();
+  const categorySelected = categories.reverse()
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Tabs defaultValue='trip'>
+      <Tabs defaultValue={categorySelected[0].id}>
         <Container className="mt-6 mb-4 space-y-4">
           <Suspense fallback={<UserAvatarLoader />}>
             <UserAvatar />
@@ -34,36 +53,26 @@ async function Explore({
           <HomepageSearch />
         </Container>
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
-          {/* <ul className="flex gap-6">
-            {tabs.map(tab => {
-              return (
-                <li key={tab.id} className="relative flex items-center g-animate py-3">
-                  <button
-                    type="button" 
-                    className="text-sm capitalize font-semibold text-muted-foreground hover:text-brand"
-                  >{tab.label}</button>
-                </li>
-              )
-            })}
-          </ul> */}
           <TabsList className="flex gap-6 justify-start bg-background text-muted-foreground">
-            <TabsTrigger value='trip' className="font-bold">Trip</TabsTrigger>
-            {/* <TabsTrigger value='coastal' className="font-bold">Coastal</TabsTrigger> */}
-            {/* <TabsTrigger value='rental' className="font-bold">Rental</TabsTrigger> */}
+            {categorySelected.map((item: any, index: number) =>
+              <TabsTrigger key={index} value={item.id} className="font-bold">{item.name}</TabsTrigger>
+            )}
           </TabsList>
         </Container>
         <div className="relative mt-6 mb-20">
-          <TabsContent value='trip'>
-            <Suspense fallback={<ProductListLoader />}>
-              <ProductList query={query} />
-            </Suspense>
-          </TabsContent>
-          <TabsContent value='coastal'>
+          {categorySelected.map((item: any, index: number) =>
+            <TabsContent key={index} value={item.id}>
+              <Suspense fallback={<ProductListLoader />}>
+                <ProductList query={query} />
+              </Suspense>
+            </TabsContent>
+          )}
+          {/* <TabsContent value='coastal'>
             testing 2
           </TabsContent>
           <TabsContent value='rental'>
             testing
-          </TabsContent>
+          </TabsContent> */}
         </div>
       </Tabs>
     </div>

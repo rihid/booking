@@ -212,7 +212,7 @@ function ConfirmNPayClient({
       console.log("productBooked:")
       console.log(productBooked)
       const variants = productBooked.variants;
-      const numberArr = variants.map((variant, i) => ({
+      const numberArr = variants.map((variant: any, i: number) => ({
         id: null,
         book_no: null,
         type: "product",
@@ -235,6 +235,7 @@ function ConfirmNPayClient({
       }))
       console.log(numberArr)
       updateBookingField({
+        type_id: productBooked.category.book_type_id,
         customer_no: user?.customer_no,
         schedule_check_in_date: '',
         product_no: productBooked.product_no,

@@ -30,7 +30,7 @@ export type BookStore = BookState & BookActions
 
 export const defaultInitState: BookState = {
   bookingField: {
-    type_id: "86ee36c2c73348959724bc06e00b94da-PSJ",
+    type_id: "",
     book_no: null,
     book_date: initialDate,
     customer_no: "",

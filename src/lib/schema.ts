@@ -158,96 +158,40 @@ export const ProductSchema = z.object({
 
 export const SingleProductSchema = z.object({
   id: z.string(),
-  product_no: z.string(),
-  product_name: z.string(),
+  product_no: z.string().nullable(),
+  product_name: z.string().nullable(),
   product_description: z.string().nullable(),
   product_about: z.string().nullable(),
-  type_id: z.string(),
-  category_id: z.string(),
-  active: z.boolean(),
-  is_serial_number: z.boolean(),
+  type_id: z.string().nullable(),
+  category_id: z.string().nullable(),
+  active: z.boolean().nullable(),
+  is_serial_number: z.boolean().nullable(),
   costing_method: z.string().nullable(),
   costing_evaluation: z.string().nullable(),
   uom_id: z.string().nullable(),
   org_no: z.string().nullable(),
   branch_no: z.string().nullable(),
-  prices: z.array(
-    z.object({
-      id: z.string(),
-      product_no: z.string(),
-      product_sku: z.string().nullable(),
-      price_date: z.string(),
-      uom_id: z.string().nullable(),
-      amount: z.string(),
-      notes: z.string().nullable()
-    })
-  ),
-  is_variant: z.boolean(),
-  is_guided: z.boolean(),
-  can_be_sold: z.boolean(),
-  cogs: z.boolean(),
-  multiple_uom: z.boolean(),
-  is_asset: z.boolean(),
+  prices: z.any(),
+  is_variant: z.boolean().nullable(),
+  is_guided: z.boolean().nullable(),
+  can_be_sold: z.boolean().nullable(),
+  cogs: z.boolean().nullable(),
+  multiple_uom: z.boolean().nullable(),
+  is_asset: z.boolean().nullable(),
   duration_trip: z.string().nullable(),
+  rating: z.string().nullable(),
   location_id: z.string().nullable(),
   location: z.string().nullable(),
-  routes: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      longitude: z.string().nullable(),
-      latitude: z.string().nullable(),
-      org_no: z.string().nullable(),
-      branch_no: z.string().nullable(),
-    })
-  ),
-  sell_price: z.string(),
+  routes: z.any(),
+  sell_price: z.string().nullable(),
   sell_date: z.string().nullable(),
-  uoms: z.array(z.any()),
-  variants: z.array(
-    z.object({
-      id: z.string().nullable(),
-      variant_name: z.string().nullable(),
-      product_sku: z.string().nullable(),
-      notes: z.string().nullable(),
-      org_no: z.string().nullable(),
-      active: z.boolean(),
-      total_rider: z.any(),
-      price: z.string().nullable(),
-      prices: z.array(
-        z.object({
-          id: z.string(),
-          product_no: z.string(),
-          product_sku: z.string().nullable(),
-          price_date: z.string(),
-          uom_id: z.string().nullable(),
-          amount: z.string().nullable(),
-          notes: z.string().nullable(),
-          active: z.boolean(),
-          created_at: z.string().nullable(),
-          updated_at: z.string().nullable()
-        })
-      ).nullable()
-    }),
-  ),
-  addons: z.array(z.any()),
+  uoms: z.any(),
+  variants: z.any(),
+  addons: z.any(),
   amenities: z.any(),
-  pictures: z.array(
-    z.object({
-      id: z.string(),
-      product_no: z.string(),
-      filename: z.string(),
-      mime_type: z.string(),
-      extension: z.string(),
-      type: z.string(),
-      size: z.string(),
-      disk: z.string(),
-      org_no: z.string(),
-      branch_no: z.string().nullable(),
-      url: z.string()
-    })
-  )
-});
+  pictures: z.any(),
+  category: z.any()
+})
 export const CustomerSchema = z.object({
   id: z.string(),
   customer_no: z.string(),
