@@ -36,7 +36,7 @@ function RiderDetailFormModal({
 }: Props) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
   const { editCustomer, customers } = useBookStore(state => state);
-
+  console.log(customer)
   const [isPending, startTransition] = React.useTransition();
   const form = useForm<z.infer<typeof CustomerFieldSchema>>({
     resolver: zodResolver(CustomerFieldSchema),

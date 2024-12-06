@@ -39,6 +39,7 @@ function ConfirmNPayClient({
   const router = useRouter();
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, customer, setCustomer, updateBookingField, addCustomer, editCustomer, updateCustomerList, setPaymentLink } = useBookStore((state) => state);
+  console.log('cust', customer)
   // local state
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -364,7 +365,7 @@ function ConfirmNPayClient({
             })}
           </dl>
         </div>
-        <div>
+        {/* <div>
           <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
           <dl className="space-y-4">
             <div className="flex items-center justify-between gap-x-6 gap-y-4">
@@ -376,7 +377,7 @@ function ConfirmNPayClient({
               </dd>
             </div>
           </dl>
-        </div>
+        </div> */}
         <hr className="border border-slate-200" />
         <div>
           <dl className="space-y-4">
