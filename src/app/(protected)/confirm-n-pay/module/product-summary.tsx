@@ -20,21 +20,35 @@ function ProductSummary({
     )
   }
   return (
-    <Suspense fallback={<ProductSummaryLoader/>}>
+    <Suspense fallback={<ProductSummaryLoader />}>
       <Container className="flex items-start bg-background py-6 gap-x-6">
         <div className="w-32 flex-shrink-0 overflow-hidden rounded-md">
           <Link href={"#"}>
-            <div className="aspect-w-6 aspect-h-4 w-full h-full">
-              <Image
-                src="/images/img-grid-2.png"
-                alt="image"
-                width={0}
-                height={0}
-                sizes="100vw"
-                className="object-cover transition-all duration-300 group-hover:scale-105"
-                priority={true}
-              />
-            </div>
+            {product.pictures.length > 0 ?
+              <div className="aspect-w-6 aspect-h-4 w-full h-full">
+                <Image
+                  src={product.pictures[0].url}
+                  alt="image"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="object-cover transition-all duration-300 group-hover:scale-105"
+                  priority={true}
+                />
+              </div>
+              :
+              <div className="aspect-w-6 aspect-h-4 w-full h-full">
+                <Image
+                  src="/images/sea-doo.svg"
+                  alt="image"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="object-cover transition-all duration-300 group-hover:scale-105"
+                  priority={true}
+                />
+              </div>
+            }
           </Link>
         </div>
         <div className="flex flex-col space-y-3 flex-grow min-w-0">

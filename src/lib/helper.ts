@@ -39,6 +39,13 @@ export const msToTime = ((value: number) => {
   const seconds = Math.round((value % 60000) / 1000)
   return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2)
 });
+export const secondsToTime = (value: number) => {
+  const hours = Math.floor(value / 3600);
+  const minutes = Math.floor((value % 3600) / 60);
+  const seconds = value % 60;
+  return ( ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2));
+};
+
 export const generateProductSlug = (products: z.infer<typeof productsType>) => {
   const usedSlugs = new Set();
 

@@ -51,27 +51,27 @@ function DatesFormModal({
       value: "11"
     },
     {
-      label: "12:00AM",
+      label: "12:00PM",
       value: "12"
     },
     {
-      label: "1:00AM",
+      label: "1:00PM",
       value: "13"
     },
     {
-      label: "2:00AM",
+      label: "2:00PM",
       value: "14"
     },
     {
-      label: "3:00AM",
+      label: "3:00PM",
       value: "15"
     },
     {
-      label: "4:00AM",
+      label: "4:00PM",
       value: "16"
     },
     {
-      label: "5:00AM",
+      label: "5:00PM",
       value: "17"
     }
   ];

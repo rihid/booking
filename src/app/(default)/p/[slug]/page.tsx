@@ -9,7 +9,7 @@ import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button/button';
 import Link from 'next/link';
 import { getSingleProductPublic, getAllProductPublic } from '@/lib/data';
-import { msToTime } from '@/lib/helper';
+import { msToTime, secondsToTime } from '@/lib/helper';
 import { SingleProductSchema } from '@/lib/schema';
 import { z } from 'zod';
 import { Suspense } from 'react';
@@ -17,6 +17,7 @@ import { ReserveButtonLoader, ProductDetailContentLoader } from '@/components/pa
 import ReserveButton from './module/reserve-button';
 import AboutDetailModal from './module/about-detail-modal';
 import ShareButton from './module/share-button';
+import Icon from '@/components/ui/icon';
 
 type Props = {
   params: { slug: string }
@@ -52,6 +53,7 @@ async function Detail({
     )
   }
   const product = await getSingleProductPublic(selectedProd.id);
+  console.log(product)
   const validTripDuration = product.duration_trip !== null ? product.duration_trip : '0';
 
   return (
@@ -87,7 +89,7 @@ async function Detail({
                 <CardContent className="p-3 flex items-center justify-between">
                   <div className="flex items-center text-foreground/50 gap-x-2">
                     <Clock className="inline-block w-5 h-5" />
-                    <span className="font-normal text-xs">Duration {msToTime(parseInt(validTripDuration))} Hours</span>
+                    <span className="font-normal text-xs">Duration {secondsToTime(parseInt(validTripDuration))} Hours</span>
                   </div>
                   <div className="flex justify-center items-center text-foreground/50 gap-x-2">
                     <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
@@ -126,7 +128,8 @@ async function Detail({
                     <React.Fragment key={pa.id}>
                       <div className="flex items-start gap-x-6 gap-y-4">
                         <dt className="text-sm font-medium text-foreground/50">
-                          <Camera className="w-5 h-5" />
+                          {/* <CupSoda className="w-5 h-5" /> */}
+                          <Icon name={pa.icon} className="w-5 h-5"/>
                         </dt>
                         <dd className="text-foreground/75 mt-0 pt-0">
                           <h3 className="text-sm font-normal tracking-tight">{pa.amenity}</h3>
