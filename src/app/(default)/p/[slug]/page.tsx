@@ -9,7 +9,7 @@ import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button/button';
 import Link from 'next/link';
 import { getSingleProductPublic, getAllProductPublic } from '@/lib/data';
-import { msToTime } from '@/lib/helper';
+import { msToTime, secondsToTime } from '@/lib/helper';
 import { SingleProductSchema } from '@/lib/schema';
 import { z } from 'zod';
 import { Suspense } from 'react';
@@ -87,7 +87,7 @@ async function Detail({
                 <CardContent className="p-3 flex items-center justify-between">
                   <div className="flex items-center text-foreground/50 gap-x-2">
                     <Clock className="inline-block w-5 h-5" />
-                    <span className="font-normal text-xs">Duration {msToTime(parseInt(validTripDuration))} Hours</span>
+                    <span className="font-normal text-xs">Duration {secondsToTime(parseInt(validTripDuration))} Hours</span>
                   </div>
                   <div className="flex justify-center items-center text-foreground/50 gap-x-2">
                     <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />

@@ -488,7 +488,7 @@ function ConfirmNPayClient({
                         <input
                           type="text"
                           id={inputName}
-                          value={customer.id}
+                          // value={customer.id}
                           aria-invalid={errors.inputName ? "true" : "false"}
                           {...register(inputName, { required: true })}
                           className="hidden"
