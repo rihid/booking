@@ -12,6 +12,7 @@ import UserAvatar from './module/user-avatar';
 import HomepageSearch from '@/components/partial/homepage-search';
 import axios from 'axios';
 import { productUrl } from '@/lib/data/endpoints';
+import Icon from '@/components/ui/icon';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -55,7 +56,11 @@ async function Explore({
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
           <TabsList className="flex gap-6 justify-start bg-background text-muted-foreground">
             {categorySelected.map((item: any, index: number) =>
-              <TabsTrigger key={index} value={item.id} className="font-bold">{item.name}</TabsTrigger>
+              <TabsTrigger key={index} value={item.id} className="font-bold">
+                <div className='flex gap-2'>
+                  <Icon name={item.icon} className="gap-5 w-5 h-5"/> {item.name}
+                </div>
+              </TabsTrigger>
             )}
           </TabsList>
         </Container>
