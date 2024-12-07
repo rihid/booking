@@ -14,6 +14,7 @@ import UserAvatar from './module/user-avatar';
 import HomepageSearch from '@/components/partial/homepage-search';
 import axios from 'axios';
 import { productUrl } from '@/lib/data/endpoints';
+import Icon from '@/components/ui/icon';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -62,7 +63,11 @@ async function Explore({
           <ScrollArea className="">
             <TabsList className="flex gap-6 justify-start bg-background text-muted-foreground">
               {categories.map((item: any, index: number) =>
-                <TabsTrigger key={index} value={item.id} className="font-bold whitespace-nowrap flex-shrink-0">{item.name}</TabsTrigger>
+                <TabsTrigger key={index} value={item.id} className="font-bold whitespace-nowrap flex-shrink-0">
+                <div className='flex gap-2'>
+                  <Icon name={item.icon} className="gap-5 w-5 h-5"/> {item.name}
+                </div>
+              </TabsTrigger>
               )}
             </TabsList>
             <ScrollBar orientation="horizontal" />
