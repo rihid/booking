@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Suspense } from 'react';
 import ProductList from './module/product-list';
 import { ProductListLoader, UserAvatarLoader } from '@/components/partial/loader';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import UserAvatar from './module/user-avatar';
 import HomepageSearch from '@/components/partial/homepage-search';
 import axios from 'axios';
@@ -34,6 +36,11 @@ async function Explore({
         }
       });
       const data = res.data.data;
+      data.sort((a: any, b: any) => {
+        if (a.name.toLowerCase() === 'trip') return -1
+        if (b.name.toLowerCase() === 'trip') return 1;
+        return 0
+      });
       return data;
     } catch (error) {
       console.log(error);
@@ -41,11 +48,10 @@ async function Explore({
     }
   }
   const categories = await getProductType();
-  const categorySelected = categories.reverse()
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Tabs defaultValue={categorySelected[0].id}>
+      <Tabs defaultValue={categories[0].id}>
         <Container className="mt-6 mb-4 space-y-4">
           <Suspense fallback={<UserAvatarLoader />}>
             <UserAvatar />
@@ -53,26 +59,45 @@ async function Explore({
           <HomepageSearch />
         </Container>
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
-          <TabsList className="flex gap-6 justify-start bg-background text-muted-foreground">
-            {categorySelected.map((item: any, index: number) =>
-              <TabsTrigger key={index} value={item.id} className="font-bold">{item.name}</TabsTrigger>
-            )}
-          </TabsList>
+          <ScrollArea className="">
+            <TabsList className="flex gap-6 justify-start bg-background text-muted-foreground">
+              {categories.map((item: any, index: number) =>
+                <TabsTrigger key={index} value={item.id} className="font-bold whitespace-nowrap flex-shrink-0">{item.name}</TabsTrigger>
+              )}
+            </TabsList>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </Container>
         <div className="relative mt-6 mb-20">
-          {categorySelected.map((item: any, index: number) =>
-            <TabsContent key={index} value={item.id}>
-              <Suspense fallback={<ProductListLoader />}>
-                <ProductList query={query} />
-              </Suspense>
-            </TabsContent>
+          {categories.map((item: any, index: number) => {
+            switch (item.name) {
+              case 'Trip':
+                return (
+                  <TabsContent key={index} value={item.id}>
+                    <Suspense fallback={<ProductListLoader />}>
+                      <ProductList query={query} />
+                    </Suspense>
+                  </TabsContent>
+                )
+              case 'Rental':
+                return (
+                  <TabsContent key={index} value={item.id}>
+                    <Container>
+                      Rental
+                    </Container>
+                  </TabsContent>
+                )
+              default:
+                return (
+                  <TabsContent key={index} value={item.id}>
+                    <Container>
+                      Lorem ipsum
+                    </Container>
+                  </TabsContent>
+                )
+            }
+          }
           )}
-          {/* <TabsContent value='coastal'>
-            testing 2
-          </TabsContent>
-          <TabsContent value='rental'>
-            testing
-          </TabsContent> */}
         </div>
       </Tabs>
     </div>
