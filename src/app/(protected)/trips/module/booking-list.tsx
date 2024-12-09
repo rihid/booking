@@ -31,19 +31,19 @@ async function BookingList({
   return (
     <Container className="space-y-6">
       {bookingData.length > 0 ?
-        bookingData.map((booking, index) => {
+        bookingData.map((booking) => {
           let bookingPayment = 0;
           for (let i = 0; i < booking.downPayments.length; i++) {
             bookingPayment += parseFloat(booking.downPayments[i].total)
           }
           const product = booking.product_no ? products.find(p => p.product_no === booking.product_no) : null;
-          let paymentLink = '/';
+          let paymentLink = '';
           if (booking.downPayments.length > 0) {
             const link = midtransRedirectUrl + booking.downPayments[0].token;
             if (link !== null) {
               paymentLink = link;
             } else {
-              paymentLink = '/'
+              paymentLink = ''
             }
           }
           return (

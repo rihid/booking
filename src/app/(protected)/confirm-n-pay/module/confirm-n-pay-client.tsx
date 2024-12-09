@@ -4,6 +4,7 @@ import React from 'react';
 import { ChevronLeft, SquarePen, CreditCard, Wallet, Check, Loader2 } from 'lucide-react';
 import Container from '@/components/ui/container';
 import { Button } from '@/components/ui/button/button';
+import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import OpenModalButton from '@/components/ui/button/open-modal-button';
 import { Label } from '@/components/ui/label';
@@ -170,7 +171,8 @@ function ConfirmNPayClient({
       throw error;
     }
   }
-  const onSubmitConfirm = async () => {
+  const onSubmitConfirm = async (validate: any) => {
+    const { payment_select, } = validate;
     setIsLoading(true);
     let bodyMidtrans = {
       orderId: bookingField.book_no,
@@ -181,6 +183,7 @@ function ConfirmNPayClient({
       customer: user.name,
       customerEmail: user.email
     }
+    let orderIdCash = '';
     // filter numbers
     const numberValue = bookingField.numbers.filter(number => number.qty !== '0');
     const body = {
@@ -197,13 +200,17 @@ function ConfirmNPayClient({
       console.log('data book:', response.data.data);
       const data = response.data.data;
       bodyMidtrans.orderId = data.id;
+      orderIdCash = data.id
     }).catch(error => {
-      // setIsLoading(false);
       console.log(error);
       throw error;
     })
-    // midtrans
-    await handleCheckout(bodyMidtrans);
+    if (payment_select === 'cash') {
+      router.push(`/confirmation?order_id=${orderIdCash}`)
+    } else {
+      // midtrans
+      await handleCheckout(bodyMidtrans);
+    }
     setIsLoading(false);
   }
   // onmount
@@ -421,7 +428,24 @@ function ConfirmNPayClient({
             <div className="flex items-start justify-between w-full">
               <div className="text-foreground/75">
                 <h4 className="font-semibold text-sm">Dates</h4>
-                <p className="text-xs font-normal text-foreground/50">{bookingField.schedule_check_in_date == '' ? 'Select date' : moment(bookingField.schedule_check_in_date).format('DD MMM YYYY H:mm')}</p>
+                {bookingField.schedule_check_in_date ?
+                  <p className="text-xs font-normal text-foreground/50">{bookingField.schedule_check_in_date == '' ? 'Select date' : moment(bookingField.schedule_check_in_date).format('DD MMM YYYY H:mm')}</p>
+                  :
+                  <>
+                    <p className="text-xs font-normal text-foreground/50">{bookingField.schedule_check_in_date == '' ? 'Select date' : moment(bookingField.schedule_check_in_date).format('DD MMM YYYY H:mm')}</p>
+                    <input
+                      type="text"
+                      id="schedule_check_in_date"
+                      value={bookingField.schedule_check_in_date || ''}
+                      aria-invalid={errors.schedule_check_in_date ? "true" : "false"}
+                      {...register("schedule_check_in_date", { required: true })}
+                      className="hidden"
+                    />
+                    {errors.schedule_check_in_date && errors.schedule_check_in_date.type === "required" && (
+                      <span role="alert" className="text-xs font-normal text-destructive">Dates is required</span>
+                    )}
+                  </>
+                }
               </div>
               <OpenModalButton variant='link' view='dates-select-view'>Edit</OpenModalButton>
             </div>
@@ -481,7 +505,7 @@ function ConfirmNPayClient({
                         <p className="text-xs font-normal text-foreground/50">ID Card - {customer.identity_number}</p>
                         <p className="text-xs font-normal text-foreground/50">{customer.rider_type}</p>
                         <pre>{ }</pre>
-                      </div> 
+                      </div>
                       :
                       <div className="text-foreground/75">
                         <h4 className="font-semibold text-sm">Your name here</h4>
@@ -512,6 +536,17 @@ function ConfirmNPayClient({
                 </React.Fragment>
               )
             })}
+          </div>
+        </Container>
+        <Container className="border-t-4 border-slate-100 bg-background py-8">
+          <h3 className="font-bold text-base text-foreground/75 mb-3">Promo Code</h3>
+          <div className="relative flex w-full max-w-sm items-center space-x-2">
+            <Input type="text" placeholder="Promo Code" />
+            <button  
+              type="button" 
+              className="absolute right-0 px-3 text-sm text-brand"
+              onClick={() => console.log('clicked')}
+            >Apply</button>
           </div>
         </Container>
         <PriceDetailComp />
