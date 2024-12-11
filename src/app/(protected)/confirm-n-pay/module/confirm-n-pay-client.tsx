@@ -13,6 +13,8 @@ import DatesFormModal from './dates-form-modal';
 import RiderFormModal from './rider-form-modal';
 import { useUiLayoutStore } from '@/store/ui-layout';
 import { useBookStore } from '@/providers/store-providers/book-provider';
+import { usePaymentStore } from '@/providers/store-providers/payment-provider';
+import { useShallow } from 'zustand/react/shallow'
 import RiderDetailFormModal from './rider-detail-form-modal';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
@@ -39,7 +41,8 @@ function ConfirmNPayClient({
 }) {
   const router = useRouter();
   const { modalView } = useUiLayoutStore();
-  const { bookingField, productBooked, customers, customer, setCustomer, updateBookingField, addCustomer, editCustomer, updateCustomerList, setPaymentLink } = useBookStore((state) => state);
+  const { bookingField, productBooked, customers, customer, setCustomer, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
+  const { setPaymentLink } = usePaymentStore((state) => state);
   console.log('cust', customer)
   // local state
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
@@ -132,6 +135,7 @@ function ConfirmNPayClient({
   }
 
   // midtrans options function
+  const pendingPayment = () => {}
   const closePayment = (bookId: string) => {
     axios.delete(bookingUrl + '/book/' + bookId, {
       headers: {
@@ -157,12 +161,14 @@ function ConfirmNPayClient({
         body: JSON.stringify(body),
       })
       const res = await response.json();
-
+      setPaymentLink({
+        order_id: body.orderId,
+        payment_token: res.data.token
+      })
       // @ts-ignore
       window.snap.pay(res.data.token, {
         onPending: (result: any) => {
-          console.log('result', result);
-          router.push(`/confirmation?order_id=${body.orderId}&status_code=${result.status_code}&payment_token=${res.data.token}`)
+          // router.push(`/confirmation?order_id=${body.orderId}&status_code=${result.status_code}&payment_token=${res.data.token}`)
         },
         onClose: () => { closePayment(body.orderId) },
       });
@@ -197,7 +203,6 @@ function ConfirmNPayClient({
         Authorization: 'Bearer ' + user.token
       }
     }).then(response => {
-      console.log('data book:', response.data.data);
       const data = response.data.data;
       bodyMidtrans.orderId = data.id;
       orderIdCash = data.id

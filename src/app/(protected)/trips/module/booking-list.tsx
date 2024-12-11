@@ -26,7 +26,7 @@ async function BookingList({
   }
   const bookingData = await getBookByCustomer(user?.token, bookingBody);
 
-  const midtransRedirectUrl = 'https://app.sandbox.midtrans.com/snap/v4/redirection/';
+  const midtransRedirectUrl = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL as string
 
   return (
     <Container className="space-y-6">
@@ -43,7 +43,7 @@ async function BookingList({
             if (link !== null) {
               paymentLink = link;
             } else {
-              paymentLink = ''
+              paymentLink = midtransRedirectUrl
             }
           }
           return (

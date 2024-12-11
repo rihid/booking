@@ -12,6 +12,7 @@ const inter = Inter({ subsets: ["latin"] });
 // providers
 import { CounterStoreProvider } from "@/providers/store-providers/testing-provider";
 import { BookStoreProvider } from "@/providers/store-providers/book-provider";
+import { PaymentStoreProvider } from "@/providers/store-providers/payment-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -33,6 +34,7 @@ const combineProviders = (providers: React.ComponentType<{ children: React.React
 const AppProviders = combineProviders([
   CounterStoreProvider,
   BookStoreProvider,
+  PaymentStoreProvider
 ])
 
 export default function RootLayout({

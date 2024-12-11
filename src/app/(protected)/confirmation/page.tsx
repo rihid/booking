@@ -8,10 +8,12 @@ import { Button } from '@/components/ui/button/button';
 import { generateBasicToken } from '@/lib/helper';
 import { getSession } from '@/lib/session';
 import axios from 'axios';
+import moment from 'moment';
 import { bookingUrl, masterUrl } from '@/lib/data/endpoints';
 import { getAllProductPublic, getBooking } from '@/lib/data';
 import { midtransServerKey } from '@/lib/constants';
 import ActionComp from './module/action-comp';
+import ConfirmationPage from './module/confirmation-page';
 
 export const metadata: Metadata = {
   title: 'Confirmation',
@@ -104,7 +106,7 @@ async function Confirmation({
   const productVal = products.find(p => p.product_no === booking.product_no);
   const paymentMethod = await getPaymentMethod();
   const paymentStatus = await getPaymentStatus();
-  console.log('payment Status: ', booking)
+
   if (paymentStatus.status_code === '200') {
     let methodVal;
     if (paymentStatus.payment_type === 'bank_transfer') {
@@ -130,8 +132,6 @@ async function Confirmation({
       token_payment: paymentDp.token_payment || null,
       cash_id: null
     }
-    console.log('body', body)
-    console.log('paymentdp', paymentDp)
     await postPayment(body);
   } else if (paymentStatus.status_code === '201') {
     let methodVal;
@@ -327,85 +327,106 @@ async function Confirmation({
   )
 }
 
-// async function Confirmation2({
-//   searchParams,
-// }: {
-//   searchParams: { [key: string]: string | string[] | null };
-// }) {
-//   const session = await getSession();
-//   // @ts-ignore 
-//   const { token } = session.user
-//   const orderId = searchParams['order_id'] || null;
-//   const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
-//   const midtransUrl = process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + orderId + '/status';
-//   // actions
-//   const getPaymentStatus = () => {
-//     const res = axios.get(midtransUrl, {
-//       headers: {
-//         accept: 'application/json',
-//         authorization: 'Basic ' + encodeToken,
-//       }
-//     }).then(response => {
-//       const data = response.data;
-//       console.log('status', response.data)
-//       return data;
-//     }).catch(error => {
-//       console.log(error);
-//       throw error;
-//     })
+async function Confirmation2({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | null };
+}) {
+  const session = await getSession();
+  // @ts-ignore 
+  const { token } = session.user
+  const orderId = searchParams['order_id'] || null;
+  const paymentToken = searchParams['payment_token'] || null;
+  const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
+  const midtransUrl = process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + orderId + '/status';
+  // actions
+  const getPaymentStatus = () => {
+    const res = axios.get(midtransUrl, {
+      headers: {
+        accept: 'application/json',
+        authorization: 'Basic ' + encodeToken,
+      }
+    }).then(response => {
+      const data = response.data;
+      console.log('status', response.data)
+      return data;
+    }).catch(error => {
+      console.log(error);
+      throw error;
+    })
 
-//     return res;
-//   }
-//   const getPaymentMethod = () => {
-//     const res = axios.get(masterUrl + '/payment-method', {
-//       headers: {
-//         Accept: 'application/json',
-//         Authorization: 'Bearer ' + token
-//       }
-//     }).then(response => {
-//       console.log(response.data.data)
-//       const data = response.data.data;
-//       return data;
-//     }).catch(error => {
-//       console.log(error);
-//       throw error;
-//     })
+    return res;
+  }
+  const getPaymentMethod = () => {
+    const res = axios.get(masterUrl + '/payment-method', {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token
+      }
+    }).then(response => {
+      console.log(response.data.data)
+      const data = response.data.data;
+      return data;
+    }).catch(error => {
+      console.log(error);
+      throw error;
+    })
 
-//     return res;
-//   }
-//   const postPayment = (body: PaymentType) => {
-//     const res = axios.post(bookingUrl + '/book/payment', body, {
-//       headers: {
-//         Accept: 'application/json',
-//         Authorization: 'Bearer ' + token
-//       }
-//     }).then(response => {
-//       console.log(response.data);
-//       const data = response.data;
-//       return data;
-//     }).catch(error => {
-//       console.log(error);
-//       throw error;
-//     })
-//     return res;
-//   }
-//   // data
-//   const products = await getAllProductPublic();
-//   const booking = await getBooking(token, orderId as string);
-//   const productVal = products.find(p => p.product_no === booking.product_no);
-//   const paymentMethod = await getPaymentMethod();
-//   const paymentStatus = await getPaymentStatus();
+    return res;
+  }
+  const getPaymentList = async () => {
+    const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD')
+    const endDate = moment().format('YYYY-MM-DD')
+    const url = bookingUrl + '/book/payment' + '?begin=' + startDate + '&end=' + endDate;
+    const res = axios.get(url, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token
+      }
+    }).then(response => {
+      const data = response.data.data;
+      return data
+    }).catch(error => {
+      console.log(error);
+      throw error;
+    })
+    return res;
+  }
+  const postPayment = (body: PaymentType) => {
+    const res = axios.post(bookingUrl + '/book/payment', body, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token
+      }
+    }).then(response => {
+      console.log(response.data);
+      const data = response.data;
+      return data;
+    }).catch(error => {
+      console.log(error);
+      throw error;
+    })
+    return res;
+  }
+  // data
+  const products = await getAllProductPublic();
+  const booking = await getBooking(token, orderId as string);
+  const productVal = products.find(p => p.product_no === booking.product_no);
+  const paymentMethod = await getPaymentMethod();
+  const paymentStatus = await getPaymentStatus();
+  const paymentList = await getPaymentList();
 
-//   return (
-//     <ConfirmationPage
-//       user={session?.user}
-//       product={productVal}
-//       booking={booking}
-//       paymentMethod={paymentMethod}
-//       paymentStatus={paymentStatus}
-//     />
+  return (
+    <ConfirmationPage
+      user={session?.user}
+      product={productVal}
+      booking={booking}
+      paymentMethod={paymentMethod}
+      paymentStatus={paymentStatus}
+      paymentToken={paymentToken}
+      payments={paymentList}
+    />
+  )
+}
 
-//   )
-// }
-
-export default Confirmation;
+export default Confirmation2;
