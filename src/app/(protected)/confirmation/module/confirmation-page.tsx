@@ -176,7 +176,7 @@ function ConfirmationPage({
         branch_no: null,
         payment_type: "down_payment",
         note: null,
-        token_payment: paymentLink?.payment_token,
+        token_payment: null,
         cash_id: null
       }
       console.log('400', body)
@@ -191,8 +191,8 @@ function ConfirmationPage({
     }
   }, [paymentLink])
   React.useEffect(() => {
-    const paymentVal = payments.find((p: any) => p.book_no === booking.book_no)
-    console.log(paymentStatus)
+    // const paymentVal = payments.find((p: any) => p.book_no === booking.book_no)
+    // console.log(paymentStatus)
   }, [])
   // chunk
   function StatusCard() {

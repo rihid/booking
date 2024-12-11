@@ -26,7 +26,7 @@ async function BookingList({
   }
   const bookingData = await getBookByCustomer(user?.token, bookingBody);
 
-  const midtransRedirectUrl = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL as string
+  const midtransRedirectUrl = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL as string;
 
   return (
     <Container className="space-y-6">
@@ -37,13 +37,13 @@ async function BookingList({
             bookingPayment += parseFloat(booking.downPayments[i].total)
           }
           const product = booking.product_no ? products.find(p => p.product_no === booking.product_no) : null;
-          let paymentLink = '';
+          let paymentLink;
           if (booking.downPayments.length > 0) {
-            const link = midtransRedirectUrl + booking.downPayments[0].token;
-            if (link !== null) {
-              paymentLink = link;
+            const token = booking.downPayments[0].token;
+            if (token !== null) {
+              paymentLink = midtransRedirectUrl + token;
             } else {
-              paymentLink = midtransRedirectUrl
+              paymentLink = null
             }
           }
           return (
@@ -77,14 +77,22 @@ async function BookingList({
               </CardContent>
               {!bookingPayment &&
                 <CardFooter className="grid grid-cols-1 w-full gap-3">
-                  <Link
-                    href={paymentLink}
-                    className=""
-                  >
-                    <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
-                      Confirm Payment
-                    </Button>
-                  </Link>
+                  {paymentLink ?
+                    <Link
+                      href={paymentLink}
+                      className="w-full"
+                    >
+                      <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
+                        Confirm Payment
+                      </Button>
+                    </Link>
+                    :
+                    <div className="inline-block w-auto">
+                      <Button disabled variant="secondary" className="text-xs h-auto">
+                        Cash Payment
+                      </Button>
+                    </div>
+                  }
                 </CardFooter>
               }
             </Card>
