@@ -53,7 +53,7 @@ export const defaultInitState: BookState = {
     promo_id: null,
     tax: "0",
     tax_id: null,
-    total: "",
+    total: "0",
     ref_no: null,
     captain_no: null,
     customer_service_no: null,
