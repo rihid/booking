@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, ComboboxButton } from '@headlessui/react';
-import { CheckIcon, ChevronDownIcon } from 'lucide-react';
+import { CheckIcon, ChevronDownIcon, MapPin } from 'lucide-react';
 import { cn } from '@/assets/styles/utils';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useLocationStore } from '@/providers/store-providers/location-provider';
@@ -25,21 +25,9 @@ function ComboboxLocation({
   })
 
   const handleLocationSelect = (value: any) => {
-    // setSelectedLocation()
+    setSelectedLocation(value)
     setLocation(value)
   }
-
-  // const handleLocationSelect = (location: any) => {
-  //   setSelectedLocation(location);
-  //   const params = new URLSearchParams(searchParams.toString());
-  //   if (location) {
-  //     params.set('ref', location.name.toLowerCase());
-  //   } else {
-  //     params.delete('ref');
-  //   }
-  //   replace(`${pathname}?${params.toString()}`);
-  // };
-  console.log(selectedLocation)
   return (
     <div className="relative">
       <Combobox value={selectedLocation} onChange={(value: any) => handleLocationSelect(value)} onClose={() => setQuery('')}>
@@ -49,9 +37,9 @@ function ComboboxLocation({
             className={cn(
               'w-full rounded-full border-none bg-background px-3 py-2 text-sm text-muted-foreground',
               // 'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25',
-              'placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+              'placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50'
             )}
-            displayValue={(person: any) => person?.name}
+            displayValue={(location: any) => location?.name}
             onChange={(event) => setQuery(event.target.value)}
           />
           <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
@@ -67,14 +55,20 @@ function ComboboxLocation({
             'transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0'
           )}
         >
-          {filteredLocation.map((person: any) => (
+          {filteredLocation.map((location: any) => (
             <ComboboxOption
-              key={person.id}
-              value={person}
+              key={location.id}
+              value={location}
               className="group flex cursor-pointer items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-slate-100"
             >
-              <CheckIcon className="invisible size-4 fill-white group-data-[selected]:visible" />
-              <div className="text-sm text-muted-foreground">{person.name}</div>
+              {/* <CheckIcon className="invisible size-4 fill-white group-data-[selected]:visible" /> */}
+              <div>
+                <MapPin className="size-6" />
+              </div>
+              <div>
+                <h6 className="text-sm font-normal text-muted-foreground">{location.name}</h6>
+                <span className="text-xs/4 font-light text-muted-foreground">{location.address}</span>
+              </div>
             </ComboboxOption>
           ))}
         </ComboboxOptions>

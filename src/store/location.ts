@@ -1,6 +1,6 @@
 import { createStore } from "zustand/vanilla";
 
-type LocationType = {
+export type LocationType = {
   id: string | null;
   name: string | null;
   longitude: string | null;

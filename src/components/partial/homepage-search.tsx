@@ -41,8 +41,8 @@ function HomepageSearch({
           <Input
             type="text"
             placeholder="Trip"
-            className="rounded-full pl-12 border-none bg-transparent focus-visible:ring-offset-0"
-            onChange={(event) => { handleSearch(event.target.value) }}
+            className="rounded-full pl-12 border-none bg-transparent focus-visible:ring-offset-0 focus-visible:ring-0"
+            onChange={(e) => { handleSearch(e.target.value) }}
             defaultValue={searchParams.get('query')?.toString()}
           />
         </div>
