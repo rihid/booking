@@ -11,6 +11,7 @@ import { currency } from '@/lib/helper';
 import { getAllProductPublic } from '@/lib/data';
 import { Suspense } from 'react';
 import Image from 'next/image';
+import { useLocationStore } from '@/providers/store-providers/location-provider';
 
 async function ProductList({
   products,
@@ -22,6 +23,7 @@ async function ProductList({
   tabGroup?: string;
 }) {
   // const products = await getAllProductPublic();
+  const { location } = useLocationStore(state => state)
   const filter = () => {
     const productGrouping = products.filter((pg: any) => pg.category_id === tabGroup) // grouping by category
     let productValues = productGrouping;
@@ -33,6 +35,7 @@ async function ProductList({
     return productValues;
   }
   const filteredProducts = filter();
+  console.log(location)
   return (
     <Container className="space-y-6">
       {filteredProducts.length === 0 &&

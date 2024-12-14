@@ -9,6 +9,12 @@ module.exports = {
       },
       {
         protocol: 'https',
+        hostname: 'backend.callistech.co.id',
+        port: '',
+        pathname: '/product/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
         port: '',
         pathname: '/**',

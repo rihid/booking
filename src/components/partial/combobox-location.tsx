@@ -24,6 +24,11 @@ function ComboboxLocation({
     return loc.name.toLowerCase().includes(query.toLowerCase())
   })
 
+  const handleLocationSelect = (value: any) => {
+    // setSelectedLocation()
+    setLocation(value)
+  }
+
   // const handleLocationSelect = (location: any) => {
   //   setSelectedLocation(location);
   //   const params = new URLSearchParams(searchParams.toString());
@@ -37,7 +42,7 @@ function ComboboxLocation({
   console.log(selectedLocation)
   return (
     <div className="relative">
-      <Combobox value={selectedLocation} onChange={(value: any) => setSelectedLocation(value)} onClose={() => setQuery('')}>
+      <Combobox value={selectedLocation} onChange={(value: any) => handleLocationSelect(value)} onClose={() => setQuery('')}>
         <div className="relative">
           <ComboboxInput
             placeholder='Select Location'

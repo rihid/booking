@@ -33,7 +33,7 @@ export const useLocationStore = <T,>(
   const locationStoreContext = useContext(LocationStoreContext)
 
   if (!locationStoreContext) {
-    throw new Error(`usePaymentStore must be used within CounterStoreProvider`)
+    throw new Error(`useLocationStore must be used within CounterStoreProvider`)
   }
 
   return useStore(locationStoreContext, selector)
