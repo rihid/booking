@@ -15,6 +15,7 @@ import HomepageSearch from '@/components/partial/homepage-search';
 import axios from 'axios';
 import { productUrl, locationUrl } from '@/lib/data/endpoints';
 import Icon from '@/components/ui/icon';
+import { getAllProductPublic } from '@/lib/data';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -29,6 +30,9 @@ async function Explore({
   }
 }) {
   const query = searchParams?.query || '';
+
+  const products = await getAllProductPublic();
+
   const getProductType = async () => {
     try {
       const res = await axios.get(productUrl + "/category", {
@@ -95,7 +99,7 @@ async function Explore({
             return (
               <TabsContent key={index} value={item.id}>
                 <Suspense fallback={<ProductListLoader />}>
-                  <ProductList query={query} tabGroup={item.id} />
+                  <ProductList products={products} query={query} tabGroup={item.id} />
                 </Suspense>
               </TabsContent>
             )

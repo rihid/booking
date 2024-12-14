@@ -4,28 +4,40 @@ import React from 'react';
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, ComboboxButton } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
 import { cn } from '@/assets/styles/utils';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { useLocationStore } from '@/providers/store-providers/location-provider';
 
 function ComboboxLocation({
   locations,
-  selectedPerson,
-  setSelectedPerson
 }: {
   locations: any;
-  selectedPerson: any;
-  setSelectedPerson: Function;
 }) {
-  // const [selectedPerson, setSelectedPerson] = React.useState('');
-  const [query, setQuery] = React.useState('')
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
-  const filteredPeople = query === '' ? locations : locations.filter((loc: any) => {
+  const { location, setLocation } = useLocationStore(state => state);
+  const [selectedLocation, setSelectedLocation] = React.useState('');
+  const [query, setQuery] = React.useState('');
+
+  const filteredLocation = query === '' ? locations : locations.filter((loc: any) => {
     return loc.name.toLowerCase().includes(query.toLowerCase())
   })
 
-  console.log(locations)
+  // const handleLocationSelect = (location: any) => {
+  //   setSelectedLocation(location);
+  //   const params = new URLSearchParams(searchParams.toString());
+  //   if (location) {
+  //     params.set('ref', location.name.toLowerCase());
+  //   } else {
+  //     params.delete('ref');
+  //   }
+  //   replace(`${pathname}?${params.toString()}`);
+  // };
+  console.log(selectedLocation)
   return (
-    // px-3 py-2 text-sm
     <div className="relative">
-      <Combobox value={selectedPerson} onChange={(value: any) => setSelectedPerson(value)} onClose={() => setQuery('')}>
+      <Combobox value={selectedLocation} onChange={(value: any) => setSelectedLocation(value)} onClose={() => setQuery('')}>
         <div className="relative">
           <ComboboxInput
             placeholder='Select Location'
@@ -50,7 +62,7 @@ function ComboboxLocation({
             'transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0'
           )}
         >
-          {filteredPeople.map((person: any) => (
+          {filteredLocation.map((person: any) => (
             <ComboboxOption
               key={person.id}
               value={person}
