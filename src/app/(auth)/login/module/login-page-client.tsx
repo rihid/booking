@@ -58,7 +58,7 @@ function LoginPageClient({ token }: { token: string | string[] | null }) {
               <h3 className="font-extrabold text-xs text-foreground/75 text-center tracking-tight leading-none">Sign with</h3>
               <div className="flex items-center justify-center">
                 <Link
-                  href={`${domain}/safari/login/social/redirect`}
+                  href={`${domain}/login/social/redirect`}
                   className="py-2 px-12 border border-slate-50 rounded shadow-md text-sm font-medium hover:bg-slate-50"
                 >
                   <Image
