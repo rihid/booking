@@ -1,7 +1,6 @@
 FROM node:lts-alpine AS build-stage
 
-# RUN npm install -g npm@9.6.0
-RUN npm install -g npm@stable
+RUN npm install -g npm@9.6.0
 RUN apk add g++ make py3-pip
 WORKDIR /app
 COPY package*.json ./
