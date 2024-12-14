@@ -48,7 +48,7 @@ export async function extendSessionData(payload: Partial<any>) {
   // Set the cookie with the new session and updated expiration time
   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days expiration
   cookies().set('session', newSession, {
-    httpOnly: true,
+    httpOnly: false,
     secure: true,
     expires: expires,
     sameSite: 'lax',

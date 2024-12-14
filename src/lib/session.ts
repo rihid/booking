@@ -27,7 +27,7 @@ export async function createSession(user: any) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const session = await encrypt({ user, expiresAt })
   cookies().set('session', session, {
-    httpOnly: true,
+    httpOnly: false,
     secure: true,
     expires: expiresAt,
     sameSite: 'lax',
@@ -49,7 +49,7 @@ export async function updateSession() {
  
   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   cookies().set('session', session, {
-    httpOnly: true,
+    httpOnly: false,
     secure: true,
     expires: expires,
     sameSite: 'lax',
