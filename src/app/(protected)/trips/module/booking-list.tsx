@@ -26,24 +26,24 @@ async function BookingList({
   }
   const bookingData = await getBookByCustomer(user?.token, bookingBody);
 
-  const midtransRedirectUrl = 'https://app.sandbox.midtrans.com/snap/v4/redirection/';
+  const midtransRedirectUrl = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL as string;
 
   return (
     <Container className="space-y-6">
       {bookingData.length > 0 ?
-        bookingData.map((booking, index) => {
+        bookingData.map((booking) => {
           let bookingPayment = 0;
           for (let i = 0; i < booking.downPayments.length; i++) {
             bookingPayment += parseFloat(booking.downPayments[i].total)
           }
           const product = booking.product_no ? products.find(p => p.product_no === booking.product_no) : null;
-          let paymentLink = '/';
+          let paymentLink;
           if (booking.downPayments.length > 0) {
-            const link = midtransRedirectUrl + booking.downPayments[0].token;
-            if (link !== null) {
-              paymentLink = link;
+            const token = booking.downPayments[0].token;
+            if (token !== null) {
+              paymentLink = midtransRedirectUrl + token;
             } else {
-              paymentLink = '/'
+              paymentLink = null
             }
           }
           return (
@@ -77,14 +77,22 @@ async function BookingList({
               </CardContent>
               {!bookingPayment &&
                 <CardFooter className="grid grid-cols-1 w-full gap-3">
-                  <Link
-                    href={paymentLink}
-                    className=""
-                  >
-                    <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
-                      Confirm Payment
-                    </Button>
-                  </Link>
+                  {paymentLink ?
+                    <Link
+                      href={paymentLink}
+                      className="w-full"
+                    >
+                      <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
+                        Confirm Payment
+                      </Button>
+                    </Link>
+                    :
+                    <div className="inline-block w-auto">
+                      <Button disabled variant="secondary" className="text-xs h-auto">
+                        Cash Payment
+                      </Button>
+                    </div>
+                  }
                 </CardFooter>
               }
             </Card>

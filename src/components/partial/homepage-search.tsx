@@ -5,8 +5,13 @@ import { Search } from 'lucide-react';
 import { Input } from '../ui/input';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
+import ComboboxLocation from './combobox-location';
 
-function HomepageSearch() {
+function HomepageSearch({
+  locations,
+}: {
+  locations: any;
+}) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -19,7 +24,7 @@ function HomepageSearch() {
       params.delete('query');
     }
     replace(`${pathname}?${params.toString()}`);
-  }, 300);
+  }, 50);
 
   React.useEffect(() => {
     const params = new URLSearchParams(searchParams);
@@ -28,17 +33,23 @@ function HomepageSearch() {
       replace(pathname);
     }
   }, []);
-
   return (
     <div className="relative">
-      <Search className="absolute w-6 h-6 top-1/2 left-2 transform -translate-y-1/2" />
-      <Input
-        type="text"
-        placeholder="Where do yo want to go"
-        className="rounded-full pl-12"
-        onChange={(event) => { handleSearch(event.target.value)}}
-        defaultValue={searchParams.get('query')?.toString()}
-      />
+      <div className="grid grid-cols-2 divide-x item-center justify-between h-10 w-full rounded-full border border-input bg-background text-sm">
+        <div className="relative">
+          <Search className="absolute w-5 h-5 top-1/2 left-2 transform -translate-y-1/2" />
+          <Input
+            type="text"
+            placeholder="Trip"
+            className="rounded-full pl-12 border-none bg-transparent focus-visible:ring-offset-0 focus-visible:ring-0"
+            onChange={(e) => { handleSearch(e.target.value) }}
+            defaultValue={searchParams.get('query')?.toString()}
+          />
+        </div>
+        <ComboboxLocation
+          locations={locations}
+        />
+      </div>
     </div>
   )
 }

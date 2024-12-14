@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Modal from '@/components/ui/modal';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import Container from '@/components/ui/container';
 import { Card } from '@/components/ui/card';

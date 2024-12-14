@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Container from '@/components/ui/container';
 import ProductCarousel from '@/components/partial/product-carousel';
@@ -8,27 +10,74 @@ import { MapPin } from 'lucide-react';
 import { currency } from '@/lib/helper';
 import { getAllProductPublic } from '@/lib/data';
 import { Suspense } from 'react';
+import Image from 'next/image';
+import { useLocationStore } from '@/providers/store-providers/location-provider';
+import { LocationType } from '@/store/location';
 
 async function ProductList({
+  products,
   query,
+  tabGroup,
 }: {
+  products: any;
   query: string;
+  tabGroup?: string;
 }) {
-  const products = await getAllProductPublic();
+  // const products = await getAllProductPublic();
+  const { location } = useLocationStore(state => state);
+  const [selectedLoc, setSelectedLoc] = React.useState<LocationType | null>(null);
   const filter = () => {
-    let productValues = products;
+    const productGrouping = products.filter((pg: any) => pg.category_id === tabGroup) // grouping by category
+    let productValues = productGrouping;
+    // search
     if (query) {
-      productValues = products.filter(product =>
+      productValues = products.filter((product: any) =>
         product.product_name.toLowerCase().includes(query.toLowerCase())
       );
     }
+    // location
+    if(selectedLoc) {
+      productValues = products.filter((product: any) => product.location_id === selectedLoc.id);
+    }
+
     return productValues;
   }
   const filteredProducts = filter();
+  React.useEffect(() => {
+    if (location) {
+      setSelectedLoc(location)
+      console.log(location)
+    }
+  }, [location])
   return (
-    <Suspense fallback={"loading..."}>
-      <Container className="space-y-6">
-        {filteredProducts.map((product) => (
+    <Container className="space-y-6">
+      {filteredProducts.length === 0 &&
+        <div className="flex flex-col items-center justify-center h-auto">
+          <div className="px-12 text-center">
+            <Image
+              src="/images/jetski-2.svg"
+              width={320}
+              height={320}
+              alt="404 Illustration"
+            />
+          </div>
+
+          <div className="grid gap-2 text-center">
+            <div className="grid gap-2">
+              <h3>Coming soon!!</h3>
+              <p className="text-xs text-muted-foreground">We&apos;re currentlly working on creating something fantastic.</p>
+            </div>
+
+            {/* <div>
+                <Link href="/" className="hover:underline underline-offset-2">
+                  Let&apos;s Go Back
+                </Link>
+              </div> */}
+          </div>
+        </div>
+      }
+      {filteredProducts.map((product: any) => {
+        return (
           <Card
             key={product.id}
             className="border-none shadow-none"
@@ -61,9 +110,9 @@ async function ProductList({
               </div>
             </div>
           </Card>
-        ))}
-      </Container>
-    </Suspense>
+        )
+      })}
+    </Container>
   )
 }
 
