@@ -17,7 +17,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import Container from '@/components/ui/container';
-import ModalDrawer from './drawer';
 import { useUiLayoutStore } from '@/store/ui-layout';
 import { Ratings } from '@/components/ui/ratings';
 import { BookingCardLoader, BookingListLoader } from '@/components/partial/loader';
@@ -58,7 +57,6 @@ function Testing() {
           Show Toast
         </Button>
       </div>
-      {modalView === 'rc-drawer-view' && <ModalDrawer />}
     </div>
   )
 }

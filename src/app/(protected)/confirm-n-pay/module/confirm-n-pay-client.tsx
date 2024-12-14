@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { ChevronLeft, SquarePen, CreditCard, Wallet, Check, Loader2 } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { ChevronLeft, SquarePen, CreditCard, Wallet, Check, CircleCheck, Loader2, XIcon } from 'lucide-react';
 import Container from '@/components/ui/container';
 import { Button } from '@/components/ui/button/button';
 import { Input } from '@/components/ui/input';
@@ -14,24 +14,20 @@ import RiderFormModal from './rider-form-modal';
 import { useUiLayoutStore } from '@/store/ui-layout';
 import { useBookStore } from '@/providers/store-providers/book-provider';
 import { usePaymentStore } from '@/providers/store-providers/payment-provider';
-import { useShallow } from 'zustand/react/shallow'
 import RiderDetailFormModal from './rider-detail-form-modal';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import moment from 'moment';
 import ProductSummary from './product-summary';
-import useMidtransSnap from '@/lib/hooks/use-midtrans-snap';
 import axios from 'axios';
-import { bookingUrl, customerUrl, customerUserUrl } from '@/lib/data/endpoints';
+import { bookingUrl, voucherUrl, customerUrl, customerUserUrl } from '@/lib/data/endpoints';
 import { z } from 'zod';
 import { CustomerFieldSchema, BookingFieldSchema } from '@/lib/schema';
 import { currency } from '@/lib/helper';
 import RiderInfoModal from './rider-info-modal';
 import { cn } from '@/assets/styles/utils';
-import { getPaymentMethod, getPaymentStatus } from '@/lib/data';
 import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { midtransClientKey } from '@/lib/constants';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function ConfirmNPayClient({
   user,
@@ -43,12 +39,15 @@ function ConfirmNPayClient({
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, customer, setCustomer, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
   const { setPaymentLink } = usePaymentStore((state) => state);
-  console.log('cust', customer)
   // local state
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [index, setIndex] = React.useState<number>(0);
 
+  const [voucherCode, setVoucherCode] = React.useState<string>('');
+  const [voucherData, setVoucherData] = React.useState<any>({});
+  const [promoRes, setPromoRes] = React.useState<any>({ status: '', message: '' });
+  const [promoLoad, setPromoLoad] = React.useState<boolean>(false);
   // form
   const { control, register, handleSubmit, formState: { errors } } = useForm();
   const [form, setForm] = React.useState<any>(null);
@@ -59,7 +58,7 @@ function ConfirmNPayClient({
     const sum = bn.reduce((acc, val) => {
       const qty = parseInt(val.qty);
       const totalRider = parseInt(val.total_rider)
-      const variant = val.variant.toLowerCase();
+      const variant = val.variant?.toLowerCase();
       if (variant.includes("couple") || variant.includes("double")) {
         return acc + (qty * 2);
       }
@@ -68,10 +67,34 @@ function ConfirmNPayClient({
     return sum;
   }, [bookingField.numbers]);
   const totalPrice = React.useMemo(() => {
-    return bookingField.numbers.reduce((acc, val) => {
-      return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
+    const subtotal = bookingField.numbers.reduce((acc, val) => {
+      return acc + parseFloat(val.price.replace(/\./g, '')) * parseFloat(val.qty);
     }, 0);
-  }, [bookingField.numbers]);
+
+    let discountAmount = 0;
+    let discount = '0';
+    if (voucherData.active) {
+      if (voucherData.type === "percentage") {
+        discountAmount = (subtotal * parseFloat(voucherData.percentage)) / 100;
+        discount = voucherData.percentage + '%'
+      } else if (voucherData.type === "amount") {
+        discountAmount = parseFloat(voucherData.amount);
+        discount = currency(voucherData.amount);
+      } else {
+        discountAmount = parseFloat(voucherData.amount);
+        discount = currency(voucherData.amount);
+      }
+    }
+    const object = {
+      subtotal: subtotal,
+      dicount: discount,
+      discountAmout: discountAmount,
+      total: subtotal - discountAmount
+    }
+    return object;
+  }, [bookingField.numbers, voucherData]);
+
+
   // functions
   const handdleCheckedChange = async (checked: boolean) => {
     if (checked) {
@@ -134,8 +157,29 @@ function ConfirmNPayClient({
     })
   }
 
+  const applyPromoCode = async () => {
+    if (!voucherCode) return;
+    setPromoLoad(true)
+    await axios.post(voucherUrl, { voucher_code: voucherCode }, { headers: { Accept: 'application/json' } })
+      .then(response => {
+        const data = response.data.data;
+        setPromoLoad(false);
+        setPromoRes({
+          status: response.status,
+          message: response.data.message
+        });
+        setVoucherData(data);
+      })
+      .catch(error => {
+        setPromoLoad(false);
+        setPromoRes({
+          status: error.status,
+          message: error.response.data.message
+        });
+        console.log(error)
+      })
+  }
   // midtrans options function
-  const pendingPayment = () => {}
   const closePayment = (bookId: string) => {
     axios.delete(bookingUrl + '/book/' + bookId, {
       headers: {
@@ -150,7 +194,6 @@ function ConfirmNPayClient({
     })
     console.log('customer closed the popup without finishing the payment');
   }
-
   const handleCheckout = async (body: any) => {
     try {
       const response = await fetch('/api/transaction', {
@@ -184,7 +227,7 @@ function ConfirmNPayClient({
       orderId: bookingField.book_no,
       itemId: productBooked?.id,
       productName: productBooked?.product_name,
-      price: totalPrice,
+      price: totalPrice.total,
       quantity: 1,
       customer: user.name,
       customerEmail: user.email
@@ -253,15 +296,16 @@ function ConfirmNPayClient({
         product_no: productBooked.product_no,
         org_no: user.org_no,
         branch_no: productBooked.branch_no,
-        subtotal: '0',
+        subtotal: totalPrice.subtotal.toString(),
         tax: '0',
+        promo_id: null,
         discount: '0',
         tax_id: null,
-        total: totalPrice.toString(),
+        total: totalPrice.total.toString(),
         numbers: numberArr,
       });
-      console.log('bookingFIeld:')
-      console.log(bookingField)
+      // console.log('bookingFIeld:')
+      // console.log(bookingField)
     }
 
     // snap script midtrans here
@@ -307,15 +351,15 @@ function ConfirmNPayClient({
         ...rider,
         customer_no: customers[i]?.customer_no || rider.customer_no,
       }));
-
       updateBookingField({
         riders: riderArr,
         branch_no: productBooked.branch_no,
-        subtotal: totalPrice.toString(),
+        subtotal: totalPrice.subtotal.toString(),
         tax: '0',
-        discount: '0',
+        discount: totalPrice.discountAmout.toString(),
+        promo_id: (voucherData && voucherData.id) ? voucherData.id : null,
         tax_id: null,
-        total: totalPrice.toString(),
+        total: totalPrice.total.toString(),
       });
 
       // customer
@@ -351,7 +395,9 @@ function ConfirmNPayClient({
         }
       }
     }
-  }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList, isAddRider]);
+    console.log('bookingFIeld:')
+    console.log(bookingField)
+  }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList, isAddRider, voucherData]);
 
   const PriceDetailComp = () => {
     return (
@@ -392,14 +438,34 @@ function ConfirmNPayClient({
           </dl>
         </div> */}
         <hr className="border border-slate-200" />
-        <div>
+        <div className="space-y-4">
+          <dl className="space-y-4">
+            <div className="flex items-center justify-between gap-x-6 gap-y-4">
+              <dt className="text-sm font-normal text-muted-foreground">
+                Subtotal
+              </dt>
+              <dd className="text-muted-foreground font-normal text-sm">
+                {currency(totalPrice.subtotal)}
+              </dd>
+            </div>
+          </dl>
+          <dl className="space-y-4">
+            <div className="flex items-center justify-between gap-x-6 gap-y-4">
+              <dt className="text-sm font-normal text-muted-foreground">
+                Discount
+              </dt>
+              <dd className="text-muted-foreground font-normal text-sm">
+                {totalPrice.dicount}
+              </dd>
+            </div>
+          </dl>
           <dl className="space-y-4">
             <div className="flex items-center justify-between gap-x-6 gap-y-4">
               <dt className="text-sm font-semibold text-foreground/75">
                 Total
               </dt>
               <dd className="text-foreground/75 font-semibold text-sm">
-                {currency(totalPrice)}
+                {currency(totalPrice.total)}
               </dd>
             </div>
           </dl>
@@ -407,7 +473,6 @@ function ConfirmNPayClient({
       </Container>
     )
   }
-
   return (
     <div className="flex flex-col min-h-screen mb-20">
       <Container className="py-6 sticky top-0 z-30 bg-background w-full border-b border-foreground-muted flex justify-between items-center shrink-0">
@@ -509,7 +574,6 @@ function ConfirmNPayClient({
                         <h4 className="font-semibold text-sm">{customer.name}</h4>
                         <p className="text-xs font-normal text-foreground/50">ID Card - {customer.identity_number}</p>
                         <p className="text-xs font-normal text-foreground/50">{customer.rider_type}</p>
-                        <pre>{ }</pre>
                       </div>
                       :
                       <div className="text-foreground/75">
@@ -545,14 +609,88 @@ function ConfirmNPayClient({
         </Container>
         <Container className="border-t-4 border-slate-100 bg-background py-8">
           <h3 className="font-bold text-base text-foreground/75 mb-3">Promo Code</h3>
-          <div className="relative flex w-full max-w-sm items-center space-x-2">
-            <Input type="text" placeholder="Promo Code" />
-            <button  
-              type="button" 
-              className="absolute right-0 px-3 text-sm text-brand"
-              onClick={() => console.log('clicked')}
-            >Apply</button>
-          </div>
+          {!promoRes.status &&
+            <>
+              {promoLoad ?
+                <div className="flex w-full max-w-sm items-center">
+                  <Skeleton className="flex h-10 w-full rounded-md" />
+                </div>
+                :
+                <div className="relative flex w-full max-w-sm items-center space-x-2">
+                  <Input
+                    type="text"
+                    id='voucher_code'
+                    placeholder="Promo Code"
+                    onChange={(e) => setVoucherCode(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (!voucherCode) return;
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        applyPromoCode();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-0 px-3 text-sm text-brand"
+                    onClick={applyPromoCode}
+                  >
+                    {promoLoad ?
+                      <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} /> :
+                      <>Apply</>
+                    }
+                  </button>
+                </div>
+              }
+            </>
+          }
+          {promoRes.status === 200 &&
+            <div className="flex w-full max-w-sm items-center">
+              <div className="flex h-10 px-4 w-full rounded-md items-center justify-between bg-green-50 border border-green-500">
+                <div className="flex items-center pr-2">
+                  <span className="mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-6 text-green-500 scale-in">
+                      <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                  <p className="text-xs font-semibold text-muted-foreground">{voucherData.voucher_code} <span className="font-normal">({totalPrice.dicount} dicount)</span></p>
+                </div>
+                <button
+                  type='button'
+                  onClick={() => {
+                    setPromoRes({ status: '', message: '' })
+                    setVoucherData({})
+                  }}
+                >
+                  <XIcon className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+            </div>
+          }
+          {promoRes.status === 404 &&
+            <div className="flex w-full max-w-sm items-center">
+              <div className="flex h-10 px-4 w-full rounded-md items-center justify-between bg-red-50 border border-red-500">
+                <div className="flex items-center pr-2">
+                  <span className="mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500 scale-in">
+                      <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
+                    </svg>
+
+                  </span>
+                  <p className="text-xs font-normal text-muted-foreground">{promoRes.message}</p>
+                </div>
+                <button
+                  type='button'
+                  onClick={() => setPromoRes({ status: '', message: '' })}
+                >
+
+                  <XIcon className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+            </div>
+          }
+          {/* <pre>{JSON.stringify(promoRes, null, 2)}</pre> */}
+          {/* <pre>{JSON.stringify(voucherData, null, 2)}</pre> */}
         </Container>
         <PriceDetailComp />
         <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">

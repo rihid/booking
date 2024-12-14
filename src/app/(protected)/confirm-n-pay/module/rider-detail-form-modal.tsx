@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { cn } from '@/assets/styles/utils';
-import Modal from '@/components/ui/modal';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Container from '@/components/ui/container';

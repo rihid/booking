@@ -107,7 +107,7 @@ async function InvoiceDetail({
       <Container>
         {numbers?.map((invNumber: any) => {
           const productVal = products.find(p => p.product_no === invNumber.product_no);
-
+          // const getSingle
           let ratingVal = {
             rating: null,
             rating_notes: null
@@ -126,7 +126,7 @@ async function InvoiceDetail({
                   <Link href={"#"}>
                     <div className="aspect-w-6 aspect-h-4 w-full h-full">
                       <Image
-                        src="/images/sea-doo.svg"
+                        src={productVal && productVal.pictures.length > 0 ? productVal.pictures[0].url : '/images/sea-doo.svg'}
                         alt="image"
                         width={0}
                         height={0}

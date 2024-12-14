@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import OpenModalButton from '@/components/ui/button/open-modal-button';
-import ReviewFormModal from './module/review-form-modal';
 import { getSession } from '@/lib/session';
 import { getAllProductPublic, getBookByCustomer, getBranchList, getInvoiceByCustomer, getSingleProductPublic } from '@/lib/data';
 import moment from 'moment';
@@ -63,7 +62,6 @@ async function Trips() {
           </TabsContent>
         </div>
       </Tabs>
-      <ReviewFormModal />
     </div>
   )
 }

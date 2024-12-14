@@ -13,7 +13,7 @@ import { bookingUrl, masterUrl } from '@/lib/data/endpoints';
 import { getAllProductPublic, getBooking } from '@/lib/data';
 import { midtransServerKey } from '@/lib/constants';
 import ActionComp from './module/action-comp';
-import ConfirmationPage from './module/confirmation-page';
+import ConfirmationContent from './module/confirmation-content';
 
 export const metadata: Metadata = {
   title: 'Confirmation',
@@ -37,7 +37,7 @@ interface PaymentType {
   token_payment: string | null;
   cash_id: string | null;
 }
-
+// unused
 async function Confirmation({
   searchParams,
 }: {
@@ -326,7 +326,7 @@ async function Confirmation({
     </div>
   )
 }
-
+//
 async function Confirmation2({
   searchParams,
 }: {
@@ -336,7 +336,6 @@ async function Confirmation2({
   // @ts-ignore 
   const { token } = session.user
   const orderId = searchParams['order_id'] || null;
-  const paymentToken = searchParams['payment_token'] || null;
   const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
   const midtransUrl = process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + orderId + '/status';
   // actions
@@ -392,22 +391,6 @@ async function Confirmation2({
     })
     return res;
   }
-  const postPayment = (body: PaymentType) => {
-    const res = axios.post(bookingUrl + '/book/payment', body, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token
-      }
-    }).then(response => {
-      console.log(response.data);
-      const data = response.data;
-      return data;
-    }).catch(error => {
-      console.log(error);
-      throw error;
-    })
-    return res;
-  }
   // data
   const products = await getAllProductPublic();
   const booking = await getBooking(token, orderId as string);
@@ -416,16 +399,117 @@ async function Confirmation2({
   const paymentStatus = await getPaymentStatus();
   const paymentList = await getPaymentList();
 
+  function StatusCard() {
+    const { status_code } = paymentStatus;
+    switch (status_code) {
+      case '404':
+        return (
+          <>
+            {booking ?
+              <Card className="flex flex-col items-center justify-center border-none p-8 shadow">
+                <div>
+                  <BadgeCheck className="w-32 h-32 text-brand" />
+                </div>
+                <Heading variant='xl' className="text-muted-foreground my-2.5">Thanks</Heading>
+                <div className="mt-1 text-foreground/50 text-sm font-normal text-center w-full max-w-[220px]">
+                  <span>Congratulations! your order have been
+                    sucessfully process.</span>
+                </div>
+              </Card>
+              :
+              <Card className="flex flex-col items-center justify-center border-none p-8 shadow">
+                <div>
+                  <BadgeAlert className="w-32 h-32 text-brand" />
+                </div>
+                <Heading variant='xl' className="text-muted-foreground my-2.5">Sorry</Heading>
+                <div className="mt-1 text-foreground/50 text-sm font-normal text-center w-full max-w-[220px]">
+                  <span>{paymentStatus.status_message}</span>
+                </div>
+              </Card>
+
+            }
+          </>
+        );
+      case '200':
+        return (
+          <Card className="flex flex-col items-center justify-center border-none p-8 shadow">
+            <div>
+              <BadgeCheck className="w-32 h-32 text-brand" />
+            </div>
+            <Heading variant='xl' className="text-muted-foreground my-2.5">Thanks</Heading>
+            <div className="mt-1 text-foreground/50 text-sm font-normal text-center w-full max-w-[220px]">
+              <span>Congratulations! your order have been
+                sucessfully process.</span>
+            </div>
+          </Card>
+        );
+      case '201':
+        return (
+          <Card className="flex flex-col items-center justify-center border-none p-8 shadow">
+            <div>
+              <BadgeCheck className="w-32 h-32 text-brand" />
+            </div>
+            <Heading variant='xl' className="text-muted-foreground my-2.5">Pending</Heading>
+            <div className="mt-1 text-foreground/50 text-sm font-normal text-center w-full max-w-[220px]">
+              <span>Your payment is pending.</span>
+            </div>
+          </Card>
+        );
+      case '202':
+        return (
+          <Card className="flex flex-col items-center justify-center border-none p-8 shadow">
+            <div>
+              <BadgeCheck className="w-32 h-32 text-brand" />
+            </div>
+            <Heading variant='xl' className="text-muted-foreground my-2.5">Denied</Heading>
+            <div className="mt-1 text-foreground/50 text-sm font-normal text-center w-full max-w-[220px]">
+              <span>Your payment has been processed but is denied by payment provider</span>
+            </div>
+          </Card>
+        );
+      default:
+        return (
+          <Card className="flex flex-col items-center justify-center border-none p-8 shadow">
+            <div>
+              <BadgeCheck className="w-32 h-32 text-brand" />
+            </div>
+            <Heading variant='xl' className="text-muted-foreground my-2.5">Thanks</Heading>
+            <div className="mt-1 text-foreground/50 text-sm font-normal text-center w-full max-w-[220px]">
+              <span>Congratulations! your order have been
+                sucessfully process.</span>
+            </div>
+          </Card>
+        );
+    }
+  }
   return (
-    <ConfirmationPage
-      user={session?.user}
-      product={productVal}
-      booking={booking}
-      paymentMethod={paymentMethod}
-      paymentStatus={paymentStatus}
-      paymentToken={paymentToken}
-      payments={paymentList}
-    />
+    <div className="flex flex-col min-h-screen">
+      <StatusCard />
+      {booking &&
+        <ConfirmationContent
+          user={session?.user}
+          product={productVal}
+          booking={booking}
+          paymentMethod={paymentMethod}
+          paymentStatus={paymentStatus}
+          payments={paymentList}
+        />
+      }
+      {!booking &&
+        <Container className="mt-8">
+          <Heading variant='base' className="text-muted-foreground">Order Detail</Heading>
+          <div className="font-normal text-sm text-brand">
+            <span>Order ID #</span>
+          </div>
+          <div className="mt-8 flex justify-center items-center">
+            <div className="flex flex-col items-center gap-4 w-auto">
+              <Button className="w-full bg-brand hover:bg-brand/90">Tract Order</Button>
+              <Button className="w-full">Back</Button>
+            </div>
+          </div>
+        </Container>
+      }
+    </div>
   )
 }
 
