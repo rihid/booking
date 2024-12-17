@@ -12,11 +12,11 @@ export const branchUrl = authUrl + '/branch'
 // master service
 export const masterUrl = domain + '/api/v1/master-service'
 // master public service
-export const locationUrl = domain + '/safari/api/v2/master-service/location'
-export const productUrl = domain + '/safari/api/v2/master-service/product';
+export const locationUrl = domain + '/api/v2/master-service/location'
+export const productUrl = domain + '/api/v2/master-service/product';
 // booking service
 export const bookingUrl = domain + '/api/v1/booking-service'
-export const bookingUrl2 = domain + '/safari/api/v2/booking-service'
+export const bookingUrl2 = domain + '/api/v2/booking-service'
 export const customerUrl = bookingUrl + '/customer'
 export const voucherUrl = bookingUrl2 + '/promo/get-voucher'
 
