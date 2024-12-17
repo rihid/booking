@@ -10,6 +10,8 @@ import { bookingUrl } from '@/lib/data/endpoints';
 import ActionComp from './action-comp';
 import { currency } from '@/lib/helper';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 interface PaymentType {
   payment_no: string | null;
@@ -227,11 +229,22 @@ function ConfirmationContent({
           </div>
         </div>
       </Card>
-      <ActionComp
-        status={paymentStatus}
-        booking={booking}
-        paymentToken={tokenPay}
-      />
+      <div className="mt-8 flex justify-center items-center">
+        <div className="flex flex-col items-center gap-4 w-auto">
+          {paymentStatus.status_code === '201' &&
+            <Link
+              href={ `${process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL}/${tokenPay}` || '#'}
+            >
+              <Button className="w-full bg-brand hover:bg-brand/90">Pay Now</Button>
+            </Link>
+          }
+          <Link
+            href="/"
+          >
+            <Button className="w-full">Back to home</Button>
+          </Link>
+        </div>
+      </div>
     </Container>
   )
 }

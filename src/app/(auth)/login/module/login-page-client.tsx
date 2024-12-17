@@ -16,7 +16,7 @@ function LoginPageClient({ token }: { token: string | string[] | null }) {
   React.useEffect(() => {
     if (token) {
       setLoadingOverlay(true);
-      
+
       const body = JSON.stringify({ token });
       axios.post('/api/auth/login', body, {
         headers: {
@@ -102,6 +102,7 @@ function LoginPageClient({ token }: { token: string | string[] | null }) {
                 </Link>
               </div>
             </div>
+            <div className="-mt-4 mb-6 flex items-center justify-center text-xs font-normal text-muted-foreground">Don&#39;t have account?&nbsp;<Link href='/register' className="text-brand hover:underline underline-offset-2">Sign Up</Link></div>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, ComboboxButton } from '@headlessui/react';
-import { CheckIcon, ChevronDownIcon, MapPin } from 'lucide-react';
+import { CheckIcon, ChevronDownIcon, MapPin, XIcon } from 'lucide-react';
 import { cn } from '@/assets/styles/utils';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useLocationStore } from '@/providers/store-providers/location-provider';
@@ -18,7 +18,7 @@ function ComboboxLocation({
 
   const { location, setLocation } = useLocationStore(state => state);
   const [selectedLocation, setSelectedLocation] = React.useState('');
-  const [query, setQuery] = React.useState('');
+  const [query, setQuery] = React.useState<string>('');
 
   const filteredLocation = query === '' ? locations : locations.filter((loc: any) => {
     return loc.name.toLowerCase().includes(query.toLowerCase())
@@ -28,9 +28,17 @@ function ComboboxLocation({
     setSelectedLocation(value)
     setLocation(value)
   }
+  const onClickClear = () => {
+    setQuery('')
+    setSelectedLocation('')
+    setLocation(null)
+  }
   return (
     <div className="relative">
-      <Combobox value={selectedLocation} onChange={(value: any) => handleLocationSelect(value)} onClose={() => setQuery('')}>
+      <Combobox
+        value={selectedLocation}
+        onChange={(value: any) => handleLocationSelect(value)} onClose={() => setQuery('')}
+      >
         <div className="relative">
           <ComboboxInput
             placeholder='Select Location'
@@ -39,9 +47,21 @@ function ComboboxLocation({
               // 'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25',
               'placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50'
             )}
-            displayValue={(location: any) => location?.name}
+            displayValue={(location: any) => {
+              return location?.name
+            }}
             onChange={(event) => setQuery(event.target.value)}
           />
+          <button
+            type='button'
+            className={cn(
+              'absolute !cursor-pointer inset-y-0 right-5 px-2.5 invisible',
+              query || selectedLocation ? 'visible' : ''
+            )}
+            onClick={onClickClear}
+          >
+            <XIcon className="w-3 h-3 fill-white/60 group-data-[hover]:fill-white" />
+          </button>
           <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
             <ChevronDownIcon className="size-4 fill-white/60 group-data-[hover]:fill-white" />
           </ComboboxButton>
@@ -63,11 +83,11 @@ function ComboboxLocation({
             >
               {/* <CheckIcon className="invisible size-4 fill-white group-data-[selected]:visible" /> */}
               <div>
-                <MapPin className="size-6" />
+                <MapPin className="size-6 text-muted-foreground" />
               </div>
               <div>
                 <h6 className="text-sm font-normal text-muted-foreground">{location.name}</h6>
-                <span className="text-xs/4 font-light text-muted-foreground">{location.address}</span>
+                <span className="text-xs/4 font-light text-muted-foreground leading-[6px] tracking-tight">{location.address && location.address.length > 40 ? location.address.slice(0, 40) + '...' : location.address}</span>
               </div>
             </ComboboxOption>
           ))}

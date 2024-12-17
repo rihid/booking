@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { getSession } from '@/lib/session'
  
 // 1. Specify protected and public routes
-const protectedRoutes = ['/confirm-n-pay', '/profile', '/trips', '/invoice', '/customer-list']
+const protectedRoutes = ['/confirm-n-pay', '/profile', '/trips', '/invoice', '/customer-list', '/confirmation']
 const publicRoutes = ['/login', '/register', '/p', '/explore', '/']
  
 export default async function middleware(req: NextRequest) {

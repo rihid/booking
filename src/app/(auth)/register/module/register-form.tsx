@@ -25,24 +25,22 @@ const RegisterFormSchema = z.object({
   org_no: z.string().nullable(),
   branch_no: z.string().nullable(),
   username: z.string().nullable(),
-  password: z.string().min(1, {
-    message: "Password is required"
-  }),
+  password: z.string()
+    .min(8, { message: "At least 8 characters" })
+    .regex(new RegExp(/(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*+-])/), { message: " At least contains number & special expression" }),
   avatar: z.string().nullable()
 })
 
 function RegisterForm() {
   const router = useRouter();
-  const [error, setError] = React.useState<string | undefined>("");
-  const [success, setSuccess] = React.useState<string | undefined>("");
-  const [isPending, startTransition] = React.useTransition();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false); 
 
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
       name: "",
       email: "",
-      org_no: "0003",
+      org_no: "C0003",
       branch_no: null,
       username: null,
       password: "",
@@ -50,33 +48,24 @@ function RegisterForm() {
     }
   });
 
-  const onSubmit = (values: z.infer<typeof RegisterFormSchema>) => {
+  const onSubmit = async(values: z.infer<typeof RegisterFormSchema>) => {
     console.log('submit: ', values);
-    startTransition(() => {
-      axios.post(authUrl + '/user', values)
-        .then(response => {
-          toast.success(response.data.message);
-          console.log('crete user', response.data.data);
-          const data = response.data.data
-          // check user customer
-          axios.post(authUrl + '/user/check-user-customer', data.id)
-            .then(response => {
-              console.log('check user ', response.data.data)
-              toast.success(response.data.message);
-
-              const data = response.data.data;
-              if (data) router.push('/login');
-            })
-            .catch(error => {
-              toast.error(error.response.data.message);
-              console.log(error);
-            })
-        })
-        .catch(error => {
-          toast.error(error.response.data.message);
-          console.log(error);
-        })
-    })
+    setIsLoading(true)
+    await axios.post(authUrl + '/user', values)
+      .then(response => {
+        toast.success(response.data.message);
+        setIsLoading(false)
+        console.log('crete user', response.data.data);
+        const data = response.data.data
+        if(data) {
+          router.push('/login')
+        }
+      })
+      .catch(error => {
+        setIsLoading(false)
+        toast.error(error.response.data.message);
+        console.log(error);
+      })
   }
   return (
     <Form {...form}>
@@ -93,7 +82,7 @@ function RegisterForm() {
               <FormControl>
                 <Input
                   {...field}
-                  disabled={isPending}
+                  disabled={isLoading}
                   placeholder="Name"
                   type="text"
                 />
@@ -110,7 +99,7 @@ function RegisterForm() {
               <FormControl>
                 <Input
                   {...field}
-                  disabled={isPending}
+                  disabled={isLoading}
                   placeholder="Email"
                   type="email"
                 />
@@ -127,7 +116,7 @@ function RegisterForm() {
               <FormControl>
                 <PasswordInput
                   {...field}
-                  disabled={isPending}
+                  disabled={isLoading}
                   placeholder="Password"
                 />
               </FormControl>
@@ -136,8 +125,8 @@ function RegisterForm() {
           )}
         />
         <div className="flex flex-col mt-2">
-          <Button type='submit' disabled={isPending} className="bg-brand font-bold hover:bg-brand/80">
-            {isPending &&
+          <Button type='submit' disabled={isLoading} className="bg-brand font-bold hover:bg-brand/80">
+            {isLoading &&
               <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
             }
             Register

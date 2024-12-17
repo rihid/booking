@@ -7,7 +7,7 @@ async function UserAvatar({ }) {
   let avatar;
   if(session !== null) {
     // @ts-ignore
-    const srcImage = session.user.avatar
+    const srcImage = session.user?.avatar
     avatar = srcImage !== null ? srcImage : '/images/avatar.png'
   }
   return (

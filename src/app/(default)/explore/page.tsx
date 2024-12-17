@@ -99,7 +99,15 @@ async function Explore({
             return (
               <TabsContent key={index} value={item.id}>
                 <Suspense fallback={<ProductListLoader />}>
-                  <ProductList products={products} query={query} tabGroup={item.id} />
+                  {products ?
+                    <ProductList
+                      products={products}
+                      tabGroup={item.id}
+                    // query={query}
+                    />
+                    :
+                    <ProductListLoader />
+                  }
                 </Suspense>
               </TabsContent>
             )

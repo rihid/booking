@@ -16,39 +16,57 @@ import { LocationType } from '@/store/location';
 
 async function ProductList({
   products,
-  query,
   tabGroup,
+  // query,
 }: {
   products: any;
-  query: string;
   tabGroup?: string;
+  // query: string;
 }) {
   // const products = await getAllProductPublic();
-  const { location } = useLocationStore(state => state);
-  const [selectedLoc, setSelectedLoc] = React.useState<LocationType | null>(null);
-  const filter = () => {
-    const productGrouping = products.filter((pg: any) => pg.category_id === tabGroup) // grouping by category
-    let productValues = productGrouping;
-    // search
-    if (query) {
-      productValues = products.filter((product: any) =>
-        product.product_name.toLowerCase().includes(query.toLowerCase())
-      );
-    }
-    // location
-    if(selectedLoc) {
-      productValues = products.filter((product: any) => product.location_id === selectedLoc.id);
-    }
+  const { location, search } = useLocationStore(state => state);
+  const filteredProducts = React.useMemo(() => {
+    return products.filter((product: any) => {
+      if (product.category_id !== tabGroup) {
+        return false;
+      }
+      if (search) {
+        if (!product.product_name.toLowerCase().includes(search.toLowerCase())) {
+          return false;
+        }
+      }
+      if (location) {
+        if (product.location_id !== location.id) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [products, tabGroup, search, location]);
+  
+  // const filter = () => {
+  //   const productGrouping = products.filter((pg: any) => pg.category_id === tabGroup) // grouping by category
+  //   let productValues = productGrouping;
+  //   // search
+  //   if (search) {
+  //     productValues = productValues.filter((product: any) =>
+  //       product.product_name.toLowerCase().includes(search.toLowerCase())
+  //     );
+  //   }
+  //   // location
+  //   if(selectedLoc) {
+  //     productValues = productValues.filter((product: any) => product.location_id === selectedLoc.id);
+  //   }
 
-    return productValues;
-  }
-  const filteredProducts = filter();
-  React.useEffect(() => {
-    if (location) {
-      setSelectedLoc(location)
-      console.log(location)
-    }
-  }, [location])
+  //   return productValues;
+  // }
+  // const filteredProducts = filter();
+  // React.useEffect(() => {
+  //   if (location) {
+  //     setSelectedLoc(location)
+  //   }
+  // }, [location])
+
   return (
     <Container className="space-y-6">
       {filteredProducts.length === 0 &&

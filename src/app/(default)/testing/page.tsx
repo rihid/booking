@@ -1,4 +1,4 @@
-'use client'
+
 import React from 'react'
 import { Calendar } from '@/components/ui/calendar'
 import Rating from '@/components/ui/rating';
@@ -21,32 +21,35 @@ import { useUiLayoutStore } from '@/store/ui-layout';
 import { Ratings } from '@/components/ui/ratings';
 import { BookingCardLoader, BookingListLoader } from '@/components/partial/loader';
 import { toast } from "sonner"
+import { getSession } from '@/lib/session';
 
-function Testing() {
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+async function Testing() {
+  // const [date, setDate] = React.useState<Date | undefined>(new Date());
 
-  const { count, incrementCount, decrementCount } = useCounterStore(
-    (state) => state,
-  )
+  // const { count, incrementCount, decrementCount } = useCounterStore(
+  //   (state) => state,
+  // )
 
-  const { openModal, setModalView, modalView } = useUiLayoutStore(state => state);
-  const handleOpenModal = () => {
-    setModalView('rc-drawer-view');
-    openModal('rc-drawer-view');
-  }
-  const handleClick = () => {
-    toast.success("Event has been created")
-  }
+  // const { openModal, setModalView, modalView } = useUiLayoutStore(state => state);
+  // const handleOpenModal = () => {
+  //   setModalView('rc-drawer-view');
+  //   openModal('rc-drawer-view');
+  // }
+  // const handleClick = () => {
+  //   toast.success("Event has been created")
+  // }
+  const session = await getSession()
+  // console.log(session.user)
   return (
     <div>
-      <Calendar
+      {/* <Calendar
         mode="single"
-        // captionLayout='dropdown-years'
+        captionLayout='dropdown-years'
         selected={date}
         onSelect={setDate}
         className="rounded-md border shadow"
-      />
-      <div>
+      /> */}
+      {/* <div>
         <Button onClick={handleOpenModal}>Open</Button>
       </div>
       <div>
@@ -56,7 +59,8 @@ function Testing() {
         >
           Show Toast
         </Button>
-      </div>
+      </div> */}
+      <pre>{JSON.stringify(session, null, 2)}</pre>
     </div>
   )
 }

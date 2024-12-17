@@ -13,7 +13,6 @@ async function Login({
   searchParams: { [key: string]: string | string[] | null }
 }) {
   const token = searchParams['token'];
-
   return <LoginPageClient token={token} />;
 }
 

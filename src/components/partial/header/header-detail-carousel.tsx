@@ -54,7 +54,7 @@ function HeaaderDetailCarousel({
                 <div className="flex aspect-w-5 aspect-h-4 w-full h-0 cursor-pointer">
                   <Image
                     src={picture.url}
-                    alt='auth-image'
+                    alt={picture.filename}
                     width={0}
                     height={0}
                     priority

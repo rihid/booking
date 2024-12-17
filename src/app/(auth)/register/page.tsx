@@ -80,6 +80,7 @@ async function Register() {
               </Link>
             </div>
           </div>
+          <div className="-mt-4 mb-6 flex items-center justify-center text-xs font-normal text-muted-foreground">have an account?&nbsp;<Link href='/login' className="text-brand hover:underline underline-offset-2">Sign In</Link></div>
         </div>
       </div>
     </div>

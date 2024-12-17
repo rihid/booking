@@ -1,4 +1,5 @@
 import { createStore } from "zustand/vanilla";
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export type LocationType = {
   id: string | null;
@@ -12,11 +13,12 @@ export type LocationType = {
 }
 
 export type LocationState = {
-  location: LocationType | null
+  location: LocationType | null;
+  search: string
 }
 export type LocationActions = {
-
-  setLocation: (obj: LocationType) => void;
+  setLocation: (obj: LocationType | null) => void;
+  setSearch: (term: string) => void;
 }
 export type LocationStore = LocationState & LocationActions
 
@@ -31,12 +33,14 @@ export const initPaymentStore = (): LocationState => {
       branch_no: '',
       address: '',
       is_route: false
-    }
+    },
+    search: ''
   }
 }
 
 export const defaultInitState: LocationState = {
-  location: null
+  location: null,
+  search: ''
 }
 export const createLocationStore = (
   initState: LocationState = defaultInitState,
@@ -44,11 +48,14 @@ export const createLocationStore = (
   return createStore<LocationStore>()(
     (set) => ({
       ...initState,
-      setLocation: (obj: LocationType) => {
+      setLocation: (obj: LocationType | null) => {
         set((state) => ({
           location: obj,
         }))
+      },
+      setSearch: (term: string) => {
+        set({ search: term })
       }
-    }),
+    })
   )
 } 

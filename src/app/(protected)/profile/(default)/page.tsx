@@ -30,7 +30,7 @@ async function Profile() {
           className="flex items-center justify-between h-full w-full py-3 border-b border-b-foreground/50"
         >
           <div className="flex items-center justify-start gap-x-4">
-            {user.avatar ?
+            {user?.avatar ?
               <Image
                 src={user.avatar}
                 alt="avatar"

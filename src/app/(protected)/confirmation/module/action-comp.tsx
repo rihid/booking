@@ -14,7 +14,7 @@ function ActionComp({
   booking: any;
   paymentToken?: any;
 }) {
-  const midtransPaymentLink = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL + paymentToken;
+  const midtransPaymentLink = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL + '/' + paymentToken;
   return (
     <div className="mt-8 flex justify-center items-center">
       <div className="flex flex-col items-center gap-4 w-auto">
