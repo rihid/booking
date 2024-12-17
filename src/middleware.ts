@@ -5,7 +5,7 @@ import { getSession } from '@/lib/session'
  
 // 1. Specify protected and public routes
 const protectedRoutes = ['/confirm-n-pay', '/profile', '/trips', '/invoice', '/customer-list', '/confirmation']
-const publicRoutes = ['/login', '/register', '/p', '/explore', '/']
+const publicRoutes = ['/login', '/register', '/p', '/explore', '/',]
  
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
