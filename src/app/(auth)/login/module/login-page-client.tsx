@@ -58,7 +58,7 @@ function LoginPageClient({ token }: { token: string | string[] | null }) {
               <h3 className="font-extrabold text-xs text-foreground/75 text-center tracking-tight leading-none">Sign with</h3>
               <div className="flex items-center justify-center">
                 <Link
-                  href={`${domain}/login/social/redirect`}
+                  href={`${domain}/login/social/redirect?provider=google`}
                   className="py-2 px-12 border border-slate-50 rounded shadow-md text-sm font-medium hover:bg-slate-50"
                 >
                   <Image
@@ -73,7 +73,7 @@ function LoginPageClient({ token }: { token: string | string[] | null }) {
               </div>
               <div className="flex items-center justify-center">
                 <Link
-                  href={"#"}
+                  href={`${domain}/login/social/facebook/redirect`}
                   className="py-2 px-12 border border-slate-50 rounded shadow-md text-sm font-medium hover:bg-slate-50"
                 >
                   <Image
@@ -86,7 +86,7 @@ function LoginPageClient({ token }: { token: string | string[] | null }) {
                   />
                 </Link>
               </div>
-              <div className="flex items-center justify-center">
+              {/* <div className="flex items-center justify-center">
                 <Link
                   href={"#"}
                   className="py-2 px-12 border border-slate-50 rounded shadow-md text-sm font-medium hover:bg-slate-50"
@@ -100,7 +100,7 @@ function LoginPageClient({ token }: { token: string | string[] | null }) {
                     className="h-14 w-14 -my-4"
                   />
                 </Link>
-              </div>
+              </div> */}
             </div>
             <div className="-mt-4 mb-6 flex items-center justify-center text-xs font-normal text-muted-foreground">Don&#39;t have account?&nbsp;<Link href='/register' className="text-brand hover:underline underline-offset-2">Sign Up</Link></div>
           </div>

@@ -73,7 +73,7 @@ export async function POST(request: Request) {
   if (!token) {
     return NextResponse.json({ message: 'Token is required' }, { status: 400 });
   }
-
+  console.log(token)
   try {
     const user = await getUserToken(token)
     console.log(user?.id)

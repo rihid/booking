@@ -119,59 +119,6 @@ async function Detail({
                 </div>
               </dl>
             </Container>
-            <Container className="flex flex-col w-full mx-auto mt-5">
-              <h3 className="font-bold text-sm text-foreground/75 mb-3">Amenities</h3>
-              <dl className="space-y-4">
-                {product.amenities.map((pa: any) => {
-                  return (
-                    <React.Fragment key={pa.id}>
-                      <div className="flex items-start gap-x-6 gap-y-4">
-                        <dt className="text-sm font-medium text-foreground/50">
-                          {/* <CupSoda className="w-5 h-5" /> */}
-                          <Icon name={pa.icon} className="w-5 h-5"/>
-                        </dt>
-                        <dd className="text-foreground/75 mt-0 pt-0">
-                          <h3 className="text-sm font-normal tracking-tight">{pa.amenity}</h3>
-                          {/* <p className="text-xs text-foreground/50">
-                            Kita sudah menyediakan Handuk, Sampo, Sabun dan Sunblock jika diperlukan
-                          </p> */}
-                        </dd>
-                      </div>
-
-                    </React.Fragment>
-                  )
-                })}
-                {/* <div className="flex items-start gap-x-6 gap-y-4">
-                <dt className="text-sm font-medium text-foreground/50">
-                  <Camera className="w-5 h-5" />
-                </dt>
-                <dd className="text-foreground/75 mt-0 pt-0">
-                  <h3 className="text-sm font-normal tracking-tight">Documentation Include</h3>
-                  <p className="text-xs text-foreground/50">Kita sudah menyediakan Handuk, Sampo, Sabun dan Sunblock
-                    jika diperlukan </p>
-                </dd>
-              </div>
-              <div className="flex items-start gap-x-6 gap-y-4">
-                <dt className="text-sm font-medium text-foreground/50">
-                  <Bath className="w-5 h-5" />
-                </dt>
-                <dd className="text-foreground/75 mt-0 pt-0">
-                  <h3 className="text-sm font-normal tracking-tight">Bathroom Essential Provided</h3>
-                  <p className="text-xs text-foreground/50">Kita sudah menyediakan Handuk, Sampo, Sabun dan Sunblock
-                    jika diperlukan </p>
-                </dd>
-              </div>
-              <div className="flex items-start gap-x-6 gap-y-4">
-                <dt className="text-sm font-medium text-foreground/50">
-                  <CupSoda className="w-5 h-5" />
-                </dt>
-                <dd className="text-foreground/75 mt-0 pt-0">
-                  <h3 className="text-sm font-normal tracking-tight">Snack & Mineral Water</h3>
-                  <p className="text-xs text-foreground/50">Tersedia snack dan mineral water untuk setiap 1 unit jetski</p>
-                </dd>
-              </div> */}
-              </dl>
-            </Container>
             <Container el="article" className="flex flex-col mx-auto mt-5">
               <h3 className="font-bold text-sm text-foreground/75 mb-3">About</h3>
               <div className="text-foreground/50 font-normal text-xs">
@@ -192,6 +139,29 @@ async function Detail({
                   </ol>
                 </div>
               </div>
+            </Container>
+            <Container className="flex flex-col w-full mx-auto mt-5">
+              <h3 className="font-bold text-sm text-foreground/75 mb-3">Includes</h3>
+              <dl className="space-y-4">
+                {product.amenities.map((pa: any) => {
+                  return (
+                    <React.Fragment key={pa.id}>
+                      <div className="flex items-start gap-x-6 gap-y-4">
+                        <dt className="text-sm font-medium text-foreground/50">
+                          {/* <CupSoda className="w-5 h-5" /> */}
+                          <Icon name={pa.icon} className="w-5 h-5"/>
+                        </dt>
+                        <dd className="text-foreground/75 mt-0 pt-0">
+                          <h3 className="text-sm font-normal tracking-tight">{pa.amenity}</h3>
+                          {/* <p className="text-xs text-foreground/50">
+                            Kita sudah menyediakan Handuk, Sampo, Sabun dan Sunblock jika diperlukan
+                          </p> */}
+                        </dd>
+                      </div>
+                    </React.Fragment>
+                  )
+                })}
+              </dl>
             </Container>
           </Suspense>
         </div>
