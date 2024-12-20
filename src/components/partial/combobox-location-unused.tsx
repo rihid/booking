@@ -5,9 +5,9 @@ import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, ComboboxButto
 import { CheckIcon, ChevronDownIcon, MapPin, XIcon } from 'lucide-react';
 import { cn } from '@/assets/styles/utils';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
-import { useLocationStore } from '@/providers/store-providers/location-provider';
+import { useFilterStore } from '@/providers/store-providers/filter-provider';
 
-function ComboboxLocation({
+function ComboboxLocationUnused({
   locations,
 }: {
   locations: any;
@@ -16,7 +16,7 @@ function ComboboxLocation({
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const { location, setLocation } = useLocationStore(state => state);
+  const { location, setLocation } = useFilterStore(state => state);
   const [selectedLocation, setSelectedLocation] = React.useState('');
   const [query, setQuery] = React.useState<string>('');
 
@@ -36,7 +36,7 @@ function ComboboxLocation({
   return (
     <div className="relative">
       <Combobox
-        value={selectedLocation}
+        value={location}
         onChange={(value: any) => handleLocationSelect(value)} onClose={() => setQuery('')}
       >
         <div className="relative">
@@ -55,8 +55,8 @@ function ComboboxLocation({
           <button
             type='button'
             className={cn(
-              'absolute !cursor-pointer inset-y-0 right-5 px-2.5 invisible',
-              query || selectedLocation ? 'visible' : ''
+              'absolute !cursor-pointer inset-y-0 right-4 px-2.5 invisible',
+              query || location ? 'visible' : ''
             )}
             onClick={onClickClear}
           >
@@ -97,4 +97,4 @@ function ComboboxLocation({
   )
 }
 
-export default ComboboxLocation;
+export default ComboboxLocationUnused;

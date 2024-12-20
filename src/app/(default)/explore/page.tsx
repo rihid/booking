@@ -22,16 +22,36 @@ export const metadata: Metadata = {
   description: 'Sewa jetski, Rental Jetski, main jetski di semarang'
 }
 
+// 
+async function ProductComp({
+  query,
+  tapGroup,
+  locQuery,
+}: {
+  query: any;
+  tapGroup: any;
+  locQuery: any;
+}) {
+  const products = await getAllProductPublic();
+  return (
+    <Suspense fallback={<ProductListLoader />}>
+      <ProductList
+        products={products}
+        tabGroup={tapGroup}
+        query={query}
+        locQuery={locQuery}
+      />
+    </Suspense>
+  )
+}
+
 async function Explore({
   searchParams,
 }: {
-  searchParams?: {
-    query?: string;
-  }
+  searchParams: { [key: string]: string | string[] | null }
 }) {
-  const query = searchParams?.query || '';
-
-  const products = await getAllProductPublic();
+  const query = searchParams?.query;
+  const locQuery = searchParams?.location;
 
   const getProductType = async () => {
     try {
@@ -75,17 +95,18 @@ async function Explore({
           <Suspense fallback={<UserAvatarLoader />}>
             <UserAvatar />
           </Suspense>
-          <HomepageSearch locations={locations} />
+          <HomepageSearch locations={locations} query={query} />
         </Container>
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
-          <TabsList className="flex gap-6 justify-start bg-background text-muted-foreground">
+          <TabsList className="flex gap-6 justify-start bg-background text-muted-foreground overflow-hidden">
             <Carousel>
               <CarouselContent className="-ml-4">
                 {categories.map((item: any, index: number) =>
                   <CarouselItem className="pl-4 basis-auto" key={index}>
                     <TabsTrigger value={item.id} className="font-bold flex-shrink-0">
                       <div className='flex gap-2'>
-                        <Icon name={item.icon} className="gap-5 w-5 h-5" /> {item.name}
+                        <Icon name={item.icon} className="gap-5 w-5 h-5" />
+                        {item.name}
                       </div>
                     </TabsTrigger>
                   </CarouselItem>
@@ -99,15 +120,7 @@ async function Explore({
             return (
               <TabsContent key={index} value={item.id}>
                 <Suspense fallback={<ProductListLoader />}>
-                  {products ?
-                    <ProductList
-                      products={products}
-                      tabGroup={item.id}
-                    // query={query}
-                    />
-                    :
-                    <ProductListLoader />
-                  }
+                  <ProductComp tapGroup={item.id} query={query} locQuery={locQuery} />
                 </Suspense>
               </TabsContent>
             )

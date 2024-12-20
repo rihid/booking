@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ["latin"] });
 import { CounterStoreProvider } from "@/providers/store-providers/testing-provider";
 import { BookStoreProvider } from "@/providers/store-providers/book-provider";
 import { PaymentStoreProvider } from "@/providers/store-providers/payment-provider";
-import { LocationStoreProvider } from "@/providers/store-providers/location-provider";
+import { FilterStoreProvider } from "@/providers/store-providers/filter-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -36,7 +36,7 @@ const AppProviders = combineProviders([
   CounterStoreProvider,
   BookStoreProvider,
   PaymentStoreProvider,
-  LocationStoreProvider
+  FilterStoreProvider
 ])
 
 export default function RootLayout({

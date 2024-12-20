@@ -28,6 +28,7 @@ import RiderInfoModal from './rider-info-modal';
 import { cn } from '@/assets/styles/utils';
 import { useForm, Controller } from 'react-hook-form';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useSearchParams } from 'next/navigation';
 
 function ConfirmNPayClient({
   user,
@@ -36,6 +37,9 @@ function ConfirmNPayClient({
   userCustomer: any;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const otsParam = searchParams.get('ots');
+
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, customer, setCustomer, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
   const { setPaymentLink } = usePaymentStore((state) => state);

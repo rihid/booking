@@ -14,7 +14,7 @@ function HomePage() {
     const timer = setTimeout(() => {
       router.push('/explore');
     }, 5000);
-
+    // cleanup
     return () => clearTimeout(timer);
   }, [router]);
 

@@ -9,40 +9,64 @@ import Heading from '@/components/ui/heading';
 import { MapPin } from 'lucide-react';
 import { currency } from '@/lib/helper';
 import { getAllProductPublic } from '@/lib/data';
-import { Suspense } from 'react';
 import Image from 'next/image';
-import { useLocationStore } from '@/providers/store-providers/location-provider';
-import { LocationType } from '@/store/location';
+import { useFilterStore } from '@/providers/store-providers/filter-provider';
+import { LocationType } from '@/store/filter';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 async function ProductList({
   products,
   tabGroup,
-  // query,
+  query,
+  locQuery,
 }: {
   products: any;
   tabGroup?: string;
-  // query: string;
+  query: any;
+  locQuery: any;
 }) {
-  // const products = await getAllProductPublic();
-  const { location, search } = useLocationStore(state => state);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const { location, search } = useFilterStore(state => state);
+
   const filteredProducts = React.useMemo(() => {
     return products.filter((product: any) => {
       if (product.category_id !== tabGroup) {
         return false;
       }
-      if (search) {
-        if (!product.product_name.toLowerCase().includes(search.toLowerCase())) {
+      if (query) {
+        if (!product.product_name.toLowerCase().includes(query.toLowerCase())) {
           return false;
         }
       }
-      if (location) {
-        if (product.location_id !== location.id) {
+      if (locQuery) {
+        if (product.location !== locQuery) {
           return false;
         }
       }
       return true;
     });
-  }, [products, tabGroup, search, location]);
+  }, [products, tabGroup, query, locQuery]);
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (search) {
+      params.set('query', search);
+      replace(`${pathname}?${params.toString()}`);
+    } else {
+      params.delete('query');
+    }
+    if (location) {
+      params.set('location', location?.name as string);
+      replace(`${pathname}?${params.toString()}`);
+    } else {
+      params.delete('location');
+    }
+
+  }, [location, search])
+
   
   // const filter = () => {
   //   const productGrouping = products.filter((pg: any) => pg.category_id === tabGroup) // grouping by category
