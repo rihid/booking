@@ -94,12 +94,29 @@ async function BookingList({
 
               return res;
             }
-            const paymentStatus = await getPaymentStatus();
-            // 
+            let paymentStatus = await getPaymentStatus();
+            if(paymentStatus?.status_code === '407') {
+              await axios.get(process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + booking.id.concat('$') + '/status', {
+                headers: {
+                  accept: 'application/json',
+                  authorization: 'Basic ' + encodeToken,
+                }
+              }).then(response => {
+                let data = response.data;
+                // data.order_id = data.order_id.replace(/\$/g, '')
+                if(data.status_code !== '404') {
+                  paymentStatus = data
+                }
+              }).catch(error => {
+                console.log(error);
+                throw error;
+              })
+            }
+            
             const paymentVal = payments.find((p: any) => p.book_no == booking.book_no)
 
             return (
-              <div className='relative'>
+              <div className='relative' key={booking.id}>
                 <BookingCard
                   user={user}
                   booking={booking}

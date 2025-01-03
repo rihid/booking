@@ -81,7 +81,6 @@ function ConfirmationContent({
       })
       return res;
     } else {
-      console.log('put')
       const obj = {
         payment_no: paymentVal.payment_no,
         book_no: body.book_no,
@@ -92,7 +91,7 @@ function ConfirmationContent({
         round: body.round,
         discount: body.discount,
         total: body.total,
-        org_no: "C0003",
+        org_no: user.org_no,
         branch_no: body.branch_no,
         payment_type: body.payment_type,
         note: body.note,
