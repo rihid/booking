@@ -47,7 +47,7 @@ async function InvoiceList({
               href={`/invoice/${invoice.invoice_no === null ? "#" : invoice.invoice_no.split('/').pop()}`}
               className="block"
             >
-              <Card className="shadow-md">
+              <Card className="border-slate-200">
                 <CardHeader className="flex-row items-center justify-between">
                   <CardTitle className="text-foreground/75">{productVal?.product_name}</CardTitle>
                   <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
@@ -77,14 +77,14 @@ async function InvoiceList({
                   </div>
                 </CardContent>
                 {/* <CardFooter className="grid grid-cols-2 w-full gap-3">
-              <Button variant="secondary" className="text-xs h-auto">Re-Book</Button>
-              <OpenModalButton
-                view='review-view'
-                variant='default'
-              >
-                Write Reviews
-              </OpenModalButton>
-            </CardFooter> */}
+                  <Button variant="secondary" className="text-xs h-auto">Re-Book</Button>
+                  <OpenModalButton
+                    view='review-view'
+                    variant='default'
+                  >
+                    Write Reviews
+                  </OpenModalButton>
+                </CardFooter> */}
               </Card>
             </Link>
           )

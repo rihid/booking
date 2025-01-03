@@ -7,7 +7,7 @@ type PaymentLink = {
 }
 
 export type PaymentState = {
-  paymentLink: PaymentLink | null
+  paymentLinks: PaymentLink[]
 }
 export type PaymentActions = {
 
@@ -25,7 +25,7 @@ export type PaymentStore = PaymentState & PaymentActions
 // }
 
 export const defaultInitState: PaymentState = {
-  paymentLink: null
+  paymentLinks: []
 }
 export const createPaymentStore = (
   initState: PaymentState = defaultInitState,
@@ -36,7 +36,7 @@ export const createPaymentStore = (
         ...initState,
         setPaymentLink: (obj: PaymentLink) => {
           set((state) => ({
-            paymentLink: obj,
+            paymentLinks: [...state.paymentLinks, obj],
           }))
         }
       }),

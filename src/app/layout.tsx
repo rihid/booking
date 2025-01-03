@@ -14,6 +14,7 @@ import { CounterStoreProvider } from "@/providers/store-providers/testing-provid
 import { BookStoreProvider } from "@/providers/store-providers/book-provider";
 import { PaymentStoreProvider } from "@/providers/store-providers/payment-provider";
 import { FilterStoreProvider } from "@/providers/store-providers/filter-provider";
+import { TripStoreProvider } from "@/providers/store-providers/trip-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -36,7 +37,8 @@ const AppProviders = combineProviders([
   CounterStoreProvider,
   BookStoreProvider,
   PaymentStoreProvider,
-  FilterStoreProvider
+  FilterStoreProvider,
+  TripStoreProvider
 ])
 
 export default function RootLayout({

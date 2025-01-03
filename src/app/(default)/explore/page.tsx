@@ -16,6 +16,7 @@ import axios from 'axios';
 import { productUrl, locationUrl } from '@/lib/data/endpoints';
 import Icon from '@/components/ui/icon';
 import { getAllProductPublic } from '@/lib/data';
+import NavbarTabList from './module/navbar-tablist';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -88,6 +89,7 @@ async function Explore({
   }
   const categories = await getProductType();
   const locations = await getLocationPublic();
+
   return (
     <div className="flex flex-col min-h-screen">
       <Tabs defaultValue={categories[0].id}>
@@ -98,22 +100,7 @@ async function Explore({
           <HomepageSearch locations={locations} query={query} />
         </Container>
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
-          <TabsList className="flex gap-6 justify-start bg-background text-muted-foreground overflow-hidden">
-            <Carousel>
-              <CarouselContent className="-ml-4">
-                {categories.map((item: any, index: number) =>
-                  <CarouselItem className="pl-4 basis-auto" key={index}>
-                    <TabsTrigger value={item.id} className="font-bold flex-shrink-0">
-                      <div className='flex gap-2'>
-                        <Icon name={item.icon} className="gap-5 w-5 h-5" />
-                        {item.name}
-                      </div>
-                    </TabsTrigger>
-                  </CarouselItem>
-                )}
-              </CarouselContent>
-            </Carousel>
-          </TabsList>
+          <NavbarTabList categories={categories} />
         </Container>
         <div className="relative mt-6 mb-20">
           {categories.map((item: any, index: number) => {

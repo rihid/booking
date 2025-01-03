@@ -34,7 +34,7 @@ export default async function middleware(req: NextRequest) {
 
   // create global query params
   const url = req.nextUrl.clone();
-  if (!url.searchParams.has('ots')) {
+  if (path !== '/' && !url.searchParams.has('ots')) {
     url.searchParams.set('ots', 'true');
     return NextResponse.redirect(url);
   }

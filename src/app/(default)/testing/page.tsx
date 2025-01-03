@@ -1,5 +1,8 @@
 
+'use client';
+
 import React from 'react'
+import { QRCodeSVG } from 'qrcode.react';
 import { Calendar } from '@/components/ui/calendar'
 import Rating from '@/components/ui/rating';
 import { useCounterStore } from '@/providers/store-providers/testing-provider';
@@ -38,7 +41,7 @@ async function Testing() {
   // const handleClick = () => {
   //   toast.success("Event has been created")
   // }
-  const session = await getSession()
+  // const session = await getSession()
   // console.log(session.user)
   return (
     <div>
@@ -60,7 +63,10 @@ async function Testing() {
           Show Toast
         </Button>
       </div> */}
-      <pre>{JSON.stringify(session, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
+      <div className="">
+        <QRCodeSVG value="Lorem ipsum dolor sit amet" />
+      </div>
     </div>
   )
 }

@@ -82,14 +82,14 @@ function ComboboxLocation({
           <button
             type='button'
             className={cn(
-              'absolute !cursor-pointer inset-y-0 right-5 px-2.5 invisible',
+              'absolute z-40 !cursor-pointer inset-y-0 right-7 px-1.5 invisible',
               query || selectedLocation ? 'visible' : ''
             )}
             onClick={onClickClear}
           >
             <XIcon className="w-3 h-3 fill-white/60 group-data-[hover]:fill-white" />
           </button>
-          <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
+          <ComboboxButton className="group absolute inset-y-0 right-0 pl-1.5 pr-2.5">
             <ChevronDownIcon className="size-4 fill-white/60 group-data-[hover]:fill-white" />
           </ComboboxButton>
         </div>

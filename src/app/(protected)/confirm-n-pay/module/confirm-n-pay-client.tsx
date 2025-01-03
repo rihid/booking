@@ -199,6 +199,7 @@ function ConfirmNPayClient({
     console.log('customer closed the popup without finishing the payment');
   }
   const handleCheckout = async (body: any) => {
+    console.log('midtrans', body)
     try {
       const response = await fetch('/api/transaction', {
         method: 'POST',

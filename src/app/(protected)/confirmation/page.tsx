@@ -89,7 +89,8 @@ async function Confirmation({
   let booking: any = null;
   let productVal: any = null;
   if (orderId) {
-    booking = await getBooking(token, orderId as string);
+    const orderIdSlice = (orderId as string).replace(/\$/g, '')
+    booking = await getBooking(token, orderIdSlice);
     productVal = products.find(p => p.product_no === booking.product_no);
   }
   const paymentMethod = await getPaymentMethod();

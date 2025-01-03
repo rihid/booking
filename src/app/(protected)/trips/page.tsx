@@ -1,22 +1,18 @@
 import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import Container from '@/components/ui/container';
-import { ChevronLeft } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, Clock, MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/button/button';
-import Image from 'next/image';
-import Link from 'next/link';
-import OpenModalButton from '@/components/ui/button/open-modal-button';
 import { getSession } from '@/lib/session';
 import { getAllProductPublic, getBookByCustomer, getBranchList, getInvoiceByCustomer, getSingleProductPublic } from '@/lib/data';
-import moment from 'moment';
-import { generateBasicToken } from '@/lib/helper';
 import BookingList from './module/booking-list';
 import Heading from '@/components/ui/heading';
 import { BookingListLoader } from '@/components/partial/loader';
 import InvoiceList from './module/invoice-list';
+import BookingDetailModal from './module/booking-detail-modal';
+import moment from 'moment';
+import { bookingUrl } from '@/lib/data/endpoints';
+import axios from 'axios';
+import { generateBasicToken } from '@/lib/helper';
 
 export const metadata: Metadata = {
   title: 'Trips',
@@ -25,6 +21,29 @@ export const metadata: Metadata = {
 
 async function Trips() {
   const session = await getSession();
+  // @ts-ignore
+  const { user } = session;
+  const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
+
+  const getPaymentList = async () => {
+    const startDate = moment().subtract(1, 'years').format('YYYY-MM-DD')
+    const endDate = moment().format('YYYY-MM-DD')
+    const url = bookingUrl + '/book/payment' + '?begin=' + startDate + '&end=' + endDate;
+    const res = axios.get(url, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + user.token
+      }
+    }).then(response => {
+      const data = response.data.data;
+      return data
+    }).catch(error => {
+      console.log(error);
+      throw error;
+    })
+    return res;
+  }
+  const payments = await getPaymentList();
   const products = await getAllProductPublic();
   return (
     <div className="flex flex-col min-h-screen">
@@ -49,6 +68,7 @@ async function Trips() {
           <TabsContent value='on-progress'>
             <Suspense fallback={<BookingListLoader />}>
               <BookingList
+                payments={payments}
                 products={products}
                 user={session?.user}
               />
@@ -62,6 +82,7 @@ async function Trips() {
           </TabsContent>
         </div>
       </Tabs>
+      <BookingDetailModal />
     </div>
   )
 }

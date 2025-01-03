@@ -48,12 +48,20 @@ function ConfirmationContent({
 }) {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('order_id')
-  const { paymentLink } = usePaymentStore((store) => store);
+  const { paymentLinks } = usePaymentStore((store) => store);
   const [tokenPay, setTokenPay] = React.useState<string | null>(null);
 
   const hasPostedRef = React.useRef(false);
 
   // methods
+  const findTokenSnap = () => {
+    const plValue = paymentLinks.find((pl: any) => pl.order_id === booking.id)
+    if(plValue) {
+      return plValue.payment_token
+    } else {
+      return null
+    }
+  }
   const postPayment = (body: PaymentType) => {
     const paymentVal = payments.find((p: any) => p.book_no === booking.book_no);
     if (!paymentVal) {
@@ -128,7 +136,7 @@ function ConfirmationContent({
         branch_no: null,
         payment_type: "down_payment",
         note: null,
-        token_payment: paymentLink?.payment_token,
+        token_payment: findTokenSnap(),
         cash_id: null
       }
       console.log('200', body)
@@ -153,7 +161,7 @@ function ConfirmationContent({
         branch_no: null,
         payment_type: "down_payment",
         note: null,
-        token_payment: paymentLink?.payment_token,
+        token_payment: findTokenSnap(),
         cash_id: null
       }
       console.log('201', body)
@@ -185,11 +193,11 @@ function ConfirmationContent({
     }
   }
   React.useEffect(() => {
-    if (paymentLink) {
-      setTokenPay(paymentLink.payment_token)
+    if (paymentLinks.length > 0) {
+      setTokenPay(findTokenSnap())
       handleAddpayment()
     }
-  }, [paymentLink])
+  }, [paymentLinks])
   return (
     <Container className="mt-8">
       <Heading variant='base' className="text-muted-foreground">Order Detail</Heading>
