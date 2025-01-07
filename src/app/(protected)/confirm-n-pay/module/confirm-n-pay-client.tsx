@@ -63,8 +63,10 @@ function ConfirmNPayClient({
       const qty = parseInt(val.qty);
       const totalRider = parseInt(val.total_rider)
       const variant = val.variant?.toLowerCase();
-      if (variant.includes("couple") || variant.includes("double")) {
-        return acc + (qty * 2);
+      if(variant) {
+        if (variant.includes("couple") || variant.includes("double")) {
+          return acc + (qty * 2);
+        }
       }
       return acc + (qty * totalRider);
     }, 0);
