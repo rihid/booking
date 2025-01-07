@@ -89,6 +89,7 @@ function LoginForm() {
                   <Input
                     {...field}
                     disabled={isPending}
+                    autoComplete="username"
                     placeholder="Email/Username"
                     type="text"
                   />
@@ -106,6 +107,7 @@ function LoginForm() {
                   <PasswordInput
                     {...field}
                     disabled={isPending}
+                    autoComplete="current-password"
                     placeholder="Password"
                   />
                 </FormControl>

@@ -3,7 +3,7 @@ import { z } from "zod";
 // Form Schema
 export const LoginFormSchema = z.object({
   username: z.string({
-    message: "Password is required",
+    message: "Email/Username is required",
   }),
   password: z.string().min(1, {
     message: "Password is required",

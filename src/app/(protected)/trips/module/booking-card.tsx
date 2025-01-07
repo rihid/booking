@@ -183,56 +183,79 @@ function BookingCard({
   }
 
   React.useEffect(() => {
-    if (paymentStatus.order_id.endsWith('$')) {
-      if (paymentStatus.status_code === '200') {
-        let methodVal;
-        if (paymentStatus.payment_type === 'bank_transfer') {
-          const midtransBankVal = paymentStatus.va_numbers[0].bank;
-          methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
+    const voidBooking = async (id: string) => {
+      await axios.post(bookingUrl + '/book/void', { id: id }, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + user.token
         }
-        if (parseFloat(paymentVal.amount) === 0) {
-          const paymentDp = booking.downPayments;
-          const body = {
-            payment_no: paymentVal.payment_no,
-            book_no: booking.book_no,
-            payment_date: paymentStatus.settlement_time,
-            method_id: methodVal ? methodVal.id : null,
-            amount: paymentStatus.gross_amount.replace(/\.00$/, ''),
-            promo_id: paymentDp[0].promo_id,
-            round: paymentDp[0].round,
-            discount: paymentDp[0].discount,
-            total: paymentStatus.gross_amount.replace(/\.00$/, ''),
-            org_no: user.org_no,
-            branch_no: null,
-            payment_type: "down_payment",
-            note: null,
-            token_payment: null,
-            cash_id: null
-          }
+      })
+        .then(response => {
+          console.log(response)
+        })
+        .catch(error => {
+          console.log(error);
+          throw error;
+        })
+    }
+    if (paymentStatus.status_code === '407' && booking.status !== 'void') {
+      voidBooking(paymentStatus.order_id)
+    }
+  }, [paymentStatus, booking])
 
-          axios.put(bookingUrl + '/book/payment/' + paymentVal.id, body, {
-            headers: {
-              Accept: 'application/json',
-              Authorization: 'Bearer ' + user.token
+  /*
+    React.useEffect(() => {
+      if (paymentStatus.order_id.endsWith('$')) {
+        if (paymentStatus.status_code === '200') {
+          let methodVal;
+          if (paymentStatus.payment_type === 'bank_transfer') {
+            const midtransBankVal = paymentStatus.va_numbers[0].bank;
+            methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
+          }
+          if (parseFloat(paymentVal.amount) === 0) {
+            const paymentDp = booking.downPayments;
+            const body = {
+              payment_no: paymentVal.payment_no,
+              book_no: booking.book_no,
+              payment_date: paymentStatus.settlement_time,
+              method_id: methodVal ? methodVal.id : null,
+              amount: paymentStatus.gross_amount.replace(/\.00$/, ''),
+              promo_id: paymentDp[0].promo_id,
+              round: paymentDp[0].round,
+              discount: paymentDp[0].discount,
+              total: paymentStatus.gross_amount.replace(/\.00$/, ''),
+              org_no: user.org_no,
+              branch_no: null,
+              payment_type: "down_payment",
+              note: null,
+              token_payment: null,
+              cash_id: null
             }
-          }).then(response => {
-            console.log(response.data);
-            const data = response.data;
-            return data;
-          }).catch(error => {
-            console.log(error);
-            throw error;
-          })
+
+            axios.put(bookingUrl + '/book/payment/' + paymentVal.id, body, {
+              headers: {
+                Accept: 'application/json',
+                Authorization: 'Bearer ' + user.token
+              }
+            }).then(response => {
+              console.log(response.data);
+              const data = response.data;
+              return data;
+            }).catch(error => {
+              console.log(error);
+              throw error;
+            })
+          }
         }
       }
-    }
-  }, [paymentStatus])
+    }, [paymentStatus])
+  */
 
   return (
     <>
       <Card className="border-slate-300">
         {/* <pre>p: {JSON.stringify(paymentVal?.id, null, 2)}</pre> */}
-        {/* <pre>price {JSON.stringify(paymentStatus, null, 2)}</pre> */}
+        {/* <pre>price {JSON.stringify(paymentStatus.status_code, null, 2)}</pre> */}
         <CardHeader className="flex-row items-center justify-between">
           <CardTitle className="text-foreground/75">{product?.product_name}</CardTitle>
           <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
@@ -275,11 +298,6 @@ function BookingCard({
           </div>
         </CardContent>
         <CardFooter className="grid grid-cols-1 w-full gap-3">
-          {paymentVal && status_code === '200' &&
-            // masuk payment & pembayaran done
-            <>
-            </>
-          }
           {paymentVal && status_code === '201' &&
             // masuk payment & pembayaran pending
             <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
@@ -294,21 +312,6 @@ function BookingCard({
                 <>payment expired</>
               }
             </Button>
-          }
-          {paymentVal && status_code == '407' &&
-            // masuk payment & pembayaran pending expired
-            <>
-              {parseFloat(paymentVal.amount) > 0 ?
-                <></>
-                :
-                <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90" disabled={loadingSnap} onClick={() => handleExpirePaymentSnap(paymentVal)}>
-                  {loadingSnap &&
-                    <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
-                  }
-                  Pay Now
-                </Button>
-              }
-            </>
           }
           {!paymentVal && status_code === '200' &&
             // belum masuk payment & pembayaran done
@@ -330,21 +333,30 @@ function BookingCard({
               </Link>
             </Button>
           }
-          {!paymentVal && status_code == '407' &&
-            // belum masuk payment & pembayaran pending expired
-            <Button type='button' variant="outline" onClick={handleAddNewPayment}>
-              Confirm Booking
-            </Button>
-          }
           {paymentVal && status_code === '404' &&
             // masuk payment & cash
             <Button disabled variant="secondary" className="text-xs h-auto">
               Cash Payment
             </Button>
           }
+          {paymentVal && status_code == '407' &&
+            // masuk payment & pembayaran pending expired
+            <Button type='button' variant="outline" disabled>
+              Expire Payment
+            </Button>
+          }
+          {!paymentVal && status_code == '407' &&
+            // belum masuk payment & pembayaran pending expired
+            <Button type='button' variant="outline" disabled>
+              Expire Payment
+            </Button>
+
+            // <Button type='button' variant="outline" onClick={handleAddNewPayment}>
+            //   Confirm Booking
+            // </Button>
+          }
 
         </CardFooter>
-        {/* <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90" onClick={handleOpenModal}>Open Modal</Button> */}
       </Card>
     </>
   )

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { decrypt } from '@/lib/session'
 import { cookies } from 'next/headers'
-import { getSession } from '@/lib/session'
 
 // 1. Specify protected and public routes
 const protectedRoutes = ['/confirm-n-pay', '/profile', '/trips', '/invoice', '/customer-list', '/confirmation']
-const publicRoutes = ['/login', '/register', '/p', '/explore', '/',]
+const publicRoutes = ['/login', '/register', '/p', '/explore', '/', 'forgot-password']
+const routesWithGlobalParams = ['/explore', '/p', '/confirm-n-pay', '/profile', '/trips', '/invoice', '/customer-list']
 
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
@@ -34,7 +34,7 @@ export default async function middleware(req: NextRequest) {
 
   // create global query params
   const url = req.nextUrl.clone();
-  if (path !== '/' && !url.searchParams.has('ots')) {
+  if (routesWithGlobalParams.includes(path) && path !== '/' && !url.searchParams.has('ots')) {
     url.searchParams.set('ots', 'true');
     return NextResponse.redirect(url);
   }
