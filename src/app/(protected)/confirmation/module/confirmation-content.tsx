@@ -246,7 +246,7 @@ function ConfirmationContent({
             </Link>
           }
           <Link
-            href="/"
+            href="/explore"
           >
             <Button className="w-full">Back to home</Button>
           </Link>

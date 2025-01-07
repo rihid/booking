@@ -14,7 +14,7 @@ import { useFilterStore } from '@/providers/store-providers/filter-provider';
 import { LocationType } from '@/store/filter';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-async function ProductList({
+function ProductList({
   products,
   tabGroup,
   query,

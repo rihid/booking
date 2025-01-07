@@ -206,8 +206,8 @@ function BookingCard({
   return (
     <>
       <Card className="border-slate-300">
-        {/* <pre>p: {JSON.stringify(paymentVal?.id, null, 2)}</pre> */}
-        {/* <pre>price {JSON.stringify(paymentStatus.status_code, null, 2)}</pre> */}
+        {/* <pre>p: {JSON.stringify(paymentStatus, null, 2)}</pre> */}
+        {/* <pre>b {JSON.stringify(booking.status, null, 2)}</pre> */}
         <CardHeader className="flex-row items-center justify-between">
           <CardTitle className="text-foreground/75">{product?.product_name}</CardTitle>
           <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
