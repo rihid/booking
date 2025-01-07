@@ -203,54 +203,6 @@ function BookingCard({
     }
   }, [paymentStatus, booking])
 
-  /*
-    React.useEffect(() => {
-      if (paymentStatus.order_id.endsWith('$')) {
-        if (paymentStatus.status_code === '200') {
-          let methodVal;
-          if (paymentStatus.payment_type === 'bank_transfer') {
-            const midtransBankVal = paymentStatus.va_numbers[0].bank;
-            methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
-          }
-          if (parseFloat(paymentVal.amount) === 0) {
-            const paymentDp = booking.downPayments;
-            const body = {
-              payment_no: paymentVal.payment_no,
-              book_no: booking.book_no,
-              payment_date: paymentStatus.settlement_time,
-              method_id: methodVal ? methodVal.id : null,
-              amount: paymentStatus.gross_amount.replace(/\.00$/, ''),
-              promo_id: paymentDp[0].promo_id,
-              round: paymentDp[0].round,
-              discount: paymentDp[0].discount,
-              total: paymentStatus.gross_amount.replace(/\.00$/, ''),
-              org_no: user.org_no,
-              branch_no: null,
-              payment_type: "down_payment",
-              note: null,
-              token_payment: null,
-              cash_id: null
-            }
-
-            axios.put(bookingUrl + '/book/payment/' + paymentVal.id, body, {
-              headers: {
-                Accept: 'application/json',
-                Authorization: 'Bearer ' + user.token
-              }
-            }).then(response => {
-              console.log(response.data);
-              const data = response.data;
-              return data;
-            }).catch(error => {
-              console.log(error);
-              throw error;
-            })
-          }
-        }
-      }
-    }, [paymentStatus])
-  */
-
   return (
     <>
       <Card className="border-slate-300">
