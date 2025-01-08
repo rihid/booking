@@ -61,6 +61,49 @@ export const getUserToken = async (token: any) => {
     throw error;
   }
 }
+export const validateCustomer = async(token: any, user: any) => {
+  const body = {
+    customer_no: null,
+    name: user.name,
+    address: null,
+    phone: null,
+    email: user.email,
+    identity_number: null,
+    vat: null,
+    org_no: user.org_no,
+    branch_no: null,
+    rating: null,
+    type: 'individual',
+    birthday: null,
+    age: null,
+  }
+  try {
+    const res = await axios.post(customerUrl + '/validate-email', body, {
+      headers: { Accept: 'application/json', Authorization: 'Bearer ' + token }, timeout: 50000
+    })
+    return res.data
+  } catch (error) {
+    console.log(error.response.status)
+    console.log(error.response.data.message)
+    throw error
+  }
+}
+export const userStoreCustomer = async(token: any, user: any) => {
+  const body = {
+    user_id: user.id,
+    customer_no: user.customer_no,
+    type: 'main'
+  }
+  try {
+    const res = await axios.post(userUrl + '/store-customer', body, {
+      headers: { Accept: 'application/json', Authorization: 'Bearer ' + token}, timeout: 50000
+    })
+    return res.data
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
 export const checkUserCustomer = async (token: any, user: any) => {
   const body = {
     id: user.id

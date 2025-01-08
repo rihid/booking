@@ -64,7 +64,7 @@
 /* Kode dibawah ini */ 
 
 import { NextResponse } from 'next/server';
-import { checkUserCustomer, getCustomerByNo, getUserToken } from '@/lib/data';
+import { checkUserCustomer, getCustomerByNo, getUserToken, userStoreCustomer, validateCustomer } from '@/lib/data';
 import { createSession } from '@/lib/session';
 
 export async function POST(request: Request) {
@@ -76,15 +76,30 @@ export async function POST(request: Request) {
   console.log(token)
   try {
     const user = await getUserToken(token)
+    console.log('USER')
+    console.log(user)
     console.log(user?.id)
     user.token = token
-    const uc = await checkUserCustomer(token, user)
-    user.customer_no = uc.customer_no
-    user.customers = uc.data
-    // const customerData = await getCustomerByNo(token, uc.customer_no)
-    // console.log('getCustomerByNo')
-    // console.log(customerData)
-    // user.customer = customerData
+    if (user.customer_no === null) {
+      const uc = await validateCustomer(token, user)
+      console.log('validate Email')
+      console.log(uc)
+      user.customer_no = uc.data.customer_no
+      user.customer = uc.data
+      console.log(user)
+      if (user.customer_no) {
+        const userCustomer = await userStoreCustomer(token, user)
+        console.log('UserCustomer:')
+        console.log(userCustomer)
+        user.customers = [userCustomer.data]
+      }
+    } else {
+      const customerData = await getCustomerByNo(token, user.customer_no)
+      console.log('getCustomerByNo')
+      console.log(customerData)
+      user.customer = customerData
+    }
+    
     await createSession(user)
     return NextResponse.json({ message: 'Login successful' }, { status: 200 });
   } catch (error) {
