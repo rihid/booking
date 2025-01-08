@@ -82,7 +82,7 @@ export const validateCustomer = async(token: any, user: any) => {
       headers: { Accept: 'application/json', Authorization: 'Bearer ' + token }, timeout: 50000
     })
     return res.data
-  } catch (error) {
+  } catch (error: any) {
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error
