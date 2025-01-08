@@ -302,10 +302,6 @@ function BookingCard({
             <Button type='button' variant="outline" disabled>
               Expire Payment
             </Button>
-
-            // <Button type='button' variant="outline" onClick={handleAddNewPayment}>
-            //   Confirm Booking
-            // </Button>
           }
 
         </CardFooter>

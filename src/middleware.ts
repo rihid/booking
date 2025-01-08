@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 
 // 1. Specify protected and public routes
 const protectedRoutes = ['/confirm-n-pay', '/profile', '/trips', '/invoice', '/customer-list', '/confirmation']
-const publicRoutes = ['/login', '/register', '/p', '/explore', '/', 'forgot-password']
+const publicRoutes = ['/login', '/register', '/p', '/explore', '/', 'forget', 'reset']
 const routesWithGlobalParams = ['/explore', '/p', '/confirm-n-pay', '/profile', '/trips', '/invoice', '/customer-list']
 
 export default async function middleware(req: NextRequest) {
