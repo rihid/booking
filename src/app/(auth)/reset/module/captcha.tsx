@@ -44,6 +44,7 @@ const Altcha = forwardRef<{ value: string | null }, AltchaProps>(({ onStateChang
       challengeurl="https://eu.altcha.org/api/v1/challenge?apiKey=key_1jnsjlueunJpbmnq7TR8L"
       style={{
         '--altcha-max-width': '100%',
+        '--altcha-color-border': '#e2e8f0',
       }}
       debug
       hidelogo

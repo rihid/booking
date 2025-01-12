@@ -4,8 +4,9 @@ import { cookies } from 'next/headers'
 
 // 1. Specify protected and public routes
 const protectedRoutes = ['/confirm-n-pay', '/profile', '/trips', '/invoice', '/customer-list', '/confirmation']
-const publicRoutes = ['/login', '/register', '/p', '/explore', '/', 'forget', 'reset']
-const routesWithGlobalParams = ['/explore', '/p', '/confirm-n-pay', '/profile', '/trips', '/invoice', '/customer-list']
+const publicRoutes = ['/login', '/register', '/p', '/explore', '/', '/forget', '/reset']
+const routesWithGlobalParams = ['/p', '/explore', '/confirm-n-pay', '/profile', '/trips', '/invoice',]
+const routesInitialParams = ['/explore', '/profile']
 
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
@@ -33,17 +34,43 @@ export default async function middleware(req: NextRequest) {
   }
 
   // create global query params
+  // const url = req.nextUrl.clone();
+  // if (routesWithGlobalParams.includes(path) && path !== '/' && !url.searchParams.has('ots')) {
+  //   url.searchParams.set('ots', 'true');
+  //   return NextResponse.redirect(url);
+  // }
+
   const url = req.nextUrl.clone();
-  if (routesWithGlobalParams.includes(path) && path !== '/' && !url.searchParams.has('ots')) {
-    url.searchParams.set('ots', 'true');
-    return NextResponse.redirect(url);
+
+  const isRouteWithGlobalParams = routesWithGlobalParams.some(route => path.startsWith(route)) && path !== '/';
+
+  const isExplore = path === '/explore';
+  const isRoutesInitialParams = routesInitialParams.some(route => path.startsWith(route))
+
+  const hasOts = req.nextUrl.searchParams.has('ots');
+
+  const otsCookie = req.cookies.get('ots');
+
+  if (isRouteWithGlobalParams) {
+    const response = NextResponse.next();
+    if (hasOts) {
+      response.cookies.set('ots', 'true');
+      return response;
+    }
+
+    if (otsCookie && !hasOts) {
+      url.searchParams.set('ots', 'true');
+      return NextResponse.redirect(url);
+    } else if (!otsCookie && hasOts) {
+      url.searchParams.delete('ots');
+      return NextResponse.redirect(url);
+    }
   }
 
   return NextResponse.next()
-
 }
 
 // Routes Middleware should not run on
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|public/images|.*\\..*).*)'],
 }

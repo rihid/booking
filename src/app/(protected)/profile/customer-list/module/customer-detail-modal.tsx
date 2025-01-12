@@ -23,7 +23,7 @@ function CustomerDetailModal({
         }
       }}
     >
-      <DialogContent className="max-w-sm">
+      <DialogContent className="max-w-sm rounded-md">
         <DialogHeader className="border-b -mx-6">
           <DialogTitle className="text-base pb-4 px-6">Info</DialogTitle>
         </DialogHeader>
@@ -37,7 +37,7 @@ function CustomerDetailModal({
                 name
               </div>
               <p
-                className="text-base capitalize"
+                className="text-base capitalize text-muted-foreground"
               >
                 {customerData?.name}
               </p>
@@ -52,7 +52,7 @@ function CustomerDetailModal({
                 customer no
               </div>
               <p
-                className="text-base capitalize"
+                className="text-base capitalize text-muted-foreground"
               >
                 {customerData?.customer_no}
               </p>
@@ -67,7 +67,7 @@ function CustomerDetailModal({
                 indentity number
               </div>
               <p
-                className="text-base capitalize"
+                className="text-base capitalize text-muted-foreground"
               >
                 {customerData?.identity_number}
               </p>
@@ -83,7 +83,7 @@ function CustomerDetailModal({
               </div>
               <Link
                 href={`maito:${customerData?.email}`}
-                className="text-base"
+                className="text-base text-muted-foreground"
               >
                 {customerData?.email}
               </Link>
@@ -99,7 +99,7 @@ function CustomerDetailModal({
               </div>
               <Link
                 href={`tel:${customerData?.phone}`}
-                className="text-base"
+                className="text-base text-muted-foreground"
               >
                 {customerData?.phone}
               </Link>
@@ -114,7 +114,7 @@ function CustomerDetailModal({
                 address
               </div>
               <p
-                className="text-base capitalize"
+                className="text-base capitalize text-muted-foreground"
               >
                 {customerData?.address}
               </p>

@@ -22,6 +22,7 @@ import axios from 'axios';
 import { customerUrl, userUrl } from '@/lib/data/endpoints';
 import { useBookStore } from '@/providers/store-providers/book-provider';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const FormSchema = z.object({
   id: z.optional(z.string().nullable()),
@@ -39,22 +40,16 @@ const FormSchema = z.object({
   org_no: z.string().nullable(),
   type: z.string().nullable(),
   from: z.optional(z.string().nullable()),
-  rider_type: z.string()
-    .min(1, { message: "Type is required" })
 })
 
-type Props = {
-  user?: any;
-  idx: number;
-  customer: any;
-}
-function RiderDetailFormModal({
+function CustomerEditModal({
   user,
-  idx,
   customer
-}: Props) {
+}: {
+  user?: any;
+  customer: any;
+}) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
-  const { editCustomer, customers } = useBookStore(state => state);
   const [isPending, startTransition] = React.useTransition();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -62,64 +57,23 @@ function RiderDetailFormModal({
   })
   const onSubmit = (values: z.infer<typeof FormSchema>) => {
     startTransition(async () => {
-      console.log('on submit')
-      console.log(values)
-      if (customer.id === null) {
-        await axios.post(customerUrl, values, {
-          headers: {
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + user.token
+      await axios.put(customerUrl + '/' + customer.customer_id, values, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + user.token
+        }
+      })
+        .then(response => {
+          const data = CustomerSchema.parse(response.data.data);
+          console.log(response.data)
+          if (data) {
+            toast.success(response.data.message)
           }
         })
-          .then(response => {
-            const data = CustomerSchema.parse(response.data.data);
-            // console.log(data)
-            customers[idx].rider_type = values.rider_type
-            editCustomer(idx, {
-              ...customers[idx],
-              ...data,
-            })
-            // update user customer
-            const body = {
-              user_id: user.id,
-              customer_no: response.data.data.customer_no,
-              type: 'child'
-            }
-            axios.post(userUrl + '/store-customer', body, {
-              headers: {
-                Accept: 'application/json',
-                Authorization: 'Bearer ' + user.token
-              }
-            })
-
-          })
-          .catch(error => {
-            console.log(error);
-            throw error
-          })
-      } else {
-        console.log('customer')
-        console.log(customer)
-        await axios.put(customerUrl + '/' + customer.customer_id, values, {
-          headers: {
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + user.token
-          }
+        .catch(error => {
+          console.log(error);
+          toast.error(error.message)
         })
-          .then(response => {
-            const data = CustomerSchema.parse(response.data.data);
-            // console.log(data)
-            customers[idx].rider_type = values.rider_type
-            editCustomer(idx, {
-              ...customers[idx],
-              ...data,
-            })
-          })
-          .catch(error => {
-            console.log(error);
-            throw error;
-          })
-      }
       closeModal();
     })
   }
@@ -134,7 +88,7 @@ function RiderDetailFormModal({
     >
       <SheetContent side="bottom" className="wrapper flex flex-col justify-between w-full h-3/4 rounded-t-2xl">
         <SheetHeader>
-          <SheetTitle className="text-center text-foreground/75">Rider Detail</SheetTitle>
+          <SheetTitle className="text-center text-foreground/75">Edit Customer</SheetTitle>
         </SheetHeader>
         <ScrollArea className="flex-grow w-full">
           <div className="pb-10 px-4 mt-5">
@@ -254,40 +208,13 @@ function RiderDetailFormModal({
                       )}
                     />
                   </div>
-                  <div className="flex flex-col space-y-2">
-                    <FormField
-                      control={form.control}
-                      name="rider_type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <Label className="text-xs text-muted-foreground">Type</Label>
-                          <Select
-                            onValueChange={field.onChange}
-                            // @ts-ignore
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue className="text-muted-foreground" placeholder="Select" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="rider">Rider</SelectItem>
-                              <SelectItem value="passenger">Passenger</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
                 </div>
                 <div className="flex flex-col mt-6">
                   <Button type='submit' disabled={isPending} className="bg-brand font-bold hover:bg-brand/80">
                     {isPending &&
                       <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
                     }
-                    Select
+                    Submit
                   </Button>
                 </div>
               </form>
@@ -299,4 +226,4 @@ function RiderDetailFormModal({
   )
 }
 
-export default RiderDetailFormModal;
+export default CustomerEditModal;

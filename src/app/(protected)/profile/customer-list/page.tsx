@@ -26,6 +26,7 @@ async function CustomerList() {
       user_id: userCustomers[j].user_id,
       customer_no: userCustomers[j].customer_no,
       type: userCustomers[j].type,
+
       customer_id: dataCustomers.id,
       name: dataCustomers.name,
       address: dataCustomers.address,
@@ -42,7 +43,6 @@ async function CustomerList() {
       books: dataCustomers.books,
     })
   }
-  console.log(customerList)
   return (
     <div className="flex flex-col min-h-screen mb-20">
       <Container className="py-6 sticky top-0 z-30 bg-background w-full border-b border-foreground-muted flex justify-between items-center shrink-0">
@@ -59,7 +59,7 @@ async function CustomerList() {
         <div></div>
       </Container>
       <Container className="mt-4">
-        <CustomerListClient customerList={customerList} />
+        <CustomerListClient user={user} customerList={customerList} />
       </Container>
     </div>
   )

@@ -123,7 +123,7 @@ function NewPasswordForm({
             </FormItem>
           )}
         />
-        <div>
+        <div className="text-sm">
           <Altcha
             ref={altchaRef}
           />

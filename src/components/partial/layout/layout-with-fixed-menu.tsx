@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { siteSetting } from '@/lib/constants';
 import { cn } from '@/assets/styles/utils';
+import tripIcon from "@/assets/images/trip-icon.svg"
 
 const MENUS = [
   {
@@ -20,6 +21,7 @@ const MENUS = [
     name: siteSetting.mainMenu[1].name,
     path: siteSetting.mainMenu[1].path,
     icon: <Image
+      // src={tripIcon}
       src="/images/trip-icon.svg"
       width={28}
       height={28}
