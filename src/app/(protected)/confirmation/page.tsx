@@ -14,6 +14,7 @@ import { getAllProductPublic, getBooking } from '@/lib/data';
 import { midtransServerKey } from '@/lib/constants';
 import ActionComp from './module/action-comp';
 import ConfirmationContent from './module/confirmation-content';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Confirmation',
@@ -67,7 +68,7 @@ async function Confirmation({
     return res;
   }
   const getPaymentList = async () => {
-    const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD')
+    const startDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
     const endDate = moment().format('YYYY-MM-DD')
     const url = bookingUrl + '/book/payment' + '?begin=' + startDate + '&end=' + endDate;
     const res = axios.get(url, {
@@ -165,6 +166,18 @@ async function Confirmation({
             </div>
           </Card>
         );
+      case '407':
+        return (
+          <Card className="flex flex-col items-center justify-center border-none p-8 shadow">
+            <div>
+              <BadgeCheck className="w-32 h-32 text-brand" />
+            </div>
+            <Heading variant='xl' className="text-muted-foreground my-2.5">Expired</Heading>
+            <div className="mt-1 text-foreground/50 text-sm font-normal text-center w-full max-w-[220px]">
+              <span>Your payment has expiredr</span>
+            </div>
+          </Card>
+        )
       default:
         return (
           <Card className="flex flex-col items-center justify-center border-none p-8 shadow">
@@ -201,7 +214,9 @@ async function Confirmation({
           </div>
           <div className="mt-8 flex justify-center items-center">
             <div className="flex flex-col items-center gap-4 w-auto">
-              <Button className="w-full">Back</Button>
+              <Link href="/explore">
+                <Button className="w-full">Back to home</Button>
+              </Link>
             </div>
           </div>
         </Container>
