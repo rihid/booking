@@ -53,7 +53,6 @@ async function Detail({
     )
   }
   const product = await getSingleProductPublic(selectedProd.id);
-  console.log(product)
   const validTripDuration = product.duration_trip !== null ? product.duration_trip : '0';
   return (
     <React.Fragment>
