@@ -25,25 +25,6 @@ async function Trips() {
   const { user } = session;
   const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
 
-  const getPaymentList = async () => {
-    const startDate = moment().subtract(1, 'years').format('YYYY-MM-DD')
-    const endDate = moment().format('YYYY-MM-DD')
-    const url = bookingUrl + '/book/payment' + '?begin=' + startDate + '&end=' + endDate;
-    const res = axios.get(url, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + user.token
-      }
-    }).then(response => {
-      const data = response.data.data;
-      return data
-    }).catch(error => {
-      console.log(error);
-      throw error;
-    })
-    return res;
-  }
-  const payments = await getPaymentList();
   const products = await getAllProductPublic();
   return (
     <div className="flex flex-col min-h-screen">
@@ -68,7 +49,6 @@ async function Trips() {
           <TabsContent value='on-progress'>
             <Suspense fallback={<BookingListLoader />}>
               <BookingList
-                payments={payments}
                 products={products}
                 user={session?.user}
               />
