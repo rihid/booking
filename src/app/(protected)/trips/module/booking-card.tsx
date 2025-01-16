@@ -121,8 +121,8 @@ function BookingCard({
     <>
       <Card className="border-slate-300">
         {/* <pre>p: {JSON.stringify(paymentVal?.id, null, 2)}</pre> */}
-        <pre>b {JSON.stringify(booking.payments, null, 2)}</pre>
-        <pre>{JSON.stringify(paymentStatus.transaction_status, null, 2)}</pre>
+        {/* <pre>b {JSON.stringify(booking.payments, null, 2)}</pre> */}
+        {/* <pre>{JSON.stringify(paymentStatus.transaction_status, null, 2)}</pre> */}
         <CardHeader className="flex-row items-center justify-between">
           <CardTitle className="text-foreground/75">{product?.product_name}</CardTitle>
           <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
@@ -201,7 +201,7 @@ function BookingCard({
             </Button>
           }
           {transaction_status === "expire" &&
-            <Button type='button' variant="outline" disabled>
+            <Button type='button' variant="outline" disabled className="cursor-not-allowed">
               Payment Expired
             </Button>
           }

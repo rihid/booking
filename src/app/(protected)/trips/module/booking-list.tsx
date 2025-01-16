@@ -45,10 +45,10 @@ async function BookingList({
   const bookingBody = {
     customer_no: user?.customer_no as string,
     type: "booking",
-    // begin: null,
-    // end: null
-    begin: "2025-01-13",
-    end: "2025-01-30"
+    begin: null,
+    end: null
+    // begin: "2025-01-13",
+    // end: "2025-01-30"
   }
   const bookingData = await getBookByCustomer(user?.token, bookingBody);
   const paymentMethod = await getPaymentMethod();
@@ -148,7 +148,7 @@ async function BookingList({
           )
         }
       </Container>
-      <MidtransScript />
+      {/* <MidtransScript /> */}
     </>
   )
 }

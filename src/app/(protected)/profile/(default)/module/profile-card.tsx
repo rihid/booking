@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { ChevronRight } from 'lucide-react';
 import { useUiLayoutStore } from '@/store/ui-layout';
+import Link from 'next/link';
 
 function ProfileCard({
   user,
@@ -44,7 +45,9 @@ function ProfileCard({
           <button type="button" className="text-[11px]" onClick={handleClick}>Show Profile</button>
         </div>
       </div>
-      <ChevronRight className="w-5 h-5 text-foreground" />
+      <Link href="/profile/edit-information" className="block pl-8">
+        <ChevronRight className="w-5 h-5 text-foreground" />
+      </Link>
     </div>
   )
 }

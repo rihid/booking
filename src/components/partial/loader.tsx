@@ -161,6 +161,60 @@ export function BookingCardLoader() {
     </Card>
   )
 }
+export function CustomerListLoader() {
+  return (
+    <div>
+      <Card className="mb-4">
+        <CardContent className="relative p-0 flex flex-col divide-y">
+          <div className="flex flex-col space-y-1.5 p-4">
+            <Skeleton className="w-12 h-4" />
+            <Skeleton className="w-16 h-4" />
+          </div>
+          <div className="grid grid-cols-2 divide-x items-center justify-center">
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="mb-4">
+        <CardContent className="relative p-0 flex flex-col divide-y">
+          <div className="flex flex-col space-y-1.5 p-4">
+            <Skeleton className="w-12 h-4" />
+            <Skeleton className="w-16 h-4" />
+          </div>
+          <div className="grid grid-cols-2 divide-x items-center justify-center">
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="mb-4">
+        <CardContent className="relative p-0 flex flex-col divide-y">
+          <div className="flex flex-col space-y-1.5 p-4">
+            <Skeleton className="w-12 h-4" />
+            <Skeleton className="w-16 h-4" />
+          </div>
+          <div className="grid grid-cols-2 divide-x items-center justify-center">
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
 export default function DashboardSkeleton() {
   return (
     <>
