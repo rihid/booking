@@ -109,6 +109,7 @@ function CustomerEditModal({
                           <FormControl>
                             <Input
                               {...field}
+                              isMask
                               disabled={isPending}
                               placeholder="ID Card"
                               type="text"
@@ -176,6 +177,8 @@ function CustomerEditModal({
                               </div>
                               <Input
                                 {...field}
+                                isMask
+                                isPhone
                                 disabled={isPending}
                                 placeholder="81..."
                                 type="text"

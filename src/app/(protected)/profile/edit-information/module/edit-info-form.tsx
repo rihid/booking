@@ -48,6 +48,7 @@ function EditInfoForm({
     defaultValues: customer,
   })
   const onSubmit = (values: z.infer<typeof FormSchema>) => {
+    console.log('values: ', values)
     startTransition(async () => {
       await axios.put(customerUrl + '/' + customer.id, values, {
         headers: {
@@ -101,6 +102,7 @@ function EditInfoForm({
                     <FormControl>
                       <Input
                         {...field}
+                        isMask
                         disabled={isPending}
                         placeholder="ID Card"
                         type="text"
@@ -168,6 +170,8 @@ function EditInfoForm({
                         </div>
                         <Input
                           {...field}
+                          isMask
+                          isPhone
                           disabled={isPending}
                           placeholder="81..."
                           type="text"

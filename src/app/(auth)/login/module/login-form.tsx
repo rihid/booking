@@ -118,7 +118,7 @@ function LoginForm() {
         </div>
         <div className="flex flex-col">
           <div className="text-xs text-foreground/50 text-right font-light mb-2">
-            <Link href={"#"} className="hover:text-brand/80 hover:underline hover:underline-offset-2">Forgot your password?</Link>
+            <Link href="/forget" className="hover:text-brand/80 hover:underline hover:underline-offset-2">Forgot your password?</Link>
           </div>
           <Button type='submit' disabled={isPending} className="bg-brand font-bold hover:bg-brand/80">
             {isPending &&

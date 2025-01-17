@@ -1,15 +1,50 @@
-import * as React from "react"
-
-import { cn } from "@/assets/styles/utils"
+import * as React from "react";
+import { cn } from "@/assets/styles/utils";
 
 export interface InputProps
-  // extends React.InputHTMLAttributes<HTMLInputElement> {}
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "value"> {
-    value?: string | number | readonly string[] | null;
-  }
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange"> {
+  value?: string | number | readonly string[] | null;
+  onChange?: (rawValue: string) => void;
+  isMask?: boolean;
+  isPhone?: boolean;
+}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, value, ...props }, ref) => {
+  ({ className, type, value, onChange, isMask, isPhone, ...props }, ref) => {
+    const formatPhone = (input: string) => {
+      const formatted = input
+        .replace(/^0/, "") // Remove '0' di depan
+        .replace(/\D/g, "") // Filter non number char
+        .replace(/(\d{3})(\d{4})(\d{0,5})/, (_, p1, p2, p3) =>
+          `${p1} ${p2}${p3 ? ` ${p3}` : ""}`
+        );
+      return formatted.substring(0, 15); // Limit length to 15 characters
+    };
+
+    const removePhoneFormat = (input: string, isPhone?: boolean) => {
+      if (isPhone) {
+        const formatted = input.replace(/\s/g, "");
+        return formatted ? '0' + formatted : "";
+      }
+      return input;
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      let inputValue = e.target.value;
+
+      if (isMask) {
+        inputValue = inputValue.replace(/\D/g, "");
+      }
+
+      if (isPhone) {
+        inputValue = formatPhone(inputValue);
+      }
+
+      onChange?.(removePhoneFormat(inputValue, isPhone));
+    };
+
+    const displayValue = isPhone && typeof value === "string" ? formatPhone(value) : value;
+
     return (
       <input
         type={type}
@@ -18,12 +53,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className
         )}
         ref={ref}
-        value={value as string | number | readonly string[] | undefined}
+        value={displayValue as string | number | readonly string[] | undefined}
+        onChange={handleChange}
         {...props}
       />
-    )
+    );
   }
-)
-Input.displayName = "Input"
+);
 
-export { Input }
+Input.displayName = "Input";
+
+export { Input };

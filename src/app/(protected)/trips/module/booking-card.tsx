@@ -96,22 +96,35 @@ function BookingCard({
     })
   }
 
-  React.useEffect(() => {
-    const voidBooking = async (id: string) => {
+  const voidBooking = React.useCallback(async (id: string) => {
+    try {
       await axios.post(bookingUrl + '/book/void', { id: id }, {
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer ' + user.token
         }
       })
-        .then(response => {
-          console.log(response)
-        })
-        .catch(error => {
-          console.log(error);
-          throw error;
-        })
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
+  }, [user.token])
+  React.useEffect(() => {
+    // const voidBooking = async (id: string) => {
+    //   await axios.post(bookingUrl + '/book/void', { id: id }, {
+    //     headers: {
+    //       Accept: 'application/json',
+    //       Authorization: 'Bearer ' + user.token
+    //     }
+    //   })
+    //     .then(response => {
+    //       // console.log(response)
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //       throw error;
+    //     })
+    // }
     if (paymentStatus.status_code === '407' && booking.status !== 'void') {
       voidBooking(paymentStatus.order_id)
     }
@@ -196,7 +209,7 @@ function BookingCard({
                 href={createSnapLink()}
                 className="w-full"
               >
-                Belum Payment, Pending
+                Pay Now
               </Link>
             </Button>
           }

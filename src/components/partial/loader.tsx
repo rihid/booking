@@ -143,12 +143,12 @@ export function ProductSummaryLoader() {
 }
 export function BookingCardLoader() {
   return (
-    <Card className="shadow-md space-y-5 p-4">
+    <Card className="border-slate-200 space-y-5 p-4">
       <div className="flex items-center justify-between">
         <Skeleton className="h-4 w-44" />
         <Skeleton className="h-4 w-24" />
       </div>
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Skeleton className="h-3 w-52" />
           <Skeleton className="h-3 w-24" />
@@ -157,6 +157,9 @@ export function BookingCardLoader() {
           <Skeleton className="h-3 w-24" />
           <Skeleton className="h-3 w-24" />
         </div>
+      </div>
+      <div className="py-6 flex justify-center">
+        <Skeleton className="w-[200px] h-[200px]" />
       </div>
     </Card>
   )
@@ -234,8 +237,6 @@ export default function DashboardSkeleton() {
 export function BookingListLoader() {
   return (
     <Container className="space-y-6">
-      <BookingCardLoader />
-      <BookingCardLoader />
       <BookingCardLoader />
       <BookingCardLoader />
     </Container>

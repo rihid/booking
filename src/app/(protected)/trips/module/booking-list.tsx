@@ -5,7 +5,7 @@ import { Star, Clock, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import moment from 'moment';
-import { TypeOf, z } from 'zod';
+import { z } from 'zod';
 import { BookByCustomerSchema, ProductSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { getBookByCustomer } from '@/lib/data';
@@ -15,6 +15,7 @@ import axios from 'axios';
 import { generateBasicToken } from '@/lib/helper';
 import { masterUrl } from '@/lib/data/endpoints';
 import MidtransScript from './midtrans-script';
+import { BookingCardLoader } from '@/components/partial/loader';
 
 async function BookingList({
   user,
@@ -47,7 +48,7 @@ async function BookingList({
     type: "booking",
     begin: null,
     end: null
-    // begin: "2025-01-13",
+    // begin: "2024-11-01",
     // end: "2025-01-30"
   }
   const bookingData = await getBookByCustomer(user?.token, bookingBody);
