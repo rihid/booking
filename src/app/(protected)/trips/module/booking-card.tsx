@@ -33,7 +33,7 @@ function BookingCard({
   const router = useRouter()
   const { openModal } = useUiLayoutStore(store => store);
   const { setTripBook } = useTripStore(store => store);
-  const { paymentLinks, setPaymentLink } = usePaymentStore(store => store)
+  const { paymentLinks } = usePaymentStore(store => store)
   const { status_code, transaction_status } = paymentStatus;
 
   const midtransRedirectUrl = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL as string;

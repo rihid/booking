@@ -16,6 +16,7 @@ import { generateBasicToken } from '@/lib/helper';
 import { masterUrl } from '@/lib/data/endpoints';
 import MidtransScript from './midtrans-script';
 import { BookingCardLoader } from '@/components/partial/loader';
+import PaymentLinkWatcher from './payment-link-watcher';
 
 async function BookingList({
   user,
@@ -149,6 +150,7 @@ async function BookingList({
           )
         }
       </Container>
+      <PaymentLinkWatcher bookings={bookingData} />
       {/* <MidtransScript /> */}
     </>
   )

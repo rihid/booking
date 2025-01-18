@@ -2,6 +2,7 @@ import { createStore } from "zustand/vanilla";
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 type PaymentLink = {
+  date: any;
   order_id: string | null;
   payment_token: string | null;
 }
@@ -10,8 +11,8 @@ export type PaymentState = {
   paymentLinks: PaymentLink[]
 }
 export type PaymentActions = {
-
   setPaymentLink: (obj: PaymentLink) => void;
+  refreshPaymentLink: () => void;
 }
 export type PaymentStore = PaymentState & PaymentActions
 
@@ -38,7 +39,16 @@ export const createPaymentStore = (
           set((state) => ({
             paymentLinks: [...state.paymentLinks, obj],
           }))
-        }
+        },
+        refreshPaymentLink: () => {
+          const currentTime = Date.now();
+          set((state) => ({
+            paymentLinks: state.paymentLinks.filter((link) => {
+              const linkTime = new Date(link.date).getTime();
+              return currentTime - linkTime < 48 * 60 * 60 * 1000;
+            }),
+          }));
+        },
       }),
       {
         name: 'safari-payment',

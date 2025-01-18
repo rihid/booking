@@ -4,29 +4,27 @@ import { cn } from "@/assets/styles/utils";
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange"> {
   value?: string | number | readonly string[] | null;
-  onChange?: (rawValue: string) => void;
+  onChange?: (event: any) => void;
   isMask?: boolean;
   isPhone?: boolean;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, value, onChange, isMask, isPhone, ...props }, ref) => {
+    
     const formatPhone = (input: string) => {
       const formatted = input
         .replace(/^0/, "") // Remove '0' di depan
-        .replace(/\D/g, "") // Filter non number char
+        .replace(/\D/g, "") // Filter non-number char
         .replace(/(\d{3})(\d{4})(\d{0,5})/, (_, p1, p2, p3) =>
           `${p1} ${p2}${p3 ? ` ${p3}` : ""}`
         );
       return formatted.substring(0, 15); // Limit length to 15 characters
     };
 
-    const removePhoneFormat = (input: string, isPhone?: boolean) => {
-      if (isPhone) {
-        const formatted = input.replace(/\s/g, "");
-        return formatted ? '0' + formatted : "";
-      }
-      return input;
+    const removePhoneFormat = (input: string) => {
+      const formatted = input.replace(/\s/g, "");
+      return formatted ? "0" + formatted : "";
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,13 +32,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
       if (isMask) {
         inputValue = inputValue.replace(/\D/g, "");
+      } else if (isPhone) {
+        const formatted = formatPhone(inputValue);
+        onChange?.(removePhoneFormat(formatted));
+      } else {
+        onChange?.(e);
       }
-
-      if (isPhone) {
-        inputValue = formatPhone(inputValue);
-      }
-
-      onChange?.(removePhoneFormat(inputValue, isPhone));
     };
 
     const displayValue = isPhone && typeof value === "string" ? formatPhone(value) : value;

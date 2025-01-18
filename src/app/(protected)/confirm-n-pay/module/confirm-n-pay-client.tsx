@@ -211,6 +211,7 @@ function ConfirmNPayClient({
       })
       const res = await response.json();
       setPaymentLink({
+        date: moment().format(),
         order_id: body.orderId,
         payment_token: res.data.token
       })
