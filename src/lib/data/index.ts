@@ -22,13 +22,15 @@ const date = new Date();
 
 export const createUser = async (values: any) => {
   try {
-    const res = await axios.post(authUrl + '/user', values,  {
+    const res = await axios.post(authUrl + '/user', values, {
       headers: { Accept: 'application/json' },
     })
     const data = res.data.data;
     return data;
-  } catch (error) {
-    console.log(error)
+  } catch (error: any) {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   }
 }
@@ -41,8 +43,10 @@ export const postAuth = async (body: z.infer<typeof LoginFormSchema>) => {
     });
     const data = AuthSchema.parse(res.data)
     return data;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   }
 }
@@ -56,12 +60,14 @@ export const getUserToken = async (token: any) => {
     })
     const data = UserTokenSchema.parse(res.data.data);
     return data;
-  } catch (error) {
-    console.log(error)
+  } catch (error: any) {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   }
 }
-export const validateCustomer = async(token: any, user: any) => {
+export const validateCustomer = async (token: any, user: any) => {
   const body = {
     customer_no: null,
     name: user.name,
@@ -88,7 +94,7 @@ export const validateCustomer = async(token: any, user: any) => {
     throw error
   }
 }
-export const userStoreCustomer = async(token: any, user: any) => {
+export const userStoreCustomer = async (token: any, user: any) => {
   const body = {
     user_id: user.id,
     customer_no: user.customer_no,
@@ -96,11 +102,13 @@ export const userStoreCustomer = async(token: any, user: any) => {
   }
   try {
     const res = await axios.post(userUrl + '/store-customer', body, {
-      headers: { Accept: 'application/json', Authorization: 'Bearer ' + token}, timeout: 50000
+      headers: { Accept: 'application/json', Authorization: 'Bearer ' + token }, timeout: 50000
     })
     return res.data
-  } catch (error) {
-    console.log(error)
+  } catch (error: any) {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error
   }
 }
@@ -113,8 +121,10 @@ export const checkUserCustomer = async (token: any, user: any) => {
       headers: { Accept: 'application/json', Authorization: 'Bearer ' + token }, timeout: 50000
     })
     return res.data
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   }
 }
@@ -128,8 +138,10 @@ export const getUserCustomerList = async (token: any, user: any) => {
       timeout: 50000
     })
     return res.data.data
-  } catch (error) {
-    console.log(error)
+  } catch (error: any) {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error
   }
 }
@@ -140,8 +152,10 @@ export const getCustomerByNo = async (token: any, customerNo: any) => {
       timeout: 30000
     })
     return res.data.data
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   }
 }
@@ -153,8 +167,10 @@ export const getCustomerByNoMulti = async (token: any, customerNo: any) => {
       timeout: 30000
     })
     return res.data.data
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   }
 }
@@ -170,8 +186,10 @@ export const getAllProductPublic = async () => {
     // generate slug
     const withSlug = generateProductSlug(products)
     return withSlug;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   }
 }
@@ -185,8 +203,10 @@ export const getSingleProductPublic = async (id: string) => {
     // const product = SingleProductSchema.parse(res.data.data);
     const product = res.data.data
     return product;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   }
 }
@@ -194,7 +214,7 @@ export const getAllBooking = async (token: any) => {
   const startDate = moment(date).subtract(30, 'days').format('YYYY-MM-DD');
   const endDate = moment(date).format('YYYY-MM-DD');
 
-  const res =  axios.get(bookingUrl + '/book' + '?begin=' + startDate + '&end=' + endDate + '&type=book', {
+  const res = axios.get(bookingUrl + '/book' + '?begin=' + startDate + '&end=' + endDate + '&type=book', {
     headers: {
       Accept: 'application/json',
       Authorization: 'Bearer ' + token
@@ -202,8 +222,10 @@ export const getAllBooking = async (token: any) => {
   }).then(response => {
     const data = BookingSchema.parse(response.data.data);
     return data;
-  }).catch(error => {
-    console.log(error);
+  }).catch((error: any) => {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   })
 
@@ -218,8 +240,10 @@ export const getBooking = async (token: any, id: string) => {
   }).then(response => {
     const data = SingleBookingSchema.parse(response.data.data);
     return data;
-  }).catch(error => {
-    console.log(error);
+  }).catch((error: any) => {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   })
 
@@ -234,8 +258,10 @@ export const getBookByCustomer = async (token: any, body: BookByCustomer) => {
   }).then(response => {
     const data = BookByCustomerSchema.parse(response.data.data);
     return data;
-  }).catch( error => {
-    console.log(error)
+  }).catch((error: any) => {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   })
   return res;
@@ -251,8 +277,10 @@ export const getInvoiceByCustomer = async (token: any, body: BookByCustomer) => 
     const data = InvoiceByCustomerSchema.parse(response.data.data);
     console.log(data)
     return data;
-  }).catch( error => {
-    console.log(error)
+  }).catch((error: any) => {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   })
   return res;
@@ -265,12 +293,13 @@ export const getCustomerList = (token: any, body: CustomerListBody) => {
     }
   })
     .then(response => {
-      console.log(response.data.data);
       const data = response.data.data;
       return data;
     })
-    .catch(error => {
-      console.log(error)
+    .catch((error: any) => {
+      console.log(error.response.config.url)
+      console.log(error.response.status)
+      console.log(error.response.data.message)
       throw error;
     })
 
@@ -283,11 +312,12 @@ export const getPaymentMethod = (token: any) => {
       Authorization: 'Bearer ' + token
     }
   }).then(response => {
-    console.log(response.data.data)
     const data = response.data.data;
     return data;
-  }).catch(error => {
-    console.log(error);
+  }).catch((error: any) => {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   })
 
@@ -303,8 +333,10 @@ export const getPaymentStatus = (orderId: string) => {
   }).then(response => {
     const data = response.data;
     return data;
-  }).catch(error => {
-    console.log(error);
+  }).catch((error: any) => {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   })
   return res;
@@ -319,8 +351,10 @@ export const getBranchList = async (token: any) => {
     const data = branchSchema.parse(response.data.data);
     console.log(data)
     return data;
-  }).catch( error => {
-    console.log(error)
+  }).catch((error: any) => {
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
     throw error;
   })
   return res;

@@ -143,12 +143,12 @@ export function ProductSummaryLoader() {
 }
 export function BookingCardLoader() {
   return (
-    <Card className="shadow-md space-y-5 p-4">
+    <Card className="border-slate-200 space-y-5 p-4">
       <div className="flex items-center justify-between">
         <Skeleton className="h-4 w-44" />
         <Skeleton className="h-4 w-24" />
       </div>
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Skeleton className="h-3 w-52" />
           <Skeleton className="h-3 w-24" />
@@ -158,7 +158,64 @@ export function BookingCardLoader() {
           <Skeleton className="h-3 w-24" />
         </div>
       </div>
+      <div className="py-6 flex justify-center">
+        <Skeleton className="w-[200px] h-[200px]" />
+      </div>
     </Card>
+  )
+}
+export function CustomerListLoader() {
+  return (
+    <div>
+      <Card className="mb-4">
+        <CardContent className="relative p-0 flex flex-col divide-y">
+          <div className="flex flex-col space-y-1.5 p-4">
+            <Skeleton className="w-12 h-4" />
+            <Skeleton className="w-16 h-4" />
+          </div>
+          <div className="grid grid-cols-2 divide-x items-center justify-center">
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="mb-4">
+        <CardContent className="relative p-0 flex flex-col divide-y">
+          <div className="flex flex-col space-y-1.5 p-4">
+            <Skeleton className="w-12 h-4" />
+            <Skeleton className="w-16 h-4" />
+          </div>
+          <div className="grid grid-cols-2 divide-x items-center justify-center">
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="mb-4">
+        <CardContent className="relative p-0 flex flex-col divide-y">
+          <div className="flex flex-col space-y-1.5 p-4">
+            <Skeleton className="w-12 h-4" />
+            <Skeleton className="w-16 h-4" />
+          </div>
+          <div className="grid grid-cols-2 divide-x items-center justify-center">
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="w-14 h-5" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 export default function DashboardSkeleton() {
@@ -180,8 +237,6 @@ export default function DashboardSkeleton() {
 export function BookingListLoader() {
   return (
     <Container className="space-y-6">
-      <BookingCardLoader />
-      <BookingCardLoader />
       <BookingCardLoader />
       <BookingCardLoader />
     </Container>

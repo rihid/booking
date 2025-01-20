@@ -46,6 +46,7 @@ function ConfirmationContent({
   paymentStatus: any;
   payments: any;
 }) {
+  console.log('booking', booking.payment)
   const searchParams = useSearchParams()
   const orderId = searchParams.get('order_id')
   const { paymentLinks } = usePaymentStore((store) => store);
@@ -81,6 +82,7 @@ function ConfirmationContent({
       })
       return res;
     } else {
+      console.log('put')
       const obj = {
         payment_no: paymentVal.payment_no,
         book_no: body.book_no,

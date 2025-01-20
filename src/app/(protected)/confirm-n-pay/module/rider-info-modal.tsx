@@ -158,7 +158,7 @@ function RiderInfoModal({
             </div>
             <div className="flex-shrink flex flex-col w-full mt-6 gap-2">
               <OpenModalButton
-                disabled={isLoading}
+                disabled={isLoading || isSelected}
                 view="rider-detail-view"
                 variant='default'
                 className='h-10 px-4 py-2'

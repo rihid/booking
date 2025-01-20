@@ -15,7 +15,7 @@ import axios from 'axios';
 import { authUrl } from '@/lib/data/endpoints';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import ReCAPTCHA from "react-google-recaptcha";
+import Altcha from './captcha';
 
 const ResetFormSchema = z.object({
   token: z.string(),
@@ -36,37 +36,10 @@ function NewPasswordForm({
   token: any;
 }) {
   const router = useRouter();
-  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
+  const altchaRef = React.useRef<HTMLInputElement>(null)
   const [isVerified, setIsVerified] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [dataReset, setDataReset] = React.useState(null);
-
-  const handleChange = (token: string | null) => {
-    console.log('captcha token: ', token)
-    handleCaptchaSubmission(token);
-  };
-
-  function handleExpired() {
-    setIsVerified(false);
-  }
-
-  async function handleCaptchaSubmission(token: string | null) {
-    try {
-      if (token) {
-        await fetch("/captcha", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token }),
-        });
-        setIsVerified(true);
-      }
-    } catch (e) {
-      setIsVerified(false);
-    }
-  }
 
   const form = useForm<z.infer<typeof ResetFormSchema>>({
     resolver: zodResolver(ResetFormSchema),
@@ -83,20 +56,22 @@ function NewPasswordForm({
     const { token, password } = values;
     const body = { token, password };
     console.log(body)
-    // await axios.post(authUrl + '/user/forgot-reset', body, { headers: { Accept: 'application/json' } })
-    //   .then(response => {
-    //     const data = response.data
-    //     if (data) {
-    //       setDataReset(data)
-    //       toast.success(data.message)
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.log(error)
-    //   })
-    //   .finally(() => {
-    //     setIsLoading(false)
-    //   })
+    if (altchaRef.current?.value) {
+      await axios.post(authUrl + '/user/forgot-reset', body, { headers: { Accept: 'application/json' } })
+        .then(response => {
+          const data = response.data
+          if (data) {
+            setDataReset(data)
+            toast.success(data.message)
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    }
   }
   if (dataReset) {
     return (
@@ -148,13 +123,11 @@ function NewPasswordForm({
             </FormItem>
           )}
         />
-        <ReCAPTCHA
-          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-          ref={recaptchaRef}
-          onChange={handleChange}
-          onExpired={handleExpired}
-          className=''
-        />
+        <div className="text-sm">
+          <Altcha
+            ref={altchaRef}
+          />
+        </div>
         <div className="flex flex-col mt-2">
           <Button type='submit' disabled={isLoading} className="bg-brand font-bold hover:bg-brand/80">
             {isLoading &&

@@ -53,10 +53,9 @@ async function Detail({
     )
   }
   const product = await getSingleProductPublic(selectedProd.id);
-  console.log(product)
   const validTripDuration = product.duration_trip !== null ? product.duration_trip : '0';
   return (
-    <React.Fragment>
+    <>
       <div className="flex flex-col min-h-screen">
         <div className="relative">
           <HeaaderDetailCarousel pictures={selectedProd.pictures} />
@@ -170,7 +169,7 @@ async function Detail({
         <ReserveButton product={product} />
       </Suspense>
       <AboutDetailModal data={product.routes} />
-    </React.Fragment>
+    </>
   )
 }
 

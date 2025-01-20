@@ -16,64 +16,80 @@ import { useBookStore } from '@/providers/store-providers/book-provider';
 type Props = {
   dates: string;
 }
+const toggleItems = [
+  {
+    label: "6:00AM",
+    value: "6"
+  },
+  {
+    label: "7:00AM",
+    value: "7"
+  },
+  {
+    label: "8:00AM",
+    value: "8"
+  },
+  {
+    label: "9:00AM",
+    value: "9"
+  },
+  {
+    label: "10:00AM",
+    value: "10"
+  },
+  {
+    label: "11:00AM",
+    value: "11"
+  },
+  {
+    label: "12:00PM",
+    value: "12"
+  },
+  {
+    label: "1:00PM",
+    value: "13"
+  },
+  {
+    label: "2:00PM",
+    value: "14"
+  },
+  {
+    label: "3:00PM",
+    value: "15"
+  },
+  {
+    label: "4:00PM",
+    value: "16"
+  }
+];
 function DatesFormModal({
   dates,
 }: Props) {
-  const { updateBookingField } = useBookStore(state => state)
+  const { updateBookingField, bookingField } = useBookStore(state => state)
   const { showModal, closeModal } = useUiLayoutStore(state => state);
   const [date, setDate] = React.useState<Date | undefined>(new Date(dates));
   const [time, setTime] = React.useState<number>(6)
 
-  const toggleItems = [
-    {
-      label: "6:00AM",
-      value: "6"
-    },
-    {
-      label: "7:00AM",
-      value: "7"
-    },
-    {
-      label: "8:00AM",
-      value: "8"
-    },
-    {
-      label: "9:00AM",
-      value: "9"
-    },
-    {
-      label: "10:00AM",
-      value: "10"
-    },
-    {
-      label: "11:00AM",
-      value: "11"
-    },
-    {
-      label: "12:00PM",
-      value: "12"
-    },
-    {
-      label: "1:00PM",
-      value: "13"
-    },
-    {
-      label: "2:00PM",
-      value: "14"
-    },
-    {
-      label: "3:00PM",
-      value: "15"
-    },
-    {
-      label: "4:00PM",
-      value: "16"
-    },
-    {
-      label: "5:00PM",
-      value: "17"
-    }
-  ];
+  const setDefaultHour = () => {
+    if (!date) return
+    const hour = date.getHours()
+    return hour.toString()
+  }
+
+  const handleValueChange = (val: string) => {
+    if(!val) return
+    const dateWithHour = date?.setHours(parseInt(val));
+    const newDate = moment(dateWithHour).format('YYYY-MM-DD H:mm:ss')
+    console.log('newDate', newDate)
+    updateBookingField({
+      schedule_check_in_date: newDate
+    })
+    closeModal();
+  }
+
+  /*
+  # Ini apabila pakai mode select Button
+
   const handleValueChange = (val: string) => {
     setTime(parseInt(val));
   }
@@ -89,6 +105,9 @@ function DatesFormModal({
     });
     closeModal();
   }
+
+  */ 
+
   return (
     <Sheet
       open={showModal}
@@ -121,8 +140,9 @@ function DatesFormModal({
                   Select Time
                 </h4>
                 <ToggleGroup
+                  defaultValue={setDefaultHour()}
                   type="single"
-                  variant="outline"
+                  variant="custom"
                   className="flex-wrap justify-start mt-4 gap-2 text-xs text-foregorund/50 rounded-sm"
                   onValueChange={value => handleValueChange(value)}
                 >
@@ -131,13 +151,13 @@ function DatesFormModal({
                   ))}
                 </ToggleGroup>
               </div>
-              <div className="flex items-center justify-center mt-6 w-full">
+              {/* <div className="flex items-center justify-center mt-6 w-full">
                 <Button
                   type='button'
                   className="bg-brand hover:bg-brand/90"
                   onClick={handleSave}
                 >Select</Button>
-              </div>
+              </div> */}
             </div>
           </form>
         </ScrollArea>

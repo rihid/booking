@@ -20,31 +20,25 @@ function BookingCard({
   booking,
   paymentMethod,
   product,
-  bookingPayment,
   paymentStatus,
-  paymentVal,
   snapLink,
 }: {
   user: any;
   booking: any;
   paymentMethod: any;
   product: any;
-  bookingPayment: any;
   paymentStatus: any;
-  paymentVal: any;
   snapLink?: any;
 }) {
   const router = useRouter()
   const { openModal } = useUiLayoutStore(store => store);
   const { setTripBook } = useTripStore(store => store);
-  const { paymentLinks, setPaymentLink } = usePaymentStore(store => store)
-  const { status_code } = paymentStatus;
+  const { paymentLinks } = usePaymentStore(store => store)
+  const { status_code, transaction_status } = paymentStatus;
 
   const midtransRedirectUrl = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL as string;
-  const midtransApiUrl = process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/'
 
   const [loadingConfirm, setLoadingConfirm] = React.useState<boolean>(false);
-  const [loadingSnap, setLoadingSnap] = React.useState<boolean>(false)
 
   const handleOpenModal = () => {
     openModal('trip-booking-view')
@@ -84,7 +78,7 @@ function BookingCard({
       token_payment: null,
       cash_id: null
     }
-    // console.log(body)
+
     await axios.post(bookingUrl + '/book/payment', body, {
       headers: {
         Accept: 'application/json',
@@ -101,103 +95,36 @@ function BookingCard({
       throw error;
     })
   }
-  const handleExpirePaymentSnap = async (value: any) => {
-    console.log('snap val', value)
-    setLoadingSnap(true)
-    let body = {
-      orderId: booking.id + '$',
-      itemId: product.id,
-      productName: product.product_name,
-      price: parseFloat(value.book_total),
-      quantity: 1,
-      customer: user.name,
-      customerEmail: user.email
-    }
-    try {
-      const response = await fetch('/api/transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      })
-      const res = await response.json();
-      if (res) {
-        setLoadingSnap(false)
-      }
-      setPaymentLink({
-        order_id: body.orderId,
-        payment_token: res.data.token
-      })
-      // @ts-ignore
-      window.snap.pay(res.data.token, {
-        onPending: (result: any) => {
-          // router.push(`/confirmation?order_id=${body.orderId}&status_code=${result.status_code}&payment_token=${res.data.token}`)
-        },
-      });
-    } catch (error) {
-      setLoadingSnap(false)
-      console.log(error);
-      throw error;
-    }
-  }
-  const handleAddNewPayment = async () => {
-    let methodVal = null
-    if (paymentStatus.payment_type === 'bank_transfer') {
-      const midtransBankVal = paymentStatus.va_numbers[0].bank;
-      methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
-    }
-    const body = {
-      payment_no: null,
-      book_no: booking.book_no,
-      payment_date: moment().format('YYYY-MM-DD'),
-      method_id: methodVal ? methodVal.id : null,
-      amount: '0',
-      promo_id: null,
-      round: null,
-      discount: null,
-      total: '0',
-      org_no: null,
-      branch_no: null,
-      payment_type: "down_payment",
-      note: null,
-      token_payment: null,
-      cash_id: null
-    }
-    console.log(body)
-    const res = await axios.post(bookingUrl + '/book/payment', body, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + user.token
-      }
-    }).then(response => {
-      console.log(response.data.data);
-      const data = response.data.data;
-      if (data) router.refresh();
-      return data
-    }).catch(error => {
-      console.log(error);
-      throw error;
-    })
-    return res;
-  }
 
-  React.useEffect(() => {
-    const voidBooking = async (id: string) => {
+  const voidBooking = React.useCallback(async (id: string) => {
+    try {
       await axios.post(bookingUrl + '/book/void', { id: id }, {
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer ' + user.token
         }
       })
-        .then(response => {
-          console.log(response)
-        })
-        .catch(error => {
-          console.log(error);
-          throw error;
-        })
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
+  }, [user.token])
+  React.useEffect(() => {
+    // const voidBooking = async (id: string) => {
+    //   await axios.post(bookingUrl + '/book/void', { id: id }, {
+    //     headers: {
+    //       Accept: 'application/json',
+    //       Authorization: 'Bearer ' + user.token
+    //     }
+    //   })
+    //     .then(response => {
+    //       // console.log(response)
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //       throw error;
+    //     })
+    // }
     if (paymentStatus.status_code === '407' && booking.status !== 'void') {
       voidBooking(paymentStatus.order_id)
     }
@@ -206,8 +133,9 @@ function BookingCard({
   return (
     <>
       <Card className="border-slate-300">
-        {/* <pre>p: {JSON.stringify(paymentStatus, null, 2)}</pre> */}
-        {/* <pre>b {JSON.stringify(booking.status, null, 2)}</pre> */}
+        {/* <pre>p: {JSON.stringify(paymentVal?.id, null, 2)}</pre> */}
+        {/* <pre>b {JSON.stringify(booking.payments, null, 2)}</pre> */}
+        {/* <pre>{JSON.stringify(paymentStatus.transaction_status, null, 2)}</pre> */}
         <CardHeader className="flex-row items-center justify-between">
           <CardTitle className="text-foreground/75">{product?.product_name}</CardTitle>
           <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
@@ -250,8 +178,18 @@ function BookingCard({
           </div>
         </CardContent>
         <CardFooter className="grid grid-cols-1 w-full gap-3">
-          {paymentVal && status_code === '201' &&
-            // masuk payment & pembayaran pending
+          {booking.payments.length > 0 && transaction_status === "settlement" &&
+            <></>
+          }
+          {booking.payments.length === 0 && transaction_status === "settlement" &&
+            <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90" disabled={loadingConfirm} onClick={handlePaymentConfirm}>
+              {loadingConfirm &&
+                <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
+              }
+              Confirm Payment
+            </Button>
+          }
+          {booking.payments.length > 0 && transaction_status === "pending" &&
             <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
               {snapLink ?
                 <Link
@@ -261,21 +199,11 @@ function BookingCard({
                   Pay Now
                 </Link>
                 :
-                <>payment expired</>
+                <>Payment Expired</>
               }
             </Button>
           }
-          {!paymentVal && status_code === '200' &&
-            // belum masuk payment & pembayaran done
-            <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90" disabled={loadingConfirm} onClick={handlePaymentConfirm}>
-              {loadingConfirm &&
-                <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
-              }
-              Confirm Payment
-            </Button>
-          }
-          {!paymentVal && status_code === '201' &&
-            // belum masuk payment & pembayaran pending
+          {booking.payments.length === 0 && transaction_status === "pending" &&
             <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90">
               <Link
                 href={createSnapLink()}
@@ -285,25 +213,16 @@ function BookingCard({
               </Link>
             </Button>
           }
-          {paymentVal && status_code === '404' &&
-            // masuk payment & cash
-            <Button disabled variant="secondary" className="text-xs h-auto">
-              Cash Payment
+          {transaction_status === "expire" &&
+            <Button type='button' variant="outline" disabled className="cursor-not-allowed">
+              Payment Expired
             </Button>
           }
-          {paymentVal && status_code == '407' &&
-            // masuk payment & pembayaran pending expired
+          {transaction_status === "cancel" &&
             <Button type='button' variant="outline" disabled>
-              Expire Payment
+              Payment Canceled
             </Button>
           }
-          {!paymentVal && status_code == '407' &&
-            // belum masuk payment & pembayaran pending expired
-            <Button type='button' variant="outline" disabled>
-              Expire Payment
-            </Button>
-          }
-
         </CardFooter>
       </Card>
     </>

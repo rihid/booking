@@ -126,7 +126,7 @@ function ConfirmNPayClient({
         ...customers[0],
         ...data
       })
-      console.log(customers[0])
+      // console.log(customers[0])
     } else {
       const initialData = {
         id: null,
@@ -153,8 +153,8 @@ function ConfirmNPayClient({
     setIsAddRider(checked);
   }
   const handleOpenRiderModal = async (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => {
-    console.log('customer in open rider modal')
-    console.log(customer)
+    // console.log('customer in open rider modal')
+    // console.log(customer)
     setIndex(idx);
     setCustomer(customer);
     editCustomer(idx, {
@@ -211,6 +211,7 @@ function ConfirmNPayClient({
       })
       const res = await response.json();
       setPaymentLink({
+        date: moment().format(),
         order_id: body.orderId,
         payment_token: res.data.token
       })
