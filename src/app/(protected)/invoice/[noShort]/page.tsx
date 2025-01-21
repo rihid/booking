@@ -7,11 +7,12 @@ import { ChevronLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button/button';
 import Heading from '@/components/ui/heading';
 import RatingForm from './module/rating-form';
-import { getAllProductPublic, getBooking, getInvoiceByCustomer } from '@/lib/data';
+import { getAllProductPublic, getBooking, getInvoiceByCustomer, getOrganizations } from '@/lib/data';
 import { getSession } from '@/lib/session';
 import { currency } from '@/lib/helper';
 import { Ratings } from '@/components/ui/ratings';
 import TopTitle from './module/top-title';
+import DownloadInvoiceBtn from './module/download-invoice-btn';
 
 export const metadata: Metadata = {
   title: 'Invoice',
@@ -25,18 +26,101 @@ async function InvoiceDetail({
 }) {
   const session = await getSession();
   // @ts-ignore
-  const { token, customer_no } = session.user;
+  const { token, customer_no, org_no } = session.user;
   const invoiceBody = {
     customer_no: customer_no as string,
     type: "invoice",
     begin: null,
     end: null
   }
+  
+  const organizations = await getOrganizations(token);
   const invoices = await getInvoiceByCustomer(token, invoiceBody);
+  const products = await getAllProductPublic();
+  const dataInvoices = []
+  if (invoices) {
+    const organization = organizations.find((o: any) => o.org_no === org_no)
+    const array = invoices
+    for (let i = 0; i < array.length; i++) {
+      const numberArr = array[i].numbers;
+      const numbers = []
+      for (let n = 0; n < numberArr.length; n++) {
+        const productVal = products.find(p => p.product_no === numberArr[i].product_no)
+        const obj = {
+          id: numberArr[i].id,
+          book_no: numberArr[i].book_no,
+          type: numberArr[i].type,
+          qty: numberArr[i].qty,
+          product_no: numberArr[i].product_no,
+          product: productVal ? productVal.product_name : null,
+          product_sku: numberArr[i].product_sku,
+          variant: numberArr[i].variant,
+          price: numberArr[i].price,
+          subtotal: numberArr[i].subtotal,
+          discount: numberArr[i].discount,
+          tax: numberArr[i].tax,
+          tax_id: numberArr[i].tax_id,
+          total: numberArr[i].total,
+          is_guided: numberArr[i].is_guided,
+          ref_no: numberArr[i].ref_no,
+          check: numberArr[i].check,
+          uom_id: numberArr[i].uom_id,
+          description: numberArr[i].description
+        }
+        numbers.push(obj)
+      }
+
+      const obj = {
+        id: array[i].id,
+        type: array[i].type,
+        type_id: array[i].type_id,
+        invoice_no: array[i].invoice_no,
+        book_no: array[i].book_no,
+        book_date: array[i].book_date,
+        customer_no: array[i].customer_no,
+
+        customer_name: array[i].customer.name,
+        customer_address: array[i].customer.address,
+        customer_phone: array[i].customer.phone,
+
+        schedule_check_in_date: array[i].schedule_check_in_date,
+        schedule_check_out_date: array[i].schedule_check_out_date,
+        check_in_date: array[i].check_in_date,
+        check_out_date: array[i].check_out_date,
+        duration: array[i].duration,
+        notes: array[i].notes,
+        product_no: array[i].product_no,
+        bill_no: array[i].bill_no,
+        create_by: array[i].create_by,
+        status: array[i].status,
+        lock: array[i].lock,
+        org_no: array[i].org_no,
+        branch_no: array[i].branch_no,
+        unit_qty: array[i].unit_qty,
+        subtotal: array[i].subtotal,
+        discount: array[i].discount,
+        tax: array[i].tax,
+        tax_id: array[i].tax_id,
+        total: array[i].total,
+        penalty: array[i].penalty,
+        payment_dp: array[i].payment_dp,
+        payment_amount: array[i].payment_amount,
+        payments: array[i].payments,
+        units: array[i].units,
+        numbers: numbers,
+        downPayments: array[i].downPayments,
+        riders: array[i].riders,
+        payment_balance: 0,
+        organization: organization
+      }
+      dataInvoices.push(obj)
+    }
+  }
+  const dataInvoice = dataInvoices.find(di => di.invoice_no.split('/').pop() === params.noShort)
+
   const invoice = invoices.find(inv => inv.invoice_no.split('/').pop() === params.noShort);
   const numbers = invoice?.numbers.filter((number: any) => number.qty !== '0');
 
-  const products = await getAllProductPublic();
   let booking = null;
   if (invoice) {
     booking = await getBooking(token, invoice.id);
@@ -71,19 +155,6 @@ async function InvoiceDetail({
             })}
           </dl>
         </div>
-        {/* <div>
-          <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
-          <dl className="space-y-4">
-            <div className="flex items-center justify-between gap-x-6 gap-y-4">
-              <dt className="text-sm font-medium text-foreground/50">
-                Rp 000.000 x 0 Single Ride
-              </dt>
-              <dd className="text-foreground/50 text-sm">
-                Rp 000,000
-              </dd>
-            </div>
-          </dl>
-        </div> */}
         <hr className="border border-slate-200" />
         <div>
           <dl className="space-y-4">
@@ -161,11 +232,7 @@ async function InvoiceDetail({
         })}
       </Container>
       <PriceDetailComp />
-      <div className="flex items-center justify-center mt-10">
-        <Button
-          className="bg-brand hover:bg-brand/90"
-        >Download Invoice</Button>
-      </div>
+      <DownloadInvoiceBtn user={session?.user} invoice={dataInvoice} />
     </div>
   )
 }

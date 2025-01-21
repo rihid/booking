@@ -32,6 +32,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
       if (isMask) {
         inputValue = inputValue.replace(/\D/g, "");
+        onChange?.(inputValue)
       } else if (isPhone) {
         const formatted = formatPhone(inputValue);
         onChange?.(removePhoneFormat(formatted));

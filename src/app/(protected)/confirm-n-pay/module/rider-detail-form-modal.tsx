@@ -212,6 +212,26 @@ function RiderDetailFormModal({
                   <div className="flex flex-col space-y-2">
                     <FormField
                       control={form.control}
+                      name="age"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label className="text-xs text-muted-foreground">Age</Label>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              disabled={isPending}
+                              placeholder="Age"
+                              type="text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <FormField
+                      control={form.control}
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
@@ -223,7 +243,6 @@ function RiderDetailFormModal({
                               </div>
                               <Input
                                 {...field}
-                                isMask
                                 isPhone
                                 disabled={isPending}
                                 placeholder="81..."

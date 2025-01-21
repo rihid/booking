@@ -16,6 +16,7 @@ import axios from 'axios';
 import { customerUrl } from '@/lib/data/endpoints';
 import { toast } from 'sonner';
 import { CustomerSchema } from '@/lib/schema';
+import moment from 'moment';
 
 const FormSchema = z.object({
   id: z.optional(z.string().nullable()),
@@ -43,9 +44,23 @@ function EditInfoForm({
   customer: any;
 }) {
   const [isPending, startTransition] = React.useTransition();
+  
+  const getCustomerAge = (birthday: any) => {
+    if(!birthday) return null
+    const birth = new Date(birthday)
+    const dayNow = new Date()
+    const diff =  new Date(dayNow.getTime() - birth.getTime())
+    const getyear = diff.getUTCFullYear() - 1970;
+    return getyear
+  }
+  const customerData = {
+    ...customer,
+    age: getCustomerAge(customer.birthday)
+  }
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: customer,
+    defaultValues: customerData,
   })
   const onSubmit = (values: z.infer<typeof FormSchema>) => {
     console.log('values: ', values)
@@ -159,6 +174,26 @@ function EditInfoForm({
             <div className="flex flex-col space-y-2">
               <FormField
                 control={form.control}
+                name="age"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-xs text-muted-foreground">Age</Label>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="Age"
+                        type="text"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex flex-col space-y-2">
+              <FormField
+                control={form.control}
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
@@ -170,7 +205,6 @@ function EditInfoForm({
                         </div>
                         <Input
                           {...field}
-                          isMask
                           isPhone
                           disabled={isPending}
                           placeholder="81..."

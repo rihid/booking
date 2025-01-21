@@ -67,6 +67,16 @@ export const getUserToken = async (token: any) => {
     throw error;
   }
 }
+export const getOrganizations = async (token: any) => {
+  try {
+    const response = await axios.get(authUrl + '/organization', { headers: { Accept: 'application/json', Authorization: 'Bearer ' + token } })
+    return response.data.data
+  } catch (error: any) {
+    console.log(error.response.status)
+    console.log(error.response.data.message)
+    throw error
+  }
+}
 export const validateCustomer = async (token: any, user: any) => {
   const body = {
     customer_no: null,
@@ -183,7 +193,6 @@ export const getAllProductPublic = async () => {
     });
     // const products = z.array(ProductSchema).parse(res.data.data);
     const products = res.data.data;
-    // generate slug
     const withSlug = generateProductSlug(products)
     return withSlug;
   } catch (error: any) {

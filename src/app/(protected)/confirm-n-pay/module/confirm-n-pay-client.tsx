@@ -63,7 +63,7 @@ function ConfirmNPayClient({
       const qty = parseInt(val.qty);
       const totalRider = parseInt(val.total_rider)
       const variant = val.variant?.toLowerCase();
-      if(variant) {
+      if (variant) {
         if (variant.includes("couple") || variant.includes("double")) {
           return acc + (qty * 2);
         }
@@ -260,12 +260,8 @@ function ConfirmNPayClient({
       console.log(error);
       throw error;
     })
-    if (payment_select === 'cash') {
-      router.push(`/confirmation?order_id=${orderIdCash}`)
-    } else {
-      // midtrans
-      await handleCheckout(bodyMidtrans);
-    }
+    // midtrans
+    await handleCheckout(bodyMidtrans);
     setIsLoading(false);
   }
   // onmount
@@ -701,46 +697,6 @@ function ConfirmNPayClient({
         </Container>
         <PriceDetailComp />
         <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
-          <div>
-            <h3 className="font-bold text-base text-foreground/75 mb-3">Pay With</h3>
-            <div className="space-y-6">
-              <Controller
-                name='payment_select'
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => {
-                  return (
-                    <ToggleGroup
-                      id="payment_select"
-                      type="single"
-                      className="flex flex-col w-full gap-5"
-                      value={field.value || null}
-                      onValueChange={field.onChange}
-                      aria-invalid={errors.payment_select ? "true" : "false"}
-                    >
-                      <ToggleGroupItem
-                        value="credit-debit"
-                        className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
-                      >
-                        <CreditCard className="w-5 h-5 mr-2 inline-block" />
-                        Cashless
-                      </ToggleGroupItem>
-                      <ToggleGroupItem
-                        value="cash"
-                        className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
-                      >
-                        <Wallet className="w-5 h-5 mr-2 inline-block" />
-                        Cash
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                  )
-                }}
-              />
-              {errors.payment_select && errors.payment_select.type === "required" && (
-                <span role="alert" className="text-xs font-normal text-destructive">Payment method is required</span>
-              )}
-            </div>
-          </div>
           <div>
             <h3 className="font-bold text-base text-foreground/75 mb-3">Rules</h3>
             <div className="text-foreground/50 text-xs font-normal ">
