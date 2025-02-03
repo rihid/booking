@@ -275,6 +275,26 @@ export const getBookByCustomer = async (token: any, body: BookByCustomer) => {
   })
   return res;
 }
+export const getEmployees = async (token: any) => {
+  try {
+    const response = await axios.get(bookingUrl + "/employee", { headers: { Accept: 'application/json', Authorization: 'Bearer ' + token } })
+    return response.data.data;
+  } catch (error: any) {
+    console.log(error.response.status)
+    console.log(error.response.data.message)
+    throw error
+  }
+}
+export const getEmployeeByNo = async (token: any, no: string) => {
+  try {
+    const response = await axios.post(bookingUrl + "/employee/get-by-no", { employee_no: no }, { headers: { Accept: 'application/json', Authorization: 'Bearer ' + token } })
+    return response.data.data;
+  } catch (error: any) {
+    console.log(error.response.status)
+    console.log(error.response.data.message)
+    throw error
+  }
+}
 export const getInvoiceByCustomer = async (token: any, body: BookByCustomer) => {
   const res = await axios.post(bookingUrl + '/book/customer', body, {
     headers: {
@@ -282,7 +302,6 @@ export const getInvoiceByCustomer = async (token: any, body: BookByCustomer) => 
       Authorization: 'Bearer ' + token
     }
   }).then(response => {
-    console.log(response.data.message)
     const data = InvoiceByCustomerSchema.parse(response.data.data);
     console.log(data)
     return data;

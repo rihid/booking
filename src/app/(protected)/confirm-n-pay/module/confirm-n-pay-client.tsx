@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { ChevronLeft, SquarePen, CreditCard, Wallet, Check, CircleCheck, Loader2, XIcon } from 'lucide-react';
+import { ChevronLeft, SquarePen, CreditCard, Wallet, Check, CircleCheck, Loader2, XIcon, TriangleAlert } from 'lucide-react';
 import Container from '@/components/ui/container';
 import { Button } from '@/components/ui/button/button';
 import { Input } from '@/components/ui/input';
@@ -38,7 +38,6 @@ function ConfirmNPayClient({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const otsParam = searchParams.get('ots');
 
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, customer, setCustomer, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
@@ -500,7 +499,12 @@ function ConfirmNPayClient({
           <div className="space-y-6">
             <div className="flex items-start justify-between w-full">
               <div className="text-foreground/75">
-                <h4 className="font-semibold text-sm">Dates</h4>
+                <div className="flex items-center gap-2">
+                  <h4 className="font-semibold text-sm">Dates</h4>
+                  {!bookingField.schedule_check_in_date &&
+                    <span className="text-xs italic text-muted-foreground">&ndash; Required</span>
+                  }
+                </div>
                 {bookingField.schedule_check_in_date ?
                   <p className="text-xs font-normal text-foreground/50">{bookingField.schedule_check_in_date == '' ? 'Select date' : moment(bookingField.schedule_check_in_date).format('DD MMM YYYY H:mm')}</p>
                   :
@@ -580,8 +584,11 @@ function ConfirmNPayClient({
                       </div>
                       :
                       <div className="text-foreground/75">
-                        <h4 className="font-semibold text-sm">Your name here</h4>
-                        <p className="text-xs font-normal text-foreground/50">ID Card - 0000</p>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-sm">Name</h4>
+                          <span className="text-xs italic text-muted-foreground">&ndash; Required</span>
+                        </div>
+                        <p className="text-xs font-normal text-foreground/50">ID - 0000</p>
                         <p className="text-xs font-normal text-foreground/50"></p>
                         <input
                           type="text"

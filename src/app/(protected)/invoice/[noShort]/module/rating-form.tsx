@@ -97,7 +97,7 @@ function RatingForm({
                 disabled
               />
             </div>
-            <div className="w-full">
+            <div className="flex items-center justify-center">
               <blockquote className="text-sm italic text-muted-foreground">
                 <p>&quot;{ratingValue.rating_notes}&quot;.</p>
               </blockquote>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Container from '@/components/ui/container';
+import ToopTitle from '@/app/(protected)/invoice/[noShort]/module/top-title';
 
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
@@ -215,6 +216,67 @@ export function CustomerListLoader() {
           </div>
         </CardContent>
       </Card>
+    </div>
+  )
+}
+export function InvoiceLoader() {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <ToopTitle label='Invoice' />
+      <Container>
+        <div className="flex items-start bg-background py-6 gap-x-6">
+          <div className="w-32 flex-shrink-0">
+            <Skeleton className="aspect-w-6 aspect-h-4 w-full h-full" />
+          </div>
+          <div className="flex flex-col space-y-3 flex-grow min-w-0">
+            <div className="flex flex-col gap-2">
+              <Skeleton className="w-36 h-4" />
+              <Skeleton className="w-44 h-3" />
+            </div>
+            <Skeleton className="w-24 h-4" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-3 justify-center items-center mb-8">
+          <Skeleton className="w-44 h-6" />
+          <Skeleton className="w-44 h-8" />
+          <Skeleton className="h-3 w-60" />
+        </div>
+      </Container>
+    </div>
+  )
+}
+export function RatingLoader() {
+  return (
+    <div className="space-y-6 py-4">
+      <div className="flex items-center gap-4 justify-center">
+        <Skeleton className="h-12 w-60" />
+      </div>
+      <div className="flex flex-col gap-4 justify-center items-center mb-8">
+        <Skeleton className="h-6 w-40" />
+      </div>
+      <div className="flex flex-col items-center">
+        <Skeleton className="h-8 w-60" />
+      </div>
+    </div>
+  )
+}
+export function CaptainRatingLoader() {
+  return (
+    <div className="space-y-6 py-4">
+      <div className="flex items-center gap-4 justify-center">
+        <Skeleton className="w-10 h-10 rounded-full" />
+        <Skeleton className="h-5 w-36" />
+      </div>
+      <div className="flex flex-col gap-4 justify-center items-center mb-8">
+        <Skeleton className="h-6 w-36" />
+      </div>
+      <div className="flex flex-col items-center">
+        <Skeleton className="h-8 w-44" />
+      </div>
+      <div className="flex flex-col items-center gap-2 justify-center">
+        <Skeleton className="h-4 w-60" />
+        <Skeleton className="h-4 w-36" />
+      </div>
     </div>
   )
 }

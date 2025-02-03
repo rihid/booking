@@ -7,12 +7,15 @@ import { ChevronLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button/button';
 import Heading from '@/components/ui/heading';
 import RatingForm from './module/rating-form';
-import { getAllProductPublic, getBooking, getInvoiceByCustomer, getOrganizations } from '@/lib/data';
+import { getAllProductPublic, getBooking, getInvoiceByCustomer, getOrganizations, getEmployeeByNo } from '@/lib/data';
 import { getSession } from '@/lib/session';
 import { currency } from '@/lib/helper';
 import { Ratings } from '@/components/ui/ratings';
 import TopTitle from './module/top-title';
 import DownloadInvoiceBtn from './module/download-invoice-btn';
+import axios from 'axios';
+import { bookingUrl } from '@/lib/data/endpoints';
+import CaptainRatingForm from './module/captain-rating-form';
 
 export const metadata: Metadata = {
   title: 'Invoice',
@@ -33,41 +36,51 @@ async function InvoiceDetail({
     begin: null,
     end: null
   }
-  
+
+  // const invoiceBody = {
+  //   customer_no: "PSJ/CRM/00002633",
+  //   type: "invoice",
+  //   begin: "2024-09-01",
+  //   end: "2025-01-30"
+  // }
+
   const organizations = await getOrganizations(token);
-  const invoices = await getInvoiceByCustomer(token, invoiceBody);
+  const invoicesRaw = await getInvoiceByCustomer(token, invoiceBody);
   const products = await getAllProductPublic();
-  const dataInvoices = []
-  if (invoices) {
+
+  const invoices = []
+  if (invoicesRaw) {
     const organization = organizations.find((o: any) => o.org_no === org_no)
-    const array = invoices
+    const array = invoicesRaw
     for (let i = 0; i < array.length; i++) {
       const numberArr = array[i].numbers;
       const numbers = []
-      for (let n = 0; n < numberArr.length; n++) {
-        const productVal = products.find(p => p.product_no === numberArr[i].product_no)
-        const obj = {
-          id: numberArr[i].id,
-          book_no: numberArr[i].book_no,
-          type: numberArr[i].type,
-          qty: numberArr[i].qty,
-          product_no: numberArr[i].product_no,
-          product: productVal ? productVal.product_name : null,
-          product_sku: numberArr[i].product_sku,
-          variant: numberArr[i].variant,
-          price: numberArr[i].price,
-          subtotal: numberArr[i].subtotal,
-          discount: numberArr[i].discount,
-          tax: numberArr[i].tax,
-          tax_id: numberArr[i].tax_id,
-          total: numberArr[i].total,
-          is_guided: numberArr[i].is_guided,
-          ref_no: numberArr[i].ref_no,
-          check: numberArr[i].check,
-          uom_id: numberArr[i].uom_id,
-          description: numberArr[i].description
+      if (numberArr.length > 0) {
+        for (let n = 0; n < numberArr.length; n++) {
+          const productVal = products.find(p => p.product_no === numberArr[n].product_no)
+          const obj = {
+            id: numberArr[n].id,
+            book_no: numberArr[n].book_no,
+            type: numberArr[n].type,
+            qty: numberArr[n].qty,
+            product_no: numberArr[n].product_no,
+            product: productVal ? productVal.product_name : null,
+            product_sku: numberArr[n].product_sku,
+            variant: numberArr[n].variant,
+            price: numberArr[n].price,
+            subtotal: numberArr[n].subtotal,
+            discount: numberArr[n].discount,
+            tax: numberArr[n].tax,
+            tax_id: numberArr[n].tax_id,
+            total: numberArr[n].total,
+            is_guided: numberArr[n].is_guided,
+            ref_no: numberArr[n].ref_no,
+            check: numberArr[n].check,
+            uom_id: numberArr[n].uom_id,
+            description: numberArr[n].description
+          }
+          numbers.push(obj)
         }
-        numbers.push(obj)
       }
 
       const obj = {
@@ -113,22 +126,60 @@ async function InvoiceDetail({
         payment_balance: 0,
         organization: organization
       }
-      dataInvoices.push(obj)
+      invoices.push(obj)
     }
   }
-  const dataInvoice = dataInvoices.find(di => di.invoice_no.split('/').pop() === params.noShort)
 
   const invoice = invoices.find(inv => inv.invoice_no.split('/').pop() === params.noShort);
   const numbers = invoice?.numbers.filter((number: any) => number.qty !== '0');
+  const unitCrew = invoice?.units.filter(unit => unit.crews.length > 0);
 
   let booking = null;
   if (invoice) {
     booking = await getBooking(token, invoice.id);
   }
 
+  const crews = [];
+  if (unitCrew && unitCrew.length > 0) {
+    for (let i = 0; i < unitCrew.length; i++) {
+      const crewArr = unitCrew[i].crews;
+      if (crewArr && crewArr.length > 0) {
+        for (let j = 0; j < crewArr.length; j++) {
+          
+          crews.push({
+            id: crewArr[j].id,
+            book_no: crewArr[j].book_no,
+            unit_no: crewArr[j].unit_no,
+            employee_no: crewArr[j].employee_no,
+            notes: crewArr[j].notes,
+            book_unit_id: crewArr[j].book_unit_id,
+            rating: crewArr[j].rating,
+            // rating: null,
+            rating_notes: crewArr[j].rating_notes
+          });
+        }
+      }
+    }
+  }
+
   const totalPrice = invoice?.numbers.reduce((acc, val) => {
     return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
   }, 0);
+
+  const getEmployee = (token: any, id: any) => {
+    const result = axios.post(bookingUrl + "/employee/get-by-no", { employee_no: id }, { headers: { Accept: 'application/json', Authorization: `Bearer ${token}` } })
+      .then(response => {
+        const data = response.data.data;
+        return data;
+      })
+      .catch(error => {
+        console.log(error.response.status)
+        console.log(error.response.data.message)
+        throw error;
+      })
+
+    return result;
+  }
 
   const PriceDetailComp = () => {
     return (
@@ -163,7 +214,7 @@ async function InvoiceDetail({
                 Total
               </dt>
               <dd className="text-foreground/75 font-semibold text-sm">
-                {currency(totalPrice)}
+                {currency(totalPrice || 0)}
               </dd>
             </div>
           </dl>
@@ -231,8 +282,21 @@ async function InvoiceDetail({
           )
         })}
       </Container>
+      <Container className="border-t-4 border-slate-100 bg-background py-4">
+        <h3 className="font-bold text-base text-foreground/75 mb-3 text-center">Crews</h3>
+        {crews.map((crew, i) => {
+          return (
+            <React.Fragment key={i}>
+              <CaptainRatingForm
+                user={session?.user}
+                crew={crew}
+              />
+            </React.Fragment>
+          )
+        })}
+      </Container>
       <PriceDetailComp />
-      <DownloadInvoiceBtn user={session?.user} invoice={dataInvoice} />
+      <DownloadInvoiceBtn user={session?.user} invoice={invoice} />
     </div>
   )
 }

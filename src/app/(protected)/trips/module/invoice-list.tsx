@@ -25,6 +25,13 @@ async function InvoiceList({
     end: null
   }
 
+  // const invoiceBody = {
+  //   customer_no: "PSJ/CRM/00002633",
+  //   type: "invoice",
+  //   begin: "2024-09-01",
+  //   end: "2025-01-30"
+  // }
+
   const invoiceData = await getInvoiceByCustomer(user?.token, invoiceBody);
   const branches = await getBranchList(user?.token);
   const formatDuration = (duration: any) => {

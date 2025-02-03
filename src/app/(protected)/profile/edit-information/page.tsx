@@ -13,8 +13,6 @@ export const metadata: Metadata = {
   description: 'Sewa jetski, Rental Jetski, main jetski di semarang'
 }
 
-
-
 async function EditInfoPage() {
   const session = await getSession();
   // @ts-ignore
@@ -22,14 +20,12 @@ async function EditInfoPage() {
 
   async function getCustomer() {
     try {
-      const response = await axios.get(customerUrl + "/" + user.id, { headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token } })
+      const response = await axios.post(customerUrl + "/get-by-no", { customer_no: user.customer_no }, { headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token } })
       const data = response.data.data
       return data;
     } catch (error: any) {
       // console.log(error)
-      return {
-        error: error.response?.data,
-      };
+      console.log(error.response?.data.message)
     }
   }
   const costumer = await getCustomer();

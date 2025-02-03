@@ -15,7 +15,7 @@ import { Select, SelectTrigger, SelectItem, SelectContent, SelectValue } from '@
 import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
 import { DatePicker } from '@/components/ui/date-time-picker';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { CustomerFieldSchema, CustomerSchema } from '@/lib/schema';
 import axios from 'axios';
@@ -60,6 +60,12 @@ function RiderDetailFormModal({
     resolver: zodResolver(FormSchema),
     defaultValues: customer,
   })
+
+  const birthdayVal = useWatch({
+    control: form.control,
+    name: 'birthday',
+  });
+
   const onSubmit = (values: z.infer<typeof FormSchema>) => {
     startTransition(async () => {
       console.log('on submit')
@@ -123,6 +129,19 @@ function RiderDetailFormModal({
       closeModal();
     })
   }
+  
+  React.useEffect(() => {
+    if (birthdayVal) {
+      const birth = new Date(birthdayVal)
+      const dayNow = new Date()
+      const diff = new Date(dayNow.getTime() - birth.getTime())
+      const age = diff.getFullYear() - 1970;
+
+      form.setValue('age', age.toString(), { shouldValidate: true });
+    } else {
+      form.setValue('age', '', { shouldValidate: true });
+    }
+  }, [birthdayVal, form]);
   return (
     <Sheet
       open={showModal}

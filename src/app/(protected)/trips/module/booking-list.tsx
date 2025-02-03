@@ -33,7 +33,6 @@ async function BookingList({
         Authorization: 'Bearer ' + user.token
       }
     }).then(response => {
-      console.log(response.data.data)
       const data = response.data.data;
       return data;
     }).catch(error => {
@@ -93,23 +92,7 @@ async function BookingList({
               return res;
             }
             let paymentStatus = await getPaymentStatus();
-            if (paymentStatus?.status_code === '407') {
-              await axios.get(process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + booking.id.concat('$') + '/status', {
-                headers: {
-                  accept: 'application/json',
-                  authorization: 'Basic ' + encodeToken,
-                }
-              }).then(response => {
-                let data = response.data;
-                // data.order_id = data.order_id.replace(/\$/g, '')
-                if (data.status_code !== '404') {
-                  paymentStatus = data
-                }
-              }).catch(error => {
-                console.log(error);
-                throw error;
-              })
-            }
+            console.log('paymentStatus', paymentStatus)
             return (
               <div className='relative' key={booking.id}>
                 <BookingCard

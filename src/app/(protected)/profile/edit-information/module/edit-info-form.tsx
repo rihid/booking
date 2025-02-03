@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import axios from 'axios';
@@ -43,25 +43,19 @@ function EditInfoForm({
   user: any;
   customer: any;
 }) {
+
   const [isPending, startTransition] = React.useTransition();
-  
-  const getCustomerAge = (birthday: any) => {
-    if(!birthday) return null
-    const birth = new Date(birthday)
-    const dayNow = new Date()
-    const diff =  new Date(dayNow.getTime() - birth.getTime())
-    const getyear = diff.getUTCFullYear() - 1970;
-    return getyear
-  }
-  const customerData = {
-    ...customer,
-    age: getCustomerAge(customer.birthday)
-  }
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: customerData,
+    defaultValues: customer,
   })
+
+  const birthdayVal = useWatch({
+    control: form.control,
+    name: 'birthday',
+  });
+
   const onSubmit = (values: z.infer<typeof FormSchema>) => {
     console.log('values: ', values)
     startTransition(async () => {
@@ -84,6 +78,20 @@ function EditInfoForm({
         })
     })
   }
+
+  React.useEffect(() => {
+    if (birthdayVal) {
+      const birth = new Date(birthdayVal)
+      const dayNow = new Date()
+      const diff =  new Date(dayNow.getTime() - birth.getTime())
+      const age = diff.getFullYear() - 1970;
+
+      form.setValue('age', age.toString(), { shouldValidate: true });
+    } else {
+      form.setValue('age', '', { shouldValidate: true });
+    }
+  }, [birthdayVal, form]);
+
   return (
     <div>
       <Form {...form}>
