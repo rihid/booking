@@ -9,8 +9,10 @@ import Link from 'next/link';
 
 function ProfileCard({
   user,
+  customer,
 }: {
   user: any;
+  customer: any;
 }) {
   const { openModal, setModalView, modalView } = useUiLayoutStore(state => state);
 
@@ -19,9 +21,7 @@ function ProfileCard({
   }
 
   return (
-    <div
-      className="flex items-center justify-between h-full w-full py-3 border-b border-b-foreground/50"
-    >
+    <div className="flex items-center justify-between h-full w-full py-3 border-b border-b-foreground/50">
       <div className="flex items-center justify-start gap-x-4">
         {user?.avatar ?
           <Image
@@ -41,7 +41,7 @@ function ProfileCard({
           />
         }
         <div className="text-muted-foreground font-normal text-start text-sm m-0 p-0">
-          <p className="capitalize">{user.name.toLowerCase()}</p>
+          <p className="capitalize">{customer.name.toLowerCase()}</p>
           <button type="button" className="text-[11px]" onClick={handleClick}>Show Profile</button>
         </div>
       </div>

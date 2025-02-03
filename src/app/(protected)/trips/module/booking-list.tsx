@@ -48,8 +48,6 @@ async function BookingList({
     type: "booking",
     begin: null,
     end: null
-    // begin: "2024-11-01",
-    // end: "2025-01-30"
   }
   const bookingData = await getBookByCustomer(user?.token, bookingBody);
   const paymentMethod = await getPaymentMethod();
@@ -92,7 +90,7 @@ async function BookingList({
               return res;
             }
             let paymentStatus = await getPaymentStatus();
-            console.log('paymentStatus', paymentStatus)
+  
             return (
               <div className='relative' key={booking.id}>
                 <BookingCard

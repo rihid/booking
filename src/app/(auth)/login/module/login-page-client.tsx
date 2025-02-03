@@ -11,7 +11,6 @@ import LoadingOverlay from '@/components/partial/loading-overlay';
 import { domain } from '@/lib/data/endpoints';
 
 function LoginPageClient({ token }: { token: string | string[] | null }) {
-  console.log(token)
   const router = useRouter();
   const [loadingOverlay, setLoadingOverlay] = React.useState<boolean>(false);
   React.useEffect(() => {

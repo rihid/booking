@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { ChevronLeft, SquarePen, CreditCard, Wallet, Check, CircleCheck, Loader2, XIcon, TriangleAlert } from 'lucide-react';
+import React from 'react';
+import { ChevronLeft, SquarePen, Check, Loader2, XIcon } from 'lucide-react';
 import Container from '@/components/ui/container';
 import { Button } from '@/components/ui/button/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,6 @@ import { useBookStore } from '@/providers/store-providers/book-provider';
 import { usePaymentStore } from '@/providers/store-providers/payment-provider';
 import RiderDetailFormModal from './rider-detail-form-modal';
 import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
 import moment from 'moment';
 import ProductSummary from './product-summary';
 import axios from 'axios';
@@ -32,9 +31,10 @@ import { useSearchParams } from 'next/navigation';
 
 function ConfirmNPayClient({
   user,
+  customerData,
 }: {
   user: any;
-  userCustomer: any;
+  customerData?: any;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -57,7 +57,6 @@ function ConfirmNPayClient({
   // calculation
   const totalRiders = React.useMemo(() => {
     const bn = bookingField.numbers;
-    console.log('bn', bn)
     const sum = bn.reduce((acc, val) => {
       const qty = parseInt(val.qty);
       const totalRider = parseInt(val.total_rider)
@@ -103,7 +102,7 @@ function ConfirmNPayClient({
   // functions
   const handdleCheckedChange = async (checked: boolean) => {
     if (checked) {
-      const crm = user.customer;
+      const crm = customerData;
       const data = {
         id: crm.id,
         customer_no: crm.customer_no,
@@ -266,8 +265,6 @@ function ConfirmNPayClient({
   // onmount
   React.useEffect(() => {
     if (productBooked) {
-      console.log("productBooked:")
-      console.log(productBooked)
       const variants = productBooked.variants;
       const numberArr = variants.map((variant: any, i: number) => ({
         id: null,
@@ -306,8 +303,6 @@ function ConfirmNPayClient({
         total: totalPrice.total.toString(),
         numbers: numberArr,
       });
-      // console.log('bookingFIeld:')
-      // console.log(bookingField)
     }
 
     // snap script midtrans here
@@ -397,8 +392,8 @@ function ConfirmNPayClient({
         }
       }
     }
-    console.log('bookingFIeld:')
-    console.log(bookingField)
+    // console.log('bookingFIeld:')
+    // console.log(bookingField)
   }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList, isAddRider, voucherData]);
 
   const PriceDetailComp = () => {

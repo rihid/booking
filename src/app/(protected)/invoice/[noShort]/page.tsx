@@ -30,19 +30,19 @@ async function InvoiceDetail({
   const session = await getSession();
   // @ts-ignore
   const { token, customer_no, org_no } = session.user;
-  const invoiceBody = {
-    customer_no: customer_no as string,
-    type: "invoice",
-    begin: null,
-    end: null
-  }
-
   // const invoiceBody = {
-  //   customer_no: "PSJ/CRM/00002633",
+  //   customer_no: customer_no as string,
   //   type: "invoice",
-  //   begin: "2024-09-01",
-  //   end: "2025-01-30"
+  //   begin: null,
+  //   end: null
   // }
+
+  const invoiceBody = {
+    customer_no: "PSJ/CRM/00002633",
+    type: "invoice",
+    begin: "2024-09-01",
+    end: "2025-01-30"
+  }
 
   const organizations = await getOrganizations(token);
   const invoicesRaw = await getInvoiceByCustomer(token, invoiceBody);
@@ -145,7 +145,7 @@ async function InvoiceDetail({
       const crewArr = unitCrew[i].crews;
       if (crewArr && crewArr.length > 0) {
         for (let j = 0; j < crewArr.length; j++) {
-          
+
           crews.push({
             id: crewArr[j].id,
             book_no: crewArr[j].book_no,
@@ -284,16 +284,18 @@ async function InvoiceDetail({
       </Container>
       <Container className="border-t-4 border-slate-100 bg-background py-4">
         <h3 className="font-bold text-base text-foreground/75 mb-3 text-center">Crews</h3>
-        {crews.map((crew, i) => {
-          return (
-            <React.Fragment key={i}>
-              <CaptainRatingForm
-                user={session?.user}
-                crew={crew}
-              />
-            </React.Fragment>
-          )
-        })}
+        <div className="divide-y-2 divide-slate-200">
+          {crews.map((crew, i) => {
+            return (
+              <React.Fragment key={i}>
+                <CaptainRatingForm
+                  user={session?.user}
+                  crew={crew}
+                />
+              </React.Fragment>
+            )
+          })}
+        </div>
       </Container>
       <PriceDetailComp />
       <DownloadInvoiceBtn user={session?.user} invoice={invoice} />

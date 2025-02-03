@@ -23,7 +23,6 @@ export const metadata: Metadata = {
   description: 'Sewa jetski, Rental Jetski, main jetski di semarang'
 }
 
-// 
 async function ProductComp({
   query,
   tapGroup,

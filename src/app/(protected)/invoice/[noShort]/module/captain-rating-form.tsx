@@ -96,7 +96,7 @@ function CaptainRatingForm({
   }
 
   return (
-    <div className="divide-y-2">
+    <>
       {ratingVal.rating !== null ?
         <div className="space-y-6 py-4">
           <div className="flex items-center gap-4 justify-center">
@@ -189,7 +189,7 @@ function CaptainRatingForm({
           </div>
         </form>
       }
-    </div>
+    </>
   )
 }
 

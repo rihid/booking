@@ -14,6 +14,7 @@ import axios from 'axios';
 import { bookingUrl } from '@/lib/data/endpoints';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/assets/styles/utils';
+import { toast } from 'sonner';
 
 function BookingCard({
   user,
@@ -87,12 +88,15 @@ function BookingCard({
     }).then(response => {
       console.log(response.data);
       const data = response.data;
-      if (data) router.refresh()
+      if (data) {
+        router.refresh();
+        toast.success("Success confirm payment")
+      } 
       setLoadingConfirm(false)
     }).catch(error => {
       setLoadingConfirm(false)
       console.log(error);
-      throw error;
+      toast.error("Error confirm payment");
     })
   }
 
@@ -110,21 +114,6 @@ function BookingCard({
     }
   }, [user.token])
   React.useEffect(() => {
-    // const voidBooking = async (id: string) => {
-    //   await axios.post(bookingUrl + '/book/void', { id: id }, {
-    //     headers: {
-    //       Accept: 'application/json',
-    //       Authorization: 'Bearer ' + user.token
-    //     }
-    //   })
-    //     .then(response => {
-    //       // console.log(response)
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //       throw error;
-    //     })
-    // }
     if (paymentStatus.status_code === '407' && booking.status !== 'void') {
       voidBooking(paymentStatus.order_id)
     }
@@ -133,9 +122,6 @@ function BookingCard({
   return (
     <>
       <Card className="border-slate-300">
-        {/* <pre>p: {JSON.stringify(paymentVal?.id, null, 2)}</pre> */}
-        {/* <pre>b {JSON.stringify(booking.payments, null, 2)}</pre> */}
-        {/* <pre>{JSON.stringify(paymentStatus.transaction_status, null, 2)}</pre> */}
         <CardHeader className="flex-row items-center justify-between">
           <CardTitle className="text-foreground/75">{product?.product_name}</CardTitle>
           <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
@@ -158,7 +144,7 @@ function BookingCard({
               <span className="text-sm  uppercase text-brand font-normal">On Schedule</span>
             </div>
             <div className="flex items-center text-foreground/50 gap-x-2">
-              <span className="text-xs font-normal">Marina</span>
+              <span className="text-xs font-normal">{product.location}</span>
               <MapPin className="text-brand inline-block w-4 h-4" />
             </div>
           </div>
@@ -167,15 +153,17 @@ function BookingCard({
 
           <div className="absolute -right-0.5 w-6 h-12 bg-background border-2 border-r-background border-y-slate-300 border-l-slate-300 rounded-tl-full rounded-bl-full" />
           <div className="h-12 bg-transparent" />
-          <div className="flex items-center justify-center">
-            <div className="my-2">
-              <QRCodeSVG
-                value={booking.book_no}
-                size={200}
-                level='M'
-              />
+          {booking.payments.length > 0 && transaction_status === "settlement" &&
+            <div className="flex items-center justify-center">
+              <div className="my-2">
+                <QRCodeSVG
+                  value={booking.book_no}
+                  size={200}
+                  level='M'
+                />
+              </div>
             </div>
-          </div>
+          }
         </CardContent>
         <CardFooter className="grid grid-cols-1 w-full gap-3">
           {booking.payments.length > 0 && transaction_status === "settlement" &&

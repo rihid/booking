@@ -13,6 +13,7 @@ import CustomerDetailModal from '../customer-list/module/customer-detail-modal';
 import axios from 'axios';
 import { customerUrl } from '@/lib/data/endpoints';
 import LoadingOverlay from '@/components/partial/loading-overlay';
+import { getCustomerByNo } from '@/lib/data';
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -24,35 +25,12 @@ async function Profile() {
   // @ts-ignore
   const { user } = session;
 
-  // async function getCustomer() {
-  //   const res = await axios.get(customerUrl + "/" + user.id, { headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token } })
-  //     .then(response => {
-  //       const data = response.data.data;
-  //       return data
-  //     })
-  //     .catch(error => {
-  //       return {
-  //         error: error.response?.data,
-  //       };
-  //     })
-  //   return res
-  // }
-
-  async function getCustomer() {
-    try {
-      const response = await axios.post(customerUrl + "/get-by-no", { customer_no: user.customer_no }, { headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token } })
-      const data = response.data.data
-      return data;
-    } catch (error: any) {
-      // console.log(error)
-      console.log(error.response?.data.message)
-    }
-  }
   function setLoading(value: boolean) {
     if (!value) return false
     return value;
   }
-  const customer = await getCustomer();
+
+  const customer = await getCustomerByNo(user.token, user.customer_no);
 
   return (
     <LoadingOverlay loading={setLoading(false)}>
@@ -62,7 +40,7 @@ async function Profile() {
             <Heading variant='lg' className="text-foreground/75">Profile</Heading>
             <Bell className="w-6 h-6" />
           </div>
-          <ProfileCard user={user} />
+          <ProfileCard user={user} customer={customer} />
         </Container>
         <Container className="bg-background">
           <h3 className="font-semibold text-sm text-foreground/75">Menu</h3>
