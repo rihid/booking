@@ -30,18 +30,11 @@ async function InvoiceDetail({
   const session = await getSession();
   // @ts-ignore
   const { token, customer_no, org_no } = session.user;
-  // const invoiceBody = {
-  //   customer_no: customer_no as string,
-  //   type: "invoice",
-  //   begin: null,
-  //   end: null
-  // }
-
   const invoiceBody = {
-    customer_no: "PSJ/CRM/00002633",
+    customer_no: customer_no as string,
     type: "invoice",
-    begin: "2024-09-01",
-    end: "2025-01-30"
+    begin: null,
+    end: null
   }
 
   const organizations = await getOrganizations(token);
