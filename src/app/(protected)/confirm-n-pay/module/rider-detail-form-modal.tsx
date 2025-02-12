@@ -174,7 +174,6 @@ function RiderDetailFormModal({
                           <FormControl>
                             <Input
                               {...field}
-                              isMask
                               disabled={isPending}
                               placeholder="ID Card"
                               type="text"

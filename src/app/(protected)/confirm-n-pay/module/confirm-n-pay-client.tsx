@@ -5,7 +5,6 @@ import { ChevronLeft, SquarePen, Check, Loader2, XIcon } from 'lucide-react';
 import Container from '@/components/ui/container';
 import { Button } from '@/components/ui/button/button';
 import { Input } from '@/components/ui/input';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import OpenModalButton from '@/components/ui/button/open-modal-button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -19,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import moment from 'moment';
 import ProductSummary from './product-summary';
 import axios from 'axios';
-import { bookingUrl, voucherUrl, customerUrl, customerUserUrl } from '@/lib/data/endpoints';
+import { bookingUrl, voucherUrl } from '@/lib/data/endpoints';
 import { z } from 'zod';
 import { CustomerFieldSchema, BookingFieldSchema } from '@/lib/schema';
 import { currency } from '@/lib/helper';
@@ -65,6 +64,8 @@ function ConfirmNPayClient({
         if (variant.includes("couple") || variant.includes("double")) {
           return acc + (qty * 2);
         }
+      } else {
+        return acc + qty
       }
       return acc + (qty * totalRider);
     }, 0);
@@ -265,29 +266,57 @@ function ConfirmNPayClient({
   // onmount
   React.useEffect(() => {
     if (productBooked) {
+      const numberArr = []
       const variants = productBooked.variants;
-      const numberArr = variants.map((variant: any, i: number) => ({
-        id: null,
-        book_no: null,
-        type: "product",
-        qty: i === 0 ? "1" : "0",
-        product_no: productBooked.product_no,
-        product_sku: variant.product_sku,
-        variant: variant.variant_name,
-        price: variant.price ? variant.price.replace(/\./g, '') : null,
-        subtotal: "0",
-        discount: "0",
-        tax: "0",
-        tax_id: null,
-        total: "",
-        is_guided: false,
-        ref_no: null,
-        check: false,
-        uom_id: "",
-        description: productBooked.product_description,
-        total_rider: variant.total_rider || 1,
-      }))
-      console.log(numberArr)
+      if (variants) {
+        for (let i = 0; i < variants.length; i++) {
+          const variant = variants[i];
+          numberArr.push({
+            id: null,
+            book_no: null,
+            type: "product",
+            qty: i === 0 ? "1" : "0",
+            product_no: productBooked.product_no,
+            product_sku: variant.product_sku,
+            variant: variant.variant_name,
+            price: variant.price ? variant.price.replace(/\./g, '') : null,
+            subtotal: "0",
+            discount: "0",
+            tax: "0",
+            tax_id: null,
+            total: "",
+            is_guided: false,
+            ref_no: null,
+            check: false,
+            uom_id: "",
+            description: productBooked.product_description,
+            total_rider: variant.total_rider || 1,
+          })
+        }
+      } else {
+        numberArr.push({
+          id: null,
+          book_no: null,
+          type: "product",
+          qty: "0",
+          product_no: productBooked.product_no,
+          product_sku: "",
+          variant: "",
+          price: "0",
+          subtotal: "0",
+          discount: "0",
+          tax: "0",
+          tax_id: null,
+          total: "",
+          is_guided: false,
+          ref_no: null,
+          check: false,
+          uom_id: "",
+          description: "",
+          total_rider: ""
+        })
+      }
+
       updateBookingField({
         type_id: productBooked.category.book_type_id,
         customer_no: user?.customer_no,
@@ -320,6 +349,7 @@ function ConfirmNPayClient({
       document.body.removeChild(scriptTag)
     }
   }, []);
+
   // onupdate
   React.useEffect(() => {
     if (productBooked) {
@@ -348,6 +378,21 @@ function ConfirmNPayClient({
         ...rider,
         customer_no: customers[i]?.customer_no || rider.customer_no,
       }));
+      // numbers
+      let numberArr = [...bookingField.numbers]
+      if(numberArr.length > 0) {
+        numberArr = numberArr.map((number, i) => {
+          const total = parseFloat(number.qty) * parseFloat(number.price)
+          return ({
+            ...number,
+            total: total.toString()
+          })
+        })
+        updateBookingField({
+          numbers: numberArr,
+        })
+      }
+
       updateBookingField({
         riders: riderArr,
         branch_no: productBooked.branch_no,
@@ -392,8 +437,8 @@ function ConfirmNPayClient({
         }
       }
     }
-    // console.log('bookingFIeld:')
-    // console.log(bookingField)
+    console.log('bookingFIeld:')
+    console.log(bookingField)
   }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList, isAddRider, voucherData]);
 
   const PriceDetailComp = () => {
@@ -694,8 +739,6 @@ function ConfirmNPayClient({
               </div>
             </div>
           }
-          {/* <pre>{JSON.stringify(promoRes, null, 2)}</pre> */}
-          {/* <pre>{JSON.stringify(voucherData, null, 2)}</pre> */}
         </Container>
         <PriceDetailComp />
         <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">

@@ -112,7 +112,7 @@ async function BookingList({
                   width={320}
                   height={320}
                   alt="404 Illustration"
-                />
+                  />
               </div>
 
               <div className="grid gap-2 text-center">

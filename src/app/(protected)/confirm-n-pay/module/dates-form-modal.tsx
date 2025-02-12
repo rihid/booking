@@ -42,10 +42,6 @@ const toggleItems = [
     value: "11"
   },
   {
-    label: "12:00PM",
-    value: "12"
-  },
-  {
     label: "1:00PM",
     value: "13"
   },
@@ -67,8 +63,23 @@ function DatesFormModal({
 }: Props) {
   const { updateBookingField, bookingField } = useBookStore(state => state)
   const { showModal, closeModal } = useUiLayoutStore(state => state);
-  const [date, setDate] = React.useState<Date | undefined>(new Date(dates));
+  const [date, setDate] = React.useState<Date | undefined>(dates ? new Date(dates) : undefined);
   const [time, setTime] = React.useState<number>(6)
+
+  const isTimeDisabled = (timeValue: string) => {
+    if (!date) return true;
+
+    const selectedDate = moment(date).format('YYYY-MM-DD');
+    const currentDate = moment().format('YYYY-MM-DD');
+    const currentHour = moment().hour();
+
+    // Disable past hours if the selected date is today
+    if (selectedDate === currentDate) {
+      return parseInt(timeValue) <= currentHour;
+    }
+
+    return false;
+  };
 
   const setDefaultHour = () => {
     if (!date) return
@@ -77,7 +88,7 @@ function DatesFormModal({
   }
 
   const handleValueChange = (val: string) => {
-    if(!val) return
+    if (!val) return
     const dateWithHour = date?.setHours(parseInt(val));
     const newDate = moment(dateWithHour).format('YYYY-MM-DD H:mm:ss')
     console.log('newDate', newDate)
@@ -86,6 +97,10 @@ function DatesFormModal({
     })
     closeModal();
   }
+  const handleDateSelect = (newDate: Date | undefined) => {
+    setDate(newDate);
+    setTime(6);
+  };
 
   /*
   # Ini apabila pakai mode select Button
@@ -106,7 +121,7 @@ function DatesFormModal({
     closeModal();
   }
 
-  */ 
+  */
 
   return (
     <Sheet
@@ -131,7 +146,7 @@ function DatesFormModal({
                 <Calendar
                   mode="single"
                   selected={date}
-                  onSelect={setDate}
+                  onSelect={handleDateSelect}
                   className="mt-4 rounded-md border border-slate-200"
                 />
               </div>
@@ -147,7 +162,13 @@ function DatesFormModal({
                   onValueChange={value => handleValueChange(value)}
                 >
                   {toggleItems.map((item, idx) => (
-                    <ToggleGroupItem key={idx} value={item.value}>{item.label}</ToggleGroupItem>
+                    <ToggleGroupItem 
+                      key={idx} 
+                      value={item.value}
+                      disabled={isTimeDisabled(item.value)}
+                    >
+                      {item.label}
+                    </ToggleGroupItem>
                   ))}
                 </ToggleGroup>
               </div>
