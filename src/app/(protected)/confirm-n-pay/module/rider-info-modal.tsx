@@ -37,6 +37,10 @@ function RiderInfoModal({
   const [isSelected, setIsSelected] = React.useState<boolean>(false)
 
   const handleAddRider = (value: any) => {
+    if(!value) {
+      setIsSelected(false)
+      return
+    }
     value.rider_type = customer.rider_type;
     const customerVal = customers.find(d => d.id === value.customer_id)
     if (customers[idx].id === null && customerVal) {
@@ -80,8 +84,8 @@ function RiderInfoModal({
         customerNo.push(data[i].customer_no)
       }
       const getCustomers = await getCustomerByNoMulti(user.token, customerNo);
-      console.log('getCustomer:')
-      console.log(getCustomers)
+      // console.log('getCustomer:')
+      // console.log(getCustomers)
       const customerArr = [];
       for (let j = 0; j < data.length; j++) {
         const dataCustomers = getCustomers.find((c: any) => c.customer_no === data[j].customer_no);
@@ -107,8 +111,8 @@ function RiderInfoModal({
         })
       }
       setCustomerList(customerArr)
-      console.log('customerArr:')
-      console.log(customerArr)
+      // console.log('customerArr:')
+      // console.log(customerArr)
       setIsLoading(false)
     }
     getData();

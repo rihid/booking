@@ -28,6 +28,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSearchParams } from 'next/navigation';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { toast } from 'sonner';
 
 function ConfirmNPayClient({
   user,
@@ -230,6 +231,7 @@ function ConfirmNPayClient({
   }
   const onSubmitConfirm = async (validate: any) => {
     const { payment_select, } = validate;
+    console.log('validate', validate)
     setIsLoading(true);
     let bodyMidtrans = {
       orderId: bookingField.book_no,
@@ -272,6 +274,20 @@ function ConfirmNPayClient({
       await handleCheckout(bodyMidtrans);
     }
     setIsLoading(false);
+  }
+  const validateToast = (errors: any) => {
+    if (errors.schedule_check_in_date) {
+      toast.warning('Date is required')
+    }
+    for (let i = 0; i < totalRiders; i++) {
+      const inputName = 'rider' + i;
+      if (errors[inputName]) {
+        toast.warning('Rider ' + (i + 1) + ' is empty')
+      }
+    }
+    if (isOts && errors.payment_select) {
+      toast.warning('Payment method is required')
+    }
   }
   // onmount
   React.useEffect(() => {
@@ -561,7 +577,7 @@ function ConfirmNPayClient({
       <ProductSummary product={productBooked} />
       <form
         action=""
-        onSubmit={handleSubmit(onSubmitConfirm)}
+        onSubmit={handleSubmit(onSubmitConfirm, validateToast)}
       >
         <Container className="border-t-4 border-slate-100 bg-background py-8">
           <h3 className="font-bold text-base text-foreground/75 mb-3">Your Trip</h3>
