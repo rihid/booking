@@ -7,7 +7,7 @@ import { getCustomerByNo, getCustomerByNoMulti, getCustomerList, getUserCustomer
 
 export const metadata: Metadata = {
   title: 'Confirm & Pay',
-  description: 'Sewa jetski, Rental Jetski, main jetski di semarang'
+  description: 'Sewa jetski, Rental Jetski, main jetski di Semarang'
 }
 
 async function ConfirmNPay() {

@@ -38,7 +38,7 @@ export async function generateMetadata(
 
   return {
     title: product.product_name,
-    description: 'Sewa jetski, Rental Jetski, main jetski di semarang'
+    description: 'Sewa jetski, Rental Jetski, main jetski di Semarang'
   }
 }
 

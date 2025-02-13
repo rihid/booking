@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: ' %s | Booking Safari',
     default: 'BRP Commerce', 
   },
-  description: "Sewa jetski, Rental Jetski, main jetski di semarang",
+  description: "Sewa jetski, Rental Jetski, main jetski di Semarang",
 };
 
 // combine providers

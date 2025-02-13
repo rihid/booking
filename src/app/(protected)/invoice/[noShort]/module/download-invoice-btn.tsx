@@ -32,7 +32,7 @@ function DownloadInvoiceBtn({
 
         const link = document.createElement('a');
         link.href = downloadUrl;
-        link.download = 'invoice.pdf';
+        link.download = 'invoice_' + invoice.invoice_no.split('/').pop() + '.pdf';
         document.body.appendChild(link);
         link.click();
 

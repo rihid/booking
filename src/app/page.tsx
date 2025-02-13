@@ -4,7 +4,7 @@ import HomePage from "./homepage-client";
 
 export const metadata: Metadata = {
   title: 'Home | Booking Safari',
-  description: 'Sewa jetski, Rental Jetski, main jetski di semarang',
+  description: 'Sewa jetski, Rental Jetski, main jetski di Semarang',
 };
 
 function Home() {

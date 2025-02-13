@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ChevronLeft, SquarePen, Check, Loader2, XIcon } from 'lucide-react';
+import { ChevronLeft, SquarePen, Check, Loader2, XIcon, CreditCard, Wallet } from 'lucide-react';
 import Container from '@/components/ui/container';
 import { Button } from '@/components/ui/button/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +27,7 @@ import { cn } from '@/assets/styles/utils';
 import { useForm, Controller } from 'react-hook-form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSearchParams } from 'next/navigation';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 function ConfirmNPayClient({
   user,
@@ -37,6 +38,7 @@ function ConfirmNPayClient({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const ots = searchParams.get('ots');
 
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, customer, setCustomer, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
@@ -45,6 +47,7 @@ function ConfirmNPayClient({
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [index, setIndex] = React.useState<number>(0);
+  const [isOts, setIsOts] = React.useState<boolean>(false);
 
   const [voucherCode, setVoucherCode] = React.useState<string>('');
   const [voucherData, setVoucherData] = React.useState<any>({});
@@ -98,7 +101,6 @@ function ConfirmNPayClient({
     }
     return object;
   }, [bookingField.numbers, voucherData]);
-
 
   // functions
   const handdleCheckedChange = async (checked: boolean) => {
@@ -260,11 +262,20 @@ function ConfirmNPayClient({
       throw error;
     })
     // midtrans
-    await handleCheckout(bodyMidtrans);
+    if (isOts) {
+      if (payment_select === 'cash') {
+        router.push(`/confirmation?order_id=${orderIdCash}`)
+      } else {
+        await handleCheckout(bodyMidtrans);
+      }
+    } else {
+      await handleCheckout(bodyMidtrans);
+    }
     setIsLoading(false);
   }
   // onmount
   React.useEffect(() => {
+    console.log('is-ots', isOts)
     if (productBooked) {
       const numberArr = []
       const variants = productBooked.variants;
@@ -335,7 +346,7 @@ function ConfirmNPayClient({
     }
 
     // snap script midtrans here
-    const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const midtransScriptUrl = process.env.NEXT_PUBLIC_MIDTRANS_SNAP_SCRIPT as string;
     const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ''
 
     let scriptTag = document.createElement('script');
@@ -352,6 +363,12 @@ function ConfirmNPayClient({
 
   // onupdate
   React.useEffect(() => {
+    if (ots === 'true') {
+      setIsOts(true)
+    } else {
+      setIsOts(false)
+    };
+
     if (productBooked) {
       // riders
       let riderArr = [...bookingField.riders];
@@ -380,7 +397,7 @@ function ConfirmNPayClient({
       }));
       // numbers
       let numberArr = [...bookingField.numbers]
-      if(numberArr.length > 0) {
+      if (numberArr.length > 0) {
         numberArr = numberArr.map((number, i) => {
           const total = parseFloat(number.qty) * parseFloat(number.price)
           return ({
@@ -439,7 +456,19 @@ function ConfirmNPayClient({
     }
     console.log('bookingFIeld:')
     console.log(bookingField)
-  }, [productBooked, totalRiders, updateBookingField, customers, addCustomer, updateCustomerList, isAddRider, voucherData]);
+  },
+    [
+      ots,
+      productBooked,
+      totalRiders,
+      updateBookingField,
+      customers,
+      addCustomer,
+      updateCustomerList,
+      isAddRider,
+      voucherData,
+    ]
+  );
 
   const PriceDetailComp = () => {
     return (
@@ -573,7 +602,8 @@ function ConfirmNPayClient({
               </div>
               <OpenModalButton variant='link' view='rider-select-view'>Edit</OpenModalButton>
             </div>
-            {/* <div className="flex flex-wrap items-start justify-between w-full">
+            {/* 
+            <div className="flex flex-wrap items-start justify-between w-full">
               <div className="text-foreground/75 w-full flex-grow">
                 <h4 className="font-semibold text-sm">Add Ons</h4>
               </div>
@@ -597,7 +627,8 @@ function ConfirmNPayClient({
                   Profesional Photos
                 </ToggleGroupItem>
               </ToggleGroup>
-            </div> */}
+            </div> 
+          */}
           </div>
         </Container>
         <Container className="border-t-4 border-slate-100 bg-background py-8">
@@ -741,6 +772,71 @@ function ConfirmNPayClient({
           }
         </Container>
         <PriceDetailComp />
+        {isOts &&
+          <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
+            <div>
+              <h3 className="font-bold text-base text-foreground/75 mb-3">Pay With</h3>
+              <div className="space-y-6">
+                <Controller
+                  name='payment_select'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => {
+                    return (
+                      <ToggleGroup
+                        id="payment_select"
+                        type="single"
+                        className="flex flex-col w-full gap-5"
+                        value={field.value || null}
+                        onValueChange={field.onChange}
+                        aria-invalid={errors.payment_select ? "true" : "false"}
+                      >
+                        <ToggleGroupItem
+                          value="credit-debit"
+                          className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
+                        >
+                          <CreditCard className="w-5 h-5 mr-2 inline-block" />
+                          Cashless
+                        </ToggleGroupItem>
+                        <ToggleGroupItem
+                          value="cash"
+                          className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
+                        >
+                          <Wallet className="w-5 h-5 mr-2 inline-block" />
+                          Cash
+                        </ToggleGroupItem>
+                      </ToggleGroup>
+                    )
+                  }}
+                />
+                {errors.payment_select && errors.payment_select.type === "required" && (
+                  <span role="alert" className="text-xs font-normal text-destructive">Payment method is required</span>
+                )}
+              </div>
+            </div>
+            <div>
+              <h3 className="font-bold text-base text-foreground/75 mb-3">Rules</h3>
+              <div className="text-foreground/50 text-xs font-normal ">
+                <p>We ask every customer to remember a few simple things
+                  about what makes a great customer.</p>
+                <ul className="mt-1 space-y-1">
+                  <li>
+                    <Check className="w-3 h-3 mr-2 inline-block" />
+                    Customer Ages
+                  </li>
+                  <li>
+                    <Check className="w-3 h-3 mr-2 inline-block" />
+                    Safety
+                  </li>
+                  <li>
+                    <Check className="w-3 h-3 mr-2 inline-block" />
+                    Life vest is a must
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </Container>
+        }
         <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
           <div>
             <h3 className="font-bold text-base text-foreground/75 mb-3">Rules</h3>

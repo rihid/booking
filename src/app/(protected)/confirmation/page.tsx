@@ -18,7 +18,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Confirmation',
-  description: 'Sewa jetski, Rental Jetski, main jetski di semarang'
+  description: 'Sewa jetski, Rental Jetski, main jetski di Semarang'
 }
 
 async function Confirmation({

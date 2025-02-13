@@ -10,7 +10,7 @@ import RegisterForm from './module/register-form';
 
 export const metadata: Metadata = {
   title: 'Register',
-  description: 'Sewa jetski, Rental Jetski, main jetski di semarang'
+  description: 'Sewa jetski, Rental Jetski, main jetski di Semarang'
 }
 
 async function Register() {

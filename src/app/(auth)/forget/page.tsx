@@ -10,7 +10,7 @@ import EmailForm from './module/reset-form';
 
 export const metadata: Metadata = {
   title: 'Reset',
-  description: 'Sewa jetski, Rental Jetski, main jetski di semarang'
+  description: 'Sewa jetski, Rental Jetski, main jetski di Semarang'
 }
 
 async function ForgotPassword() {

@@ -20,7 +20,7 @@ const useMidtransSnap = (body: any) => {
   }, [body]);
 
   React.useEffect(() => {
-    const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const midtransScriptUrl = process.env.NEXT_PUBLIC_MIDTRANS_SNAP_SCRIPT as string;
     const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ''
 
     let scriptTag = document.createElement('script');

@@ -10,7 +10,7 @@ import { getSession } from '@/lib/session';
 
 export const metadata: Metadata = {
   title: 'Edit Info',
-  description: 'Sewa jetski, Rental Jetski, main jetski di semarang'
+  description: 'Sewa jetski, Rental Jetski, main jetski di Semarang'
 }
 
 async function EditInfoPage() {
