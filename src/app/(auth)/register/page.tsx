@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import HeaderImageStatic from '@/components/partial/header/header-image-static';
 import RegisterForm from './module/register-form';
+import { domain } from '@/lib/data/endpoints';
 
 export const metadata: Metadata = {
   title: 'Register',
@@ -36,7 +37,7 @@ async function Register() {
             <h3 className="font-extrabold text-xs text-foreground/75 text-center tracking-tight leading-none">Sign with</h3>
             <div className="flex items-center justify-center">
               <Link
-                href={"#"}
+                href={`${domain}/login/social/redirect?provider=google`}
                 className="py-2 px-12 border border-slate-50 rounded shadow-md text-sm font-medium hover:bg-slate-50"
               >
                 <Image
@@ -49,6 +50,7 @@ async function Register() {
                 />
               </Link>
             </div>
+            {/* 
             <div className="flex items-center justify-center">
               <Link
                 href={"#"}
@@ -79,6 +81,7 @@ async function Register() {
                 />
               </Link>
             </div>
+            */}
           </div>
           <div className="-mt-4 mb-6 flex items-center justify-center text-xs font-normal text-muted-foreground">have an account?&nbsp;<Link href='/login' className="text-brand hover:underline underline-offset-2">Sign In</Link></div>
         </div>
