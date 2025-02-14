@@ -44,6 +44,10 @@ function LoginForm() {
         const data = response.data;
 
         if (response.status === 200) {
+          if(!data) {
+            toast.warning('Email not verified');
+            return
+          }
           login(data.token);
           toast.success('Success!');
         }

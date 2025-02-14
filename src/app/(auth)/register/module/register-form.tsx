@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '@/assets/styles/utils';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { authUrl } from '@/lib/data/endpoints';
+import { authUrl, userUrl } from '@/lib/data/endpoints';
 import { toast } from 'sonner';
 
 const RegisterFormSchema = z.object({
@@ -56,7 +56,7 @@ function RegisterForm() {
         toast.success(response.data.message);
         setIsLoading(false)
         console.log('crete user', response.data.data);
-        const data = response.data.data
+        const data = response.data.data;
         if(data) {
           router.push('/login')
         }
