@@ -40,6 +40,7 @@ function BookingCard({
   const midtransRedirectUrl = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL as string;
 
   const [loadingConfirm, setLoadingConfirm] = React.useState<boolean>(false);
+  const [stateTotal, setST] = React.useState<any>(0)
 
   const handleOpenModal = () => {
     openModal('trip-booking-view')
@@ -91,15 +92,22 @@ function BookingCard({
       if (data) {
         router.refresh();
         toast.success("Success confirm payment")
-      } 
-      setLoadingConfirm(false)
+        setLoadingConfirm(false)
+      }
     }).catch(error => {
       setLoadingConfirm(false)
       console.log(error);
       toast.error("Error confirm payment");
     })
   }
-
+  const cashPaymentCheck = () => {
+    const paymentArr = booking.payment_dp;
+    let totalVal = 0
+    for (let i = 0; i < paymentArr.length; i++) {
+      totalVal += parseFloat(paymentArr[i].total)
+    }
+    setST(totalVal)
+  }
   const voidBooking = React.useCallback(async (id: string) => {
     try {
       await axios.post(bookingUrl + '/book/void', { id: id }, {
@@ -114,6 +122,7 @@ function BookingCard({
     }
   }, [user.token])
   React.useEffect(() => {
+    // void booking
     if (paymentStatus.status_code === '407' && booking.status !== 'void') {
       voidBooking(paymentStatus.order_id)
     }
@@ -153,7 +162,19 @@ function BookingCard({
 
           <div className="absolute -right-0.5 w-6 h-12 bg-background border-2 border-r-background border-y-slate-300 border-l-slate-300 rounded-tl-full rounded-bl-full" />
           <div className="h-12 bg-transparent" />
-          {booking.payments.length > 0 && transaction_status === "settlement" &&
+          {booking.payment_amount > 0 && transaction_status === "settlement" &&
+            <div className="flex items-center justify-center">
+              <div className="my-2">
+                <QRCodeSVG
+                  value={booking.book_no}
+                  size={200}
+                  level='M'
+                />
+              </div>
+            </div>
+          }
+          {/* cash */}
+          {booking.payment_amount > 0 && status_code === '404' &&
             <div className="flex items-center justify-center">
               <div className="my-2">
                 <QRCodeSVG
@@ -209,6 +230,11 @@ function BookingCard({
           {transaction_status === "cancel" &&
             <Button type='button' variant="outline" disabled>
               Payment Canceled
+            </Button>
+          }
+          {booking.payment_amount === 0 && status_code === '404' &&
+            <Button type='button' variant="outline" disabled>
+              Cash Payment
             </Button>
           }
         </CardFooter>

@@ -104,6 +104,13 @@ function ConfirmNPayClient({
   }, [bookingField.numbers, voucherData]);
 
   // functions
+  const handlePageBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/explore');
+    }
+  };
   const handdleCheckedChange = async (checked: boolean) => {
     if (checked) {
       const crm = customerData;
@@ -128,7 +135,6 @@ function ConfirmNPayClient({
         ...customers[0],
         ...data
       })
-      // console.log(customers[0])
     } else {
       const initialData = {
         id: null,
@@ -164,7 +170,6 @@ function ConfirmNPayClient({
       ...customer
     })
   }
-
   const applyPromoCode = async () => {
     if (!voucherCode) return;
     setPromoLoad(true)
@@ -281,8 +286,12 @@ function ConfirmNPayClient({
     }
     for (let i = 0; i < totalRiders; i++) {
       const inputName = 'rider' + i;
+      const phoneInput = 'phone_' + inputName;
       if (errors[inputName]) {
         toast.warning('Rider ' + (i + 1) + ' is empty')
+      }
+      if (errors[phoneInput]) {
+        toast.warning('Phone number for Rider ' + (i + 1) + ' is required')
       }
     }
     if (isOts && errors.payment_select) {
@@ -565,7 +574,7 @@ function ConfirmNPayClient({
       <Container className="py-6 sticky top-0 z-30 bg-background w-full border-b border-foreground-muted flex justify-between items-center shrink-0">
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={handlePageBack}
         >
           <span>
             <ChevronLeft className="w-5 h-5" />
@@ -665,9 +674,28 @@ function ConfirmNPayClient({
                   <div className="flex items-start justify-between w-full">
                     {customer.id !== null ?
                       <div className="text-foreground/75">
-                        <h4 className="font-semibold text-sm">{customer.name}</h4>
-                        <p className="text-xs font-normal text-foreground/50">ID Card - {customer.identity_number}</p>
-                        <p className="text-xs font-normal text-foreground/50">{customer.rider_type}</p>
+                        <h4 className="font-semibold text-sm capitalize">{customer.name} <span className="font-normal text-xs">{customer.rider_type ? `(${customer.rider_type})` : ''}</span></h4>
+                        <div className="flex items-center justify-start gap-2">
+                          {customer.email &&
+                            <>
+                              <p className="text-xs font-normal text-foreground/50">{customer.email}</p>
+                              <span className="text-xs font-normal text-foreground/50">-</span>
+                            </>
+                          }
+                          {customer.phone ? (
+                            <p className="text-xs font-normal text-foreground/50">{customer.phone}</p>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs font-normal text-destructive">Phone number is required</p>
+                              <input
+                                type="text"
+                                id={`phone_${inputName}`}
+                                {...register(`phone_${inputName}`, { required: true })}
+                                className="hidden"
+                              />
+                            </div>
+                          )}
+                        </div>
                       </div>
                       :
                       <div className="text-foreground/75">
@@ -675,8 +703,12 @@ function ConfirmNPayClient({
                           <h4 className="font-semibold text-sm">Name</h4>
                           <span className="text-xs italic text-muted-foreground">&ndash; Required</span>
                         </div>
-                        <p className="text-xs font-normal text-foreground/50">ID - 0000</p>
-                        <p className="text-xs font-normal text-foreground/50"></p>
+                        <div className="flex items-center justify-start gap-2">
+                          <p className="text-xs font-normal text-foreground/50">Email</p>
+                          <span className="text-xs font-normal text-foreground/50">-</span>
+                          <p className="text-xs font-normal text-foreground/50">Phone</p>
+
+                        </div>
                         <input
                           type="text"
                           id={inputName}

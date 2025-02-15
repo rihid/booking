@@ -25,8 +25,9 @@ const FormSchema = z.object({
   address: z.string().nullable(),
   phone: z.string().nullable(),
   email: z.string().nullable(),
-  identity_number: z.string()
-    .min(1, { message: "ID Card is required" }),
+  identity_number: z.string().nullable().refine((val) => val !== null && val.length >= 1, {
+    message: "ID Card is required"
+  }),
   vat: z.string().nullable(),
   rating: z.string().nullable(),
   birthday: z.any().nullable(),
@@ -83,7 +84,7 @@ function EditInfoForm({
     if (birthdayVal) {
       const birth = new Date(birthdayVal)
       const dayNow = new Date()
-      const diff =  new Date(dayNow.getTime() - birth.getTime())
+      const diff = new Date(dayNow.getTime() - birth.getTime())
       const age = diff.getFullYear() - 1970;
 
       form.setValue('age', age.toString(), { shouldValidate: true });

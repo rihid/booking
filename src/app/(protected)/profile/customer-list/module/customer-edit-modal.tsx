@@ -32,8 +32,9 @@ const FormSchema = z.object({
   address: z.string().nullable(),
   phone: z.string().nullable(),
   email: z.string().nullable(),
-  identity_number: z.string()
-    .min(1, { message: "ID Card is required" }),
+  identity_number: z.string().nullable().refine((val) => val !== null && val.length >= 1, {
+    message: "ID Card is required"
+  }),
   vat: z.string().nullable(),
   rating: z.string().nullable(),
   birthday: z.any().nullable(),

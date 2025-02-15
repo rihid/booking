@@ -9,6 +9,8 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import LoadingOverlay from '@/components/partial/loading-overlay';
 import { domain } from '@/lib/data/endpoints';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft } from 'lucide-react';
 
 function LoginPageClient({ token }: { token: string | string[] | null }) {
   const router = useRouter();
@@ -41,6 +43,18 @@ function LoginPageClient({ token }: { token: string | string[] | null }) {
     <LoadingOverlay loading={loadingOverlay}>
       <div className="flex flex-col items-center justify-between w-full h-full min-h-screen">
         <HeaderImageStatic className="shrink-0" />
+        <div className="absolute z-30 top-6 left-0 right-0 px-[30px] flex items-center justify-between">
+          <Button
+            type='button'
+            variant="outline"
+            size="icon"
+            className="bg-background/50 rounded-full h-7 w-7 p-1"
+          >
+            <Link href="/">
+              <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+            </Link>
+          </Button>
+        </div>
         <div className="flex-1 w-full">
           <div className="mx-12 mt-10">
             <h3 className="font-extrabold text-base text-foreground/75 mb-5 text-center tracking-tight leading-none">Login to your account</h3>
