@@ -268,17 +268,21 @@ function ConfirmNPayClient({
       console.log(error);
       throw error;
     })
-    // midtrans
+
     if (isOts) {
       if (payment_select === 'cash') {
         router.push(`/confirmation?order_id=${orderIdCash}`)
+        // setIsLoading(false);
       } else {
+        // midtrans
         await handleCheckout(bodyMidtrans);
+        setIsLoading(false);
       }
     } else {
+      // midtrans
       await handleCheckout(bodyMidtrans);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }
   const validateToast = (errors: any) => {
     if (errors.schedule_check_in_date) {
@@ -299,7 +303,7 @@ function ConfirmNPayClient({
     }
   }
   const phoneFormat = (value: string) => {
-    if(!value) return;
+    if (!value) return;
     const format = value.replace(/(\d{4})(\d{4})(\d{0,5})/, (_, p1, p2, p3) =>
       `${p1} ${p2}${p3 ? ` ${p3}` : ""}`
     )
@@ -866,27 +870,6 @@ function ConfirmNPayClient({
                 {errors.payment_select && errors.payment_select.type === "required" && (
                   <span role="alert" className="text-xs font-normal text-destructive">Payment method is required</span>
                 )}
-              </div>
-            </div>
-            <div>
-              <h3 className="font-bold text-base text-foreground/75 mb-3">Rules</h3>
-              <div className="text-foreground/50 text-xs font-normal ">
-                <p>We ask every customer to remember a few simple things
-                  about what makes a great customer.</p>
-                <ul className="mt-1 space-y-1">
-                  <li>
-                    <Check className="w-3 h-3 mr-2 inline-block" />
-                    Customer Ages
-                  </li>
-                  <li>
-                    <Check className="w-3 h-3 mr-2 inline-block" />
-                    Safety
-                  </li>
-                  <li>
-                    <Check className="w-3 h-3 mr-2 inline-block" />
-                    Life vest is a must
-                  </li>
-                </ul>
               </div>
             </div>
           </Container>
