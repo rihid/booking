@@ -23,7 +23,9 @@ const FormSchema = z.object({
   customer_no: z.string().nullable(),
   name: z.string(),
   address: z.string().nullable(),
-  phone: z.string().nullable(),
+  phone: z.string().nullable().refine((val) => val !== null && val.length >= 4, {
+    message: "Phone number is required"
+  }),
   email: z.string().nullable(),
   identity_number: z.string().nullable().refine((val) => val !== null && val.length >= 1, {
     message: "ID Card is required"

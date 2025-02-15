@@ -298,9 +298,15 @@ function ConfirmNPayClient({
       toast.warning('Payment method is required')
     }
   }
+  const phoneFormat = (value: string) => {
+    if(!value) return;
+    const format = value.replace(/(\d{4})(\d{4})(\d{0,5})/, (_, p1, p2, p3) =>
+      `${p1} ${p2}${p3 ? ` ${p3}` : ""}`
+    )
+    return format;
+  }
   // onmount
   React.useEffect(() => {
-    console.log('is-ots', isOts)
     if (productBooked) {
       const numberArr = []
       const variants = productBooked.variants;
@@ -683,7 +689,7 @@ function ConfirmNPayClient({
                             </>
                           }
                           {customer.phone ? (
-                            <p className="text-xs font-normal text-foreground/50">{customer.phone}</p>
+                            <p className="text-xs font-normal text-foreground/50">{phoneFormat(customer.phone)}</p>
                           ) : (
                             <div className="flex items-center gap-2">
                               <p className="text-xs font-normal text-destructive">Phone number is required</p>

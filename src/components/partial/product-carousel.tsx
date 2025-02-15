@@ -7,6 +7,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/assets/styles/utils';
 
+const isVideo = true;
+
 function ProductCarousel({
   slug,
   pictures,
@@ -39,14 +41,14 @@ function ProductCarousel({
               <CarouselItem key={picture.id}>
                 <Link href={`/p/${encodeURIComponent(slug)}`}>
                   <div className="flex aspect-w-5 aspect-h-4 w-full h-0">
-                    <Image
-                      src={picture.url}
-                      alt="image"
-                      width={0}
-                      height={0}
-                      sizes="100vw"
-                      className="h-full w-full object-cover rounded-md"
-                    />
+                  <Image
+                    src={picture.url}
+                    alt="image"
+                    width={0}
+                    height={0}
+                    sizes="100vw"
+                    className="h-full w-full object-cover rounded-md"
+                  />
                   </div>
                 </Link>
               </CarouselItem>
