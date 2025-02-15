@@ -161,8 +161,6 @@ function ConfirmNPayClient({
     setIsAddRider(checked);
   }
   const handleOpenRiderModal = async (idx: number, customer: z.infer<typeof CustomerFieldSchema>) => {
-    // console.log('customer in open rider modal')
-    // console.log(customer)
     setIndex(idx);
     setCustomer(customer);
     editCustomer(idx, {
@@ -265,14 +263,16 @@ function ConfirmNPayClient({
       bodyMidtrans.orderId = data.id;
       orderIdCash = data.id
     }).catch(error => {
+      setIsLoading(false);
       console.log(error);
       throw error;
     })
-
+    
     if (isOts) {
       if (payment_select === 'cash') {
         router.push(`/confirmation?order_id=${orderIdCash}`)
-        // setIsLoading(false);
+        setIsLoading(false);
+        return;
       } else {
         // midtrans
         await handleCheckout(bodyMidtrans);
