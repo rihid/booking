@@ -171,7 +171,7 @@ export const getCustomerByNo = async (token: any, customerNo: any) => {
 }
 export const getCustomerByNoMulti = async (token: any, customerNo: any) => {
   try {
-    // ArrAY
+    // Array
     const res = await axios.post(customerUrl + '/get-multi', { customer_no: customerNo }, {
       headers: { Accept: 'application/json', Authorization: 'Bearer ' + token },
       timeout: 30000
@@ -191,7 +191,6 @@ export const getAllProductPublic = async () => {
         Accept: 'application/json',
       }
     });
-    // const products = z.array(ProductSchema).parse(res.data.data);
     const products = res.data.data;
     const withSlug = generateProductSlug(products)
     return withSlug;
@@ -219,6 +218,7 @@ export const getSingleProductPublic = async (id: string) => {
     throw error;
   }
 }
+
 export const getAllBooking = async (token: any) => {
   const startDate = moment(date).subtract(30, 'days').format('YYYY-MM-DD');
   const endDate = moment(date).format('YYYY-MM-DD');
@@ -241,23 +241,23 @@ export const getAllBooking = async (token: any) => {
   return res;
 }
 export const getBooking = async (token: any, id: string) => {
-  const res = axios.get(bookingUrl + '/book/' + id, {
-    headers: {
-      Accept: 'application/json',
-      Authorization: 'Bearer ' + token
-    }
-  }).then(response => {
-    const data = SingleBookingSchema.parse(response.data.data);
+  try {
+    const res = await axios.get(bookingUrl + '/book/' + id, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token
+      }
+    })
+    const data = SingleBookingSchema.parse(res.data.data);
     return data;
-  }).catch((error: any) => {
+  } catch (error: any) {
     console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
-  })
-
-  return res;
+  }
 }
+
 export const getBookByCustomer = async (token: any, body: BookByCustomer) => {
   const res = await axios.post(bookingUrl + '/book/customer', body, {
     headers: {
@@ -295,6 +295,7 @@ export const getEmployeeByNo = async (token: any, no: string) => {
     throw error
   }
 }
+
 export const getInvoiceByCustomer = async (token: any, body: BookByCustomer) => {
   const res = await axios.post(bookingUrl + '/book/customer', body, {
     headers: {

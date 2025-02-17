@@ -25,6 +25,7 @@ interface PaymentType {
   total: string | null;
   org_no: string | null;
   branch_no: string | null;
+  settlement_id?: string | null;
   payment_type: string | null;
   note: string | null;
   token_payment: any;
@@ -46,13 +47,14 @@ function ConfirmationContent({
   paymentStatus: any;
   payments: any;
 }) {
-  console.log('booking', booking.payment)
   const searchParams = useSearchParams()
   const orderId = searchParams.get('order_id')
   const { paymentLinks } = usePaymentStore((store) => store);
   const [tokenPay, setTokenPay] = React.useState<string | null>(null);
 
   const hasPostedRef = React.useRef(false);
+  const transactionId = paymentStatus.status_code !== '404' ? paymentStatus.transaction_id : null;
+  console.log('tran id', transactionId)
 
   // methods
   const findTokenSnap = () => {
@@ -67,6 +69,7 @@ function ConfirmationContent({
     const paymentVal = payments.find((p: any) => p.book_no === booking.book_no);
     if (!paymentVal) {
       console.log('post')
+      console.log(body)
       const res = axios.post(bookingUrl + '/book/payment', body, {
         headers: {
           Accept: 'application/json',
@@ -95,10 +98,12 @@ function ConfirmationContent({
         total: body.total,
         org_no: user.org_no,
         branch_no: body.branch_no,
+        settlement_id: body.settlement_id,
         payment_type: body.payment_type,
         note: body.note,
         cash_id: body.cash_id
       }
+      console.log(obj)
       const res = axios.put(bookingUrl + '/book/payment/' + paymentVal.id, obj, {
         headers: {
           Accept: 'application/json',
@@ -137,6 +142,7 @@ function ConfirmationContent({
         branch_no: null,
         payment_type: "down_payment",
         note: null,
+        settlement_id: paymentStatus.transaction_id,
         token_payment: findTokenSnap(),
         cash_id: null
       }
@@ -160,6 +166,7 @@ function ConfirmationContent({
         total: '0',
         org_no: null,
         branch_no: null,
+        settlement_id: paymentStatus.transaction_id,
         payment_type: "down_payment",
         note: null,
         token_payment: findTokenSnap(),
@@ -184,6 +191,7 @@ function ConfirmationContent({
         total: '0',
         org_no: null,
         branch_no: null,
+        settlement_id: null,
         payment_type: "down_payment",
         note: null,
         token_payment: null,

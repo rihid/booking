@@ -57,7 +57,6 @@ async function Confirmation({
         Authorization: 'Bearer ' + token
       }
     }).then(response => {
-      console.log(response.data.data)
       const data = response.data.data;
       return data;
     }).catch(error => {
@@ -92,7 +91,9 @@ async function Confirmation({
   if (orderId) {
     const orderIdSlice = (orderId as string).replace(/\$/g, '')
     booking = await getBooking(token, orderIdSlice);
-    productVal = products.find(p => p.product_no === booking.product_no);
+    if(booking) {
+      productVal = products.find(p => p.product_no === booking?.product_no);
+    }
   }
   const paymentMethod = await getPaymentMethod();
   const paymentStatus = await getPaymentStatus();
@@ -193,6 +194,7 @@ async function Confirmation({
         );
     }
   }
+  
   return (
     <div className="flex flex-col min-h-screen">
       <StatusCard />

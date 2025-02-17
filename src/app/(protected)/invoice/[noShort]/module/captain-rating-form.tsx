@@ -21,7 +21,9 @@ const FormFieldSchema = z.object({
   rating: z.string().min(1, {
     message: "Rating is required.",
   }),
-  rating_notes: z.string().nullable()
+  rating_notes: z.string().min(1, {
+    message: "Rating notes is required"
+  })
 });
 
 function CaptainRatingForm({
@@ -31,7 +33,7 @@ function CaptainRatingForm({
   user: any;
   crew: any;
 }) {
-
+  console.log(crew)
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [loader, setLoader] = React.useState<boolean>(false);
   const [employee, setEmployee] = React.useState<any>({});
@@ -41,8 +43,8 @@ function CaptainRatingForm({
     resolver: zodResolver(FormFieldSchema),
     defaultValues: {
       id: '',
-      rating: '',
-      rating_notes: ''
+      rating: crew.rating || '',
+      rating_notes: crew.rating_notes || ''
     }
   });
   const onSubmit = async (values: z.infer<typeof FormFieldSchema>) => {
@@ -97,7 +99,7 @@ function CaptainRatingForm({
 
   return (
     <>
-      {ratingVal.rating !== null ?
+      {ratingVal.rating !== null && ratingVal.rating_notes ?
         <div className="space-y-6 py-4">
           <div className="flex items-center gap-4 justify-center">
             <Image

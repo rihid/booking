@@ -29,6 +29,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useSearchParams } from 'next/navigation';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { toast } from 'sonner';
+import Tnc from '@/components/partial/tnc';
+import Cancelation from '@/components/partial/cancelation';
+import { Checkbox } from '@/components/ui/checkbox';
 
 function ConfirmNPayClient({
   user,
@@ -234,7 +237,6 @@ function ConfirmNPayClient({
   }
   const onSubmitConfirm = async (validate: any) => {
     const { payment_select, } = validate;
-    console.log('validate', validate)
     setIsLoading(true);
     let bodyMidtrans = {
       orderId: bookingField.book_no,
@@ -248,11 +250,8 @@ function ConfirmNPayClient({
     let orderIdCash = '';
     // filter numbers
     const numberValue = bookingField.numbers.filter(number => number.qty !== '0');
-    const body = {
-      ...bookingField,
-      numbers: numberValue
-    }
-    console.log(body);
+    const body = { ...bookingField, numbers: numberValue }
+
     await axios.post(bookingUrl + '/book', body, {
       headers: {
         Accept: 'application/json',
@@ -263,21 +262,14 @@ function ConfirmNPayClient({
       bodyMidtrans.orderId = data.id;
       orderIdCash = data.id
     }).catch(error => {
-      setIsLoading(false);
+      toast.error('Error create booking!')
       console.log(error);
-      throw error;
     })
-    
-    if (isOts) {
-      if (payment_select === 'cash') {
-        router.push(`/confirmation?order_id=${orderIdCash}`)
-        setIsLoading(false);
-        return;
-      } else {
-        // midtrans
-        await handleCheckout(bodyMidtrans);
-        setIsLoading(false);
-      }
+
+    if (isOts && payment_select === 'cash') {
+      window.location.href = `/confirmation?order_id=${orderIdCash}`;
+      setIsLoading(false);
+      return;
     } else {
       // midtrans
       await handleCheckout(bodyMidtrans);
@@ -638,32 +630,32 @@ function ConfirmNPayClient({
               <OpenModalButton variant='link' view='rider-select-view'>Edit</OpenModalButton>
             </div>
             {/* 
-            <div className="flex flex-wrap items-start justify-between w-full">
-              <div className="text-foreground/75 w-full flex-grow">
-                <h4 className="font-semibold text-sm">Add Ons</h4>
-              </div>
-              <ToggleGroup type="multiple" className="mt-3 gap-4">
-                <ToggleGroupItem
-                  value="drone"
-                  className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
-                >
-                  Drone
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="food"
-                  className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
-                >
-                  Food
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="profesional-photos"
-                  className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
-                >
-                  Profesional Photos
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div> 
-          */}
+              <div className="flex flex-wrap items-start justify-between w-full">
+                <div className="text-foreground/75 w-full flex-grow">
+                  <h4 className="font-semibold text-sm">Add Ons</h4>
+                </div>
+                <ToggleGroup type="multiple" className="mt-3 gap-4">
+                  <ToggleGroupItem
+                    value="drone"
+                    className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
+                  >
+                    Drone
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="food"
+                    className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
+                  >
+                    Food
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="profesional-photos"
+                    className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
+                  >
+                    Profesional Photos
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div> 
+            */}
           </div>
         </Container>
         <Container className="border-t-4 border-slate-100 bg-background py-8">
@@ -851,14 +843,15 @@ function ConfirmNPayClient({
                       >
                         <ToggleGroupItem
                           value="credit-debit"
-                          className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
+                          className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50 data-[state=on]:bg-brand data-[state=on]:text-background data-[state=on]:border-brand"
                         >
                           <CreditCard className="w-5 h-5 mr-2 inline-block" />
                           Cashless
                         </ToggleGroupItem>
+
                         <ToggleGroupItem
                           value="cash"
-                          className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50"
+                          className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50 data-[state=on]:bg-brand data-[state=on]:text-background data-[state=on]:border-brand"
                         >
                           <Wallet className="w-5 h-5 mr-2 inline-block" />
                           Cash
@@ -875,62 +868,90 @@ function ConfirmNPayClient({
           </Container>
         }
         <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
-          <div>
-            <h3 className="font-bold text-base text-foreground/75 mb-3">Rules</h3>
-            <div className="text-foreground/50 text-xs font-normal ">
-              <p>We ask every customer to remember a few simple things
-                about what makes a great customer.</p>
-              <ul className="mt-1 space-y-1">
-                <li>
-                  <Check className="w-3 h-3 mr-2 inline-block" />
-                  Customer Ages
-                </li>
-                <li>
-                  <Check className="w-3 h-3 mr-2 inline-block" />
-                  Safety
-                </li>
-                <li>
-                  <Check className="w-3 h-3 mr-2 inline-block" />
-                  Life vest is a must
-                </li>
-              </ul>
+          <Tnc />
+          <div className="flex items-start space-x-2">
+            <Controller
+              name="tncAgreement"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Checkbox
+                  id="tnc-agreement"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <label
+                htmlFor="tnc-agreement"
+                className="text-xs text-muted-foreground"
+              >
+                I agree to the Terms and Conditions
+              </label>
+              {errors.tncAgreement && (
+                <span className="text-xs font-normal text-destructive">
+                  Terms and Conditions is required
+                </span>
+              )}
             </div>
           </div>
-        </Container>
-        <Container className="border-t-4 border-slate-100 bg-background py-8">
-          <h3 className="font-bold text-base text-foreground/75 mb-3">Cancellation Pollicy</h3>
-          <div className="space-y-6">
-            <div className="text-foreground/50 font-normal text-xs">
-              <p>This reservation is non-refundable. Learn More
-                <button type="button" className="inline-block ml-1 text-brand hover:underline hover:underline-offset-1">learn More</button></p>
-            </div>
-          </div>
-        </Container>
-        <Container el="article" className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
-          <div className="text-foreground/50 text-xs font-normal space-y-4">
-            <p>By selecting the button below, I agree to Seadoo Safari rules.</p>
-            <p>I also agree to the updated Terms of Service, Payments Terms
-              Of Service, and I acknowledge the Privacy Policy.</p>
-          </div>
-          <div className="flex items-center justify-center">
-            <Button
-              type='submit'
-              disabled={isLoading}
-              className="bg-brand hover:bg-brand/90"
+      </Container>
+      <Container className="border-t-4 border-slate-100 bg-background py-8">
+        <Cancelation />
+        <div className="flex items-start space-x-2 mt-6">
+          <Controller
+            name="cancellationAgreement"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Checkbox
+                id="cancellation-agreement"
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            )}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <label
+              htmlFor="cancellation-agreement"
+              className="text-xs text-muted-foreground"
             >
-              {isLoading &&
-                <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
-              }
-              Confirm & pay
-            </Button>
+              I agree to the cancellation policy
+            </label>
+            {errors.cancellationAgreement && (
+              <span className="text-xs font-normal text-destructive">
+                Cancellation policy is required
+              </span>
+            )}
           </div>
-        </Container>
-      </form>
-      {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.schedule_check_in_date as string} />}
-      {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
-      {modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} user={user} />}
-      {modalView === 'rider-detail-view' && <RiderDetailFormModal user={user} idx={index} customer={customer} />}
-    </div>
+        </div>
+      </Container>
+      <Container el="article" className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
+        <div className="text-foreground/50 text-xs font-normal space-y-4">
+          <p>By selecting the button below, I agree to Seadoo Safari rules.</p>
+          <p>I also agree to the updated Terms of Service, Payments Terms
+            Of Service, and I acknowledge the Privacy Policy.</p>
+        </div>
+        <div className="flex items-center justify-center">
+          <Button
+            type='submit'
+            disabled={isLoading}
+            className="bg-brand hover:bg-brand/90"
+          >
+            {isLoading &&
+              <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
+            }
+            Confirm & pay
+          </Button>
+        </div>
+      </Container>
+    </form>
+      { modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.schedule_check_in_date as string} /> }
+  { modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} /> }
+  { modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} user={user} /> }
+  { modalView === 'rider-detail-view' && <RiderDetailFormModal user={user} idx={index} customer={customer} /> }
+    </div >
   )
 }
 

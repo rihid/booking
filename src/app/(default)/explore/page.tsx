@@ -52,7 +52,10 @@ async function Explore({
 }) {
   const query = searchParams?.query;
   const locQuery = searchParams?.location;
-
+  // data
+  let categories = [];
+  let locations = [];
+  
   const getProductType = async () => {
     try {
       const res = await axios.get(productUrl + "/category", {
@@ -86,8 +89,8 @@ async function Explore({
       throw error
     }
   }
-  const categories = await getProductType();
-  const locations = await getLocationPublic();
+  categories = await getProductType();
+  locations = await getLocationPublic();
 
   return (
     <div className="flex flex-col min-h-screen">

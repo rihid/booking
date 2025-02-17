@@ -72,10 +72,14 @@ function DatesFormModal({
     const selectedDate = moment(date).format('YYYY-MM-DD');
     const currentDate = moment().format('YYYY-MM-DD');
     const currentHour = moment().hour();
+    const currentMinute = moment().minute();
 
     // Disable past hours if the selected date is today
     if (selectedDate === currentDate) {
-      return parseInt(timeValue) <= currentHour;
+      if (parseInt(timeValue) === currentHour) {
+        return currentMinute > 0;
+      }
+      return parseInt(timeValue) < currentHour;
     }
 
     return false;
