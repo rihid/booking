@@ -869,14 +869,19 @@ function ConfirmNPayClient({
         }
         <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
           <Tnc />
+        </Container>
+        <Container className="border-t-4 border-slate-100 bg-background py-8">
+          <Cancelation />
+        </Container>
+        <Container className="border-t-4 border-slate-100 bg-background py-8">
           <div className="flex items-start space-x-2">
             <Controller
-              name="tncAgreement"
+              name="agreement"
               control={control}
               rules={{ required: true }}
               render={({ field }) => (
                 <Checkbox
-                  id="tnc-agreement"
+                  id="agreement"
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
@@ -884,73 +889,43 @@ function ConfirmNPayClient({
             />
             <div className="grid gap-1.5 leading-none">
               <label
-                htmlFor="tnc-agreement"
+                htmlFor="agreement"
                 className="text-xs text-muted-foreground"
               >
                 I agree to the Terms and Conditions
               </label>
-              {errors.tncAgreement && (
+              {errors.agreement && (
                 <span className="text-xs font-normal text-destructive">
                   Terms and Conditions is required
                 </span>
               )}
             </div>
           </div>
-      </Container>
-      <Container className="border-t-4 border-slate-100 bg-background py-8">
-        <Cancelation />
-        <div className="flex items-start space-x-2 mt-6">
-          <Controller
-            name="cancellationAgreement"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Checkbox
-                id="cancellation-agreement"
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
-            )}
-          />
-          <div className="grid gap-1.5 leading-none">
-            <label
-              htmlFor="cancellation-agreement"
-              className="text-xs text-muted-foreground"
-            >
-              I agree to the cancellation policy
-            </label>
-            {errors.cancellationAgreement && (
-              <span className="text-xs font-normal text-destructive">
-                Cancellation policy is required
-              </span>
-            )}
+        </Container>
+        <Container el="article" className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
+          <div className="text-foreground/50 text-xs font-normal space-y-4">
+            <p>By selecting the button below, I agree to Seadoo Safari rules.</p>
+            <p>I also agree to the updated Terms of Service, Payments Terms
+              Of Service, and I acknowledge the Privacy Policy.</p>
           </div>
-        </div>
-      </Container>
-      <Container el="article" className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
-        <div className="text-foreground/50 text-xs font-normal space-y-4">
-          <p>By selecting the button below, I agree to Seadoo Safari rules.</p>
-          <p>I also agree to the updated Terms of Service, Payments Terms
-            Of Service, and I acknowledge the Privacy Policy.</p>
-        </div>
-        <div className="flex items-center justify-center">
-          <Button
-            type='submit'
-            disabled={isLoading}
-            className="bg-brand hover:bg-brand/90"
-          >
-            {isLoading &&
-              <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
-            }
-            Confirm & pay
-          </Button>
-        </div>
-      </Container>
-    </form>
-      { modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.schedule_check_in_date as string} /> }
-  { modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} /> }
-  { modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} user={user} /> }
-  { modalView === 'rider-detail-view' && <RiderDetailFormModal user={user} idx={index} customer={customer} /> }
+          <div className="flex items-center justify-center">
+            <Button
+              type='submit'
+              disabled={isLoading}
+              className="bg-brand hover:bg-brand/90"
+            >
+              {isLoading &&
+                <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
+              }
+              Confirm & pay
+            </Button>
+          </div>
+        </Container>
+      </form>
+      {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.schedule_check_in_date as string} />}
+      {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
+      {modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} user={user} />}
+      {modalView === 'rider-detail-view' && <RiderDetailFormModal user={user} idx={index} customer={customer} />}
     </div >
   )
 }

@@ -49,7 +49,7 @@ const dataTnC = [
 function Tnc() {
   return (
     <div>
-      <h3 className="font-bold text-base text-foreground/75 mb-3">Terms and Conditions</h3>
+      <h3 className="font-bold text-base text-foreground/75 mb-3">Rules</h3>
       <div className="text-foreground/50 text-xs font-normal ">
         <p className="mb-2">Customer Term and Conditions Seadoo Safari Semarang:</p>
         {dataTnC.map((data, index) => {
