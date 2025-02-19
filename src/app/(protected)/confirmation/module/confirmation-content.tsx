@@ -53,12 +53,11 @@ function ConfirmationContent({
   const [tokenPay, setTokenPay] = React.useState<string | null>(null);
 
   const hasPostedRef = React.useRef(false);
-  const transactionId = paymentStatus.status_code !== '404' ? paymentStatus.transaction_id : null;
-  console.log('tran id', transactionId)
-
+  console.log('booking', booking)
   // methods
   const findTokenSnap = () => {
-    const plValue = paymentLinks.find((pl: any) => pl.order_id === booking.id)
+    const formatBookNo = booking.book_no.replace(/\//g, '_')
+    const plValue = paymentLinks.find((pl: any) => pl.order_id === formatBookNo)
     if(plValue) {
       return plValue.payment_token
     } else {
@@ -127,16 +126,16 @@ function ConfirmationContent({
         const midtransBankVal = paymentStatus.va_numbers[0].bank;
         methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
       }
-      const paymentDp = booking.payment_dp;
+      const payment = booking.payment_dp;
       const body = {
         payment_no: null,
         book_no: booking.book_no,
         payment_date: paymentStatus.settlement_time,
         method_id: methodVal ? methodVal.id : null,
         amount: paymentStatus.gross_amount.replace(/\.00$/, ''),
-        promo_id: paymentDp.promo_id,
-        round: paymentDp.round,
-        discount: paymentDp.discount,
+        promo_id: payment ? payment.promo_id : null,
+        round: payment ? payment.round : null,
+        discount: payment ? payment.discount : null,
         total: paymentStatus.gross_amount.replace(/\.00$/, ''),
         org_no: null,
         branch_no: null,
@@ -197,7 +196,7 @@ function ConfirmationContent({
         token_payment: null,
         cash_id: null
       }
-      console.log('400', body)
+      console.log('404', body)
       await postPayment(body);
     }
   }
@@ -251,6 +250,7 @@ function ConfirmationContent({
           {paymentStatus.status_code === '201' &&
             <Link
               href={ `${process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL}/${tokenPay}` || '#'}
+              target='_blank'
             >
               <Button className="w-full bg-brand hover:bg-brand/90">Pay Now</Button>
             </Link>

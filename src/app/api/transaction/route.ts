@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
       customer_details: {
         first_name: customer,
         email: customerEmail,
-      }
+      },
+      // callback: {
+      //   finish: 'https://safari-booking.callistech.co.id/confirmation'
+      // }
     }
     const data = await snap.createTransaction(transactionParams);
     return NextResponse.json({ data });

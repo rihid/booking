@@ -208,7 +208,7 @@ function ConfirmNPayClient({
     })
     console.log('customer closed the popup without finishing the payment');
   }
-  const handleCheckout = async (body: any) => {
+  const handleCheckout = async (body: any, bookId: string) => {
     try {
       const response = await fetch('/api/transaction', {
         method: 'POST',
@@ -225,10 +225,19 @@ function ConfirmNPayClient({
       })
       // @ts-ignore
       window.snap.pay(res.data.token, {
-        onPending: (result: any) => {
-          // router.push(`/confirmation?order_id=${body.orderId}&status_code=${result.status_code}&payment_token=${res.data.token}`)
+        onSuccess: (result: any) => {
+          toast.success("Payment success! wait for redirection")
+          console.log('result', result)
+          // router.push(`/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`)
+          window.location.href = `/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`
         },
-        onClose: () => { closePayment(body.orderId) },
+        onPending: (result: any) => {
+          toast.warning("Payment pending! wait for redirection")
+          console.log('resutl', result)
+          // router.push(`/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`)
+          window.location.href = `/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`
+        },
+        onClose: () => { closePayment(bookId) },
       });
     } catch (error) {
       console.log(error);
@@ -247,33 +256,42 @@ function ConfirmNPayClient({
       customer: user.name,
       customerEmail: user.email
     }
+    let bookId = ''
     let orderIdCash = '';
     // filter numbers
     const numberValue = bookingField.numbers.filter(number => number.qty !== '0');
     const body = { ...bookingField, numbers: numberValue }
-
-    await axios.post(bookingUrl + '/book', body, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + user.token
+    try {
+      const res = await axios.post(bookingUrl + '/book', body, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + user.token
+        }
+      })
+      const data = res.data.data;
+      console.log(data)
+      if(data) {
+        const formatOrderId = data.book_no.replace(/\//g, '_')
+        bodyMidtrans.orderId = formatOrderId;
+        orderIdCash = formatOrderId;
+        bookId = data.id;
       }
-    }).then(response => {
-      const data = response.data.data;
-      bodyMidtrans.orderId = data.id;
-      orderIdCash = data.id
-    }).catch(error => {
-      toast.error('Error create booking!')
-      console.log(error);
-    })
 
-    if (isOts && payment_select === 'cash') {
-      window.location.href = `/confirmation?order_id=${orderIdCash}`;
+      if (isOts && payment_select === 'cash') {
+        window.location.href = `/confirmation?order_id=${orderIdCash}`;
+        setIsLoading(false);
+        return;
+      } else {
+        // midtrans
+        await handleCheckout(bodyMidtrans, bookId);
+        console.log(bodyMidtrans)
+        setIsLoading(false);
+      }
+
+    } catch (error: any) {
+      toast.error('Error create booking!')
       setIsLoading(false);
-      return;
-    } else {
-      // midtrans
-      await handleCheckout(bodyMidtrans);
-      setIsLoading(false);
+      console.log(error);
     }
   }
   const validateToast = (errors: any) => {

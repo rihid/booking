@@ -257,6 +257,23 @@ export const getBooking = async (token: any, id: string) => {
     throw error;
   }
 }
+export const getBookbyNo = async(token: any, bookNo: string) => {
+  try{
+    const res = await axios.post(bookingUrl + '/book/get-by-no', {book_no: bookNo}, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token
+      }
+    })
+    const data = res.data.data;
+    return data;
+  } catch(error: any){
+    console.log(error.response.config.url)
+    console.log(error.response.status)
+    console.log(error.response.data.message)
+    throw error;
+  }
+}
 
 export const getBookByCustomer = async (token: any, body: BookByCustomer) => {
   const res = await axios.post(bookingUrl + '/book/customer', body, {
@@ -268,9 +285,7 @@ export const getBookByCustomer = async (token: any, body: BookByCustomer) => {
     const data = BookByCustomerSchema.parse(response.data.data);
     return data;
   }).catch((error: any) => {
-    console.log(error.response.config.url)
-    console.log(error.response.status)
-    console.log(error.response.data.message)
+    console.log(error.response)
     throw error;
   })
   return res;

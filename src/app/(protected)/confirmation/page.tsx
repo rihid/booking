@@ -10,7 +10,7 @@ import { getSession } from '@/lib/session';
 import axios from 'axios';
 import moment from 'moment';
 import { bookingUrl, masterUrl } from '@/lib/data/endpoints';
-import { getAllProductPublic, getBooking } from '@/lib/data';
+import { getAllProductPublic, getBookByCustomer, getBookbyNo, getBooking } from '@/lib/data';
 import { midtransServerKey } from '@/lib/constants';
 import ActionComp from './module/action-comp';
 import ConfirmationContent from './module/confirmation-content';
@@ -28,12 +28,14 @@ async function Confirmation({
 }) {
   const session = await getSession();
   // @ts-ignore 
-  const { token } = session.user
+  const { token, customer_no } = session.user
   const orderId = searchParams['order_id'] || null;
+  const formatOrderID = orderId ? (orderId as string).replace(/_/g, '/') : null;
+  const transactionId = searchParams['transaction_id'] || null;
   const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
-  const midtransUrl = process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + orderId + '/status';
   // actions
   const getPaymentStatus = () => {
+    const midtransUrl = (process.env.NEXT_PUBLIC_MIDTRANS_API as string) + transactionId + '/status';
     const res = axios.get(midtransUrl, {
       headers: {
         accept: 'application/json',
@@ -88,10 +90,9 @@ async function Confirmation({
   const products = await getAllProductPublic();
   let booking: any = null;
   let productVal: any = null;
-  if (orderId) {
-    const orderIdSlice = (orderId as string).replace(/\$/g, '')
-    booking = await getBooking(token, orderIdSlice);
-    if(booking) {
+  if (formatOrderID) {
+    booking = await getBookbyNo(token, formatOrderID);
+    if (booking) {
       productVal = products.find(p => p.product_no === booking?.product_no);
     }
   }
@@ -194,7 +195,7 @@ async function Confirmation({
         );
     }
   }
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <StatusCard />

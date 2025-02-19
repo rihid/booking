@@ -69,8 +69,8 @@ async function BookingList({
                 snapLink = null
               }
             }
-
-            const midtransUrl = process.env.NEXT_PUBLIC_MIDTRANS_API + '/v2/' + booking.id + '/status';
+            const formatBookNo = booking.book_no.replace(/\//g, '_')
+            const midtransUrl = (process.env.NEXT_PUBLIC_MIDTRANS_API as string) + formatBookNo + '/status';
             const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
             const getPaymentStatus = () => {
               const res = axios.get(midtransUrl, {

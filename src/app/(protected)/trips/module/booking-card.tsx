@@ -40,7 +40,7 @@ function BookingCard({
   const midtransRedirectUrl = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL as string;
 
   const [loadingConfirm, setLoadingConfirm] = React.useState<boolean>(false);
-  const [stateTotal, setST] = React.useState<any>(0)
+  const [statuss, setStatuss] = React.useState<any>(null)
 
   const handleOpenModal = () => {
     openModal('trip-booking-view')
@@ -100,14 +100,7 @@ function BookingCard({
       toast.error("Error confirm payment");
     })
   }
-  const cashPaymentCheck = () => {
-    const paymentArr = booking.payment_dp;
-    let totalVal = 0
-    for (let i = 0; i < paymentArr.length; i++) {
-      totalVal += parseFloat(paymentArr[i].total)
-    }
-    setST(totalVal)
-  }
+
   const voidBooking = React.useCallback(async (id: string) => {
     try {
       await axios.post(bookingUrl + '/book/void', { id: id }, {
@@ -203,6 +196,7 @@ function BookingCard({
               {snapLink ?
                 <Link
                   href={snapLink}
+                  target='_blank'
                   className="w-full"
                 >
                   Pay Now
