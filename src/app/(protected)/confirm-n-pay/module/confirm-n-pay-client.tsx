@@ -261,6 +261,7 @@ function ConfirmNPayClient({
     // filter numbers
     const numberValue = bookingField.numbers.filter(number => number.qty !== '0');
     const body = { ...bookingField, numbers: numberValue }
+    console.log('submit', body)
     try {
       const res = await axios.post(bookingUrl + '/book', body, {
         headers: {
@@ -270,7 +271,7 @@ function ConfirmNPayClient({
       })
       const data = res.data.data;
       console.log(data)
-      if(data) {
+      if (data) {
         const formatOrderId = data.book_no.replace(/\//g, '_')
         bodyMidtrans.orderId = formatOrderId;
         orderIdCash = formatOrderId;
@@ -280,6 +281,7 @@ function ConfirmNPayClient({
       if (isOts && payment_select === 'cash') {
         window.location.href = `/confirmation?order_id=${orderIdCash}`;
         setIsLoading(false);
+        toast.success("Succes create booking, wait for redirection")
         return;
       } else {
         // midtrans
@@ -413,7 +415,7 @@ function ConfirmNPayClient({
     } else {
       setIsOts(false)
     };
-
+    console.log('cust opdate', customers)
     if (productBooked) {
       // riders
       let riderArr = [...bookingField.riders];
@@ -439,6 +441,7 @@ function ConfirmNPayClient({
       riderArr = riderArr.map((rider, i) => ({
         ...rider,
         customer_no: customers[i]?.customer_no || rider.customer_no,
+        type: customers[i]?.rider_type || rider.type
       }));
       // numbers
       let numberArr = [...bookingField.numbers]
@@ -868,6 +871,7 @@ function ConfirmNPayClient({
                         </ToggleGroupItem>
 
                         <ToggleGroupItem
+                          disabled={false}
                           value="cash"
                           className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50 data-[state=on]:bg-brand data-[state=on]:text-background data-[state=on]:border-brand"
                         >

@@ -58,7 +58,7 @@ export const getUserToken = async (token: any) => {
         Authorization: 'Bearer ' + token
       }
     })
-    const data = UserTokenSchema.parse(res.data.data);
+    const data = res.data.data;
     return data;
   } catch (error: any) {
     console.log(error.response.config.url)

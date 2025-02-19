@@ -1,15 +1,10 @@
 import React from 'react';
 import { Metadata } from 'next';
 import Container from '@/components/ui/container';
-import Image from 'next/image';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Suspense } from 'react';
 import ProductList from './module/product-list';
 import { ProductListLoader, UserAvatarLoader } from '@/components/partial/loader';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import UserAvatar from './module/user-avatar';
 import HomepageSearch from '@/components/partial/homepage-search';
 import axios from 'axios';
@@ -17,6 +12,7 @@ import { productUrl, locationUrl } from '@/lib/data/endpoints';
 import Icon from '@/components/ui/icon';
 import { getAllProductPublic } from '@/lib/data';
 import NavbarTabList from './module/navbar-tablist';
+import WarningCompletion from '@/components/partial/warning-completion';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -55,7 +51,7 @@ async function Explore({
   // data
   let categories = [];
   let locations = [];
-  
+
   const getProductType = async () => {
     try {
       const res = await axios.get(productUrl + "/category", {
@@ -94,6 +90,7 @@ async function Explore({
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* <WarningCompletion /> */}
       <Tabs defaultValue={categories[0].id}>
         <Container className="mt-6 mb-4 space-y-4">
           <Suspense fallback={<UserAvatarLoader />}>

@@ -109,7 +109,6 @@ export const UserTokenSchema = z.object({
   token: z.optional(z.any()),
   pending_payment: z.optional(z.array(z.any())),
 });
-
 export const ProductSchema = z.object({
   id: z.string(),
   product_no: z.string(),

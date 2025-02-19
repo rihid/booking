@@ -44,13 +44,13 @@ function Cancelation() {
               {({ open }) => (
                 <>
                   <DisclosureButton className="w-full flex items-center justify-between border-b pb-1">
-                    <span className="text-start">{data.name}</span>
-                    <ChevronDownIcon className={`w-3 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+                    <span className="text-start font-bold text-xs">{data.name}</span>
+                    <ChevronDownIcon className={`w-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
                   </DisclosureButton>
                   <div className="overflow-hidden py-1">
                     <DisclosurePanel
                       transition
-                      className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
+                      className="origin-top transition duration-200 ease-in-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
                     >
                       <dl className="mt-1 space-y-1">
                         {lists.map((list, index) => (

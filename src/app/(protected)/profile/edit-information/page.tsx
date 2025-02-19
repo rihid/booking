@@ -7,6 +7,7 @@ import EditInfoForm from './module/edit-info-form';
 import axios from 'axios';
 import { customerUrl } from '@/lib/data/endpoints';
 import { getSession } from '@/lib/session';
+import { getCustomerByNo } from '@/lib/data';
 
 export const metadata: Metadata = {
   title: 'Edit Info',
@@ -18,17 +19,18 @@ async function EditInfoPage() {
   // @ts-ignore
   const { user } = session;
 
-  async function getCustomer() {
-    try {
-      const response = await axios.post(customerUrl + "/get-by-no", { customer_no: user.customer_no }, { headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token } })
-      const data = response.data.data
-      return data;
-    } catch (error: any) {
-      // console.log(error)
-      console.log(error.response?.data.message)
-    }
-  }
-  const costumer = await getCustomer();
+  // async function getCustomer() {
+  //   try {
+  //     const response = await axios.post(customerUrl + "/get-by-no", { customer_no: user.customer_no }, { headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token } })
+  //     const data = response.data.data
+  //     return data;
+  //   } catch (error: any) {
+  //     // console.log(error)
+  //     console.log(error.response?.data.message)
+  //   }
+  // }
+
+  const costumer = await getCustomerByNo(user.token, { customer_no: user.customer_no });
 
   return (
     <div className="flex flex-col min-h-screen mb-20">

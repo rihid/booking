@@ -11,7 +11,7 @@ export function UserAvatarLoader() {
   return (
     <div className="flex items-center justify-start gap-x-2">
       <Skeleton className="w-8 h-8 roundel-full" />
-      <Skeleton className="h-3 w-10" />
+      <Skeleton className="h-3 w-24" />
     </div>
   )
 }
