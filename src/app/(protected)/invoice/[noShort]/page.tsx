@@ -33,7 +33,7 @@ async function InvoiceDetail({
   const invoiceBody = {
     customer_no: customer_no as string,
     type: "invoice",
-    begin: null,
+    begin: "2025-02-01",
     end: null
   }
 

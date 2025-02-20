@@ -10,9 +10,10 @@ import HomepageSearch from '@/components/partial/homepage-search';
 import axios from 'axios';
 import { productUrl, locationUrl } from '@/lib/data/endpoints';
 import Icon from '@/components/ui/icon';
-import { getAllProductPublic } from '@/lib/data';
+import { getAllProductPublic, getCustomerByNo } from '@/lib/data';
 import NavbarTabList from './module/navbar-tablist';
 import WarningCompletion from '@/components/partial/warning-completion';
+import { getSession } from '@/lib/session';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -46,12 +47,34 @@ async function Explore({
 }: {
   searchParams: { [key: string]: string | string[] | null }
 }) {
+  const session = await getSession();
+
   const query = searchParams?.query;
   const locQuery = searchParams?.location;
   // data
+  let customer = {
+    id: "",
+    customer_no: "",
+    name: "",
+    address: "",
+    phone: "",
+    email: "",
+    identity_number: "",
+    vat: "",
+    rating: "",
+    birthday: "",
+    age: "",
+    org_no: "",
+    type: "",
+  }
   let categories = [];
   let locations = [];
 
+  if (session) {
+    // @ts-ignore
+    const { token, customer_no } = session.user;
+    customer = await getCustomerByNo(token, customer_no);
+  }
   const getProductType = async () => {
     try {
       const res = await axios.get(productUrl + "/category", {
@@ -90,11 +113,11 @@ async function Explore({
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* <WarningCompletion /> */}
+      {session && !customer.phone && <WarningCompletion />}
       <Tabs defaultValue={categories[0].id}>
         <Container className="mt-6 mb-4 space-y-4">
           <Suspense fallback={<UserAvatarLoader />}>
-            <UserAvatar />
+            <UserAvatar session={session} customer={customer} />
           </Suspense>
           <HomepageSearch locations={locations} query={query} />
         </Container>

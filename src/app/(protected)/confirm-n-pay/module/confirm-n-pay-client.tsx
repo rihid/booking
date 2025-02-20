@@ -228,16 +228,17 @@ function ConfirmNPayClient({
         onSuccess: (result: any) => {
           toast.success("Payment success! wait for redirection")
           console.log('result', result)
-          // router.push(`/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`)
           window.location.href = `/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`
         },
         onPending: (result: any) => {
           toast.warning("Payment pending! wait for redirection")
           console.log('resutl', result)
-          // router.push(`/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`)
           window.location.href = `/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`
         },
-        onClose: () => { closePayment(bookId) },
+        onClose: () => {
+          closePayment(bookId)
+          window.location.href = '/explore'
+        },
       });
     } catch (error) {
       console.log(error);
@@ -871,7 +872,7 @@ function ConfirmNPayClient({
                         </ToggleGroupItem>
 
                         <ToggleGroupItem
-                          disabled={false}
+                          disabled={true}
                           value="cash"
                           className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50 data-[state=on]:bg-brand data-[state=on]:text-background data-[state=on]:border-brand"
                         >

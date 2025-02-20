@@ -146,7 +146,7 @@ function BookingCard({
               <span className="text-sm  uppercase text-brand font-normal">On Schedule</span>
             </div>
             <div className="flex items-center text-foreground/50 gap-x-2">
-              <span className="text-xs font-normal">{product.location}</span>
+              <span className="text-xs font-normal">{product?.location}</span>
               <MapPin className="text-brand inline-block w-4 h-4" />
             </div>
           </div>

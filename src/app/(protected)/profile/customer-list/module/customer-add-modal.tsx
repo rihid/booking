@@ -24,7 +24,21 @@ import { useBookStore } from '@/providers/store-providers/book-provider';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
-
+const initialData = {
+  id: "",
+  customer_no: "",
+  name: "",
+  address: "",
+  phone: "",
+  email: "",
+  identity_number: "",
+  vat: "",
+  rating: "",
+  birthday: "",
+  age: "",
+  org_no: "",
+  type: "",
+}
 const FormSchema = z.object({
   id: z.optional(z.string().nullable()),
   customer_no: z.string().nullable(),
@@ -46,18 +60,16 @@ const FormSchema = z.object({
   from: z.optional(z.string().nullable()),
 })
 
-function CustomerEditModal({
+function CustomerAddModal({
   user,
-  customer
 }: {
   user?: any;
-  customer: any;
 }) {
   const { showModal, closeModal } = useUiLayoutStore(state => state);
   const [isPending, startTransition] = React.useTransition();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: customer,
+    defaultValues: initialData,
   })
 
   const birthdayVal = useWatch({
@@ -67,7 +79,7 @@ function CustomerEditModal({
 
   const onSubmit = (values: z.infer<typeof FormSchema>) => {
     startTransition(async () => {
-      await axios.put(customerUrl + '/' + customer.customer_id, values, {
+      await axios.post(customerUrl, values, {
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer ' + user.token
@@ -112,7 +124,7 @@ function CustomerEditModal({
     >
       <SheetContent side="bottom" className="wrapper flex flex-col justify-between w-full h-3/4 rounded-t-2xl">
         <SheetHeader>
-          <SheetTitle className="text-center text-foreground/75">Edit Rider</SheetTitle>
+          <SheetTitle className="text-center text-foreground/75">Add Rider</SheetTitle>
         </SheetHeader>
         <ScrollArea className="flex-grow w-full">
           <div className="pb-10 px-4 mt-5">
@@ -272,4 +284,4 @@ function CustomerEditModal({
   )
 }
 
-export default CustomerEditModal;
+export default CustomerAddModal;

@@ -42,7 +42,7 @@ function ProductList({
         }
       }
       if (locQuery) {
-        if (product.location !== locQuery) {
+        if (product?.location !== locQuery) {
           return false;
         }
       }

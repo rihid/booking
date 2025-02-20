@@ -19,24 +19,3 @@ export const bookingUrl = domain + '/api/v1/booking-service'
 export const bookingUrl2 = domain + '/api/v2/booking-service'
 export const customerUrl = bookingUrl + '/customer'
 export const voucherUrl = bookingUrl2 + '/promo/get-voucher'
-
-export const setHeader = async () => {
-  let token;
-  const response = await fetch('http://localhost:3000/api/auth/jwt', {
-    method: 'GET',
-    credentials: 'include'
-  });
-  if (response.ok) {
-    const data = await response.json();
-    token = data.token;
-  }
-
-  const headers: { [key: string]: any } = {
-    Accept: 'application/json',
-  };
-  if (token) {
-    headers.Authorization = 'Bearer ' + token;
-  }
-
-  return headers;
-};

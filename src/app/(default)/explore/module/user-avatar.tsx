@@ -1,12 +1,15 @@
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { getSession } from '@/lib/session';
 import { getCustomerByNo, getUserToken } from '@/lib/data';
 
-async function UserAvatar({ }) {
-  const session = await getSession();
+async function UserAvatar({
+  session,
+  customer,
+}: {
+  session: any;
+  customer: any;
+}) {
   let avatar;
-  let customer;
   let userToken;
   if (session !== null) {
     // @ts-ignore
@@ -14,8 +17,7 @@ async function UserAvatar({ }) {
     // @ts-ignore
     const srcImage = session.user?.avatar
     avatar = srcImage !== null ? srcImage : '/images/avatar.png';
-
-    customer = await getCustomerByNo(token, customer_no)
+    
     userToken = await getUserToken(token)
   }
   return (

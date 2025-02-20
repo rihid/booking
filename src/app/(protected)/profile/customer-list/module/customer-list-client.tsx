@@ -8,13 +8,15 @@ import { Mail, Phone, SquarePen } from 'lucide-react';
 import { useUiLayoutStore } from '@/store/ui-layout';
 import CustomerDetailModal from './customer-detail-modal';
 import CustomerEditModal from './customer-edit-modal';
+import CustomerAddModal from './customer-add-modal';
+import OpenModalButton from '@/components/ui/button/open-modal-button';
 
 export interface CustomerType {
   id: string | null,
-  user_id: string | null,
+  user_id?: string | null,
   customer_no: string | null,
   type: string | null,
-  customer_id: string | null,
+  customer_id?: string | null,
   name: string | null,
   address: string | null,
   phone: string | null,
@@ -25,9 +27,9 @@ export interface CustomerType {
   rating: string | null,
   birthday: string | null,
   age: string | null,
-  sosmeds: string | null,
-  prospects: string | null,
-  books: string | null,
+  sosmeds?: string | null,
+  prospects?: string | null,
+  books?: string | null,
 }
 
 function CustomerListClient({
@@ -46,20 +48,20 @@ function CustomerListClient({
     openModal(view);
   }
   const handelEdit = (value: CustomerType) => {
-    console.log(value.customer_id)
+    console.log(value)
     const view = 'customer-edit-view';
     setSelectedCustomer(value);
     setModalView(view)
     openModal(view)
   }
   return (
-    <>
+    <div>
       {customerList.map((customer, index) => {
         return (
           <Card key={index} className="mb-4">
             <CardContent className="relative p-0 flex flex-col divide-y">
               <button type='button' onClick={() => handleClick(customer)} className="flex flex-col space-y-1.5 p-4">
-                <Heading variant='base' className="font-semibold leading-none tracking-tight">{customer.name}</Heading>
+                <Heading variant='base' className="font-semibold leading-none tracking-tight capitalize">{customer.name}</Heading>
                 <p className="text-sm text-muted-foreground">{customer.address}</p>
               </button>
               <button
@@ -87,13 +89,23 @@ function CustomerListClient({
           </Card>
         )
       })}
+      <div className="flex-shrink flex flex-col w-full mt-6 gap-2">
+        <OpenModalButton
+          view="customer-add-view"
+          variant='default'
+          className='h-10 px-4 py-2'
+        >
+          Add New
+        </OpenModalButton>
+      </div>
       {selectedCustomer !== null &&
         <>
-          {modalView === 'customer-list-view' && <CustomerDetailModal customerData={selectedCustomer} />}
+          {modalView === 'customer-add-view' && <CustomerAddModal user={user} />}
           {modalView === 'customer-edit-view' && <CustomerEditModal user={user} customer={selectedCustomer} />}
+          {modalView === 'customer-list-view' && <CustomerDetailModal customerData={selectedCustomer} />}
         </>
       }
-    </>
+    </div>
   )
 }
 

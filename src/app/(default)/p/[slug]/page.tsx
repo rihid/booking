@@ -78,7 +78,7 @@ async function Detail({
             <Container className="flex items-center justify-between">
               <Heading variant='base' className="text-brand truncate mr-4">{product.product_name}</Heading>
               <div className="flex items-center text-xs font-normal text-foreground/50">
-                <span className="mr-1">{product.location}</span>
+                <span className="mr-1">{product?.location}</span>
                 <MapPin className="inline-block text-brand w-4 h-4" />
               </div>
             </Container>

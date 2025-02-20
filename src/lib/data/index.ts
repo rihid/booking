@@ -28,9 +28,7 @@ export const createUser = async (values: any) => {
     const data = res.data.data;
     return data;
   } catch (error: any) {
-    console.log(error.response.config.url)
-    console.log(error.response.status)
-    console.log(error.response.data.message)
+    console.log(error)
     throw error;
   }
 }
@@ -44,9 +42,7 @@ export const postAuth = async (body: z.infer<typeof LoginFormSchema>) => {
     const data = AuthSchema.parse(res.data)
     return data;
   } catch (error: any) {
-    console.log(error.response.config.url)
-    console.log(error.response.status)
-    console.log(error.response.data.message)
+    console.log(error)
     throw error;
   }
 }
@@ -61,8 +57,7 @@ export const getUserToken = async (token: any) => {
     const data = res.data.data;
     return data;
   } catch (error: any) {
-    console.log(error.response.config.url)
-    console.log(error.response.status)
+    console.log(error)
     console.log(error.response.data.message)
     throw error;
   }
@@ -116,7 +111,6 @@ export const userStoreCustomer = async (token: any, user: any) => {
     })
     return res.data
   } catch (error: any) {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error
@@ -132,7 +126,6 @@ export const checkUserCustomer = async (token: any, user: any) => {
     })
     return res.data
   } catch (error: any) {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -149,7 +142,6 @@ export const getUserCustomerList = async (token: any, user: any) => {
     })
     return res.data.data
   } catch (error: any) {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error
@@ -163,8 +155,7 @@ export const getCustomerByNo = async (token: any, customerNo: any) => {
     })
     return res.data.data
   } catch (error: any) {
-    console.log(error.response.config.url)
-    console.log(error.response.status)
+    console.log(error)
     console.log(error.response.data.message)
     throw error;
   }
@@ -178,7 +169,6 @@ export const getCustomerByNoMulti = async (token: any, customerNo: any) => {
     })
     return res.data.data
   } catch (error: any) {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -195,7 +185,6 @@ export const getAllProductPublic = async () => {
     const withSlug = generateProductSlug(products)
     return withSlug;
   } catch (error: any) {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -212,7 +201,6 @@ export const getSingleProductPublic = async (id: string) => {
     const product = res.data.data
     return product;
   } catch (error: any) {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -232,7 +220,6 @@ export const getAllBooking = async (token: any) => {
     const data = BookingSchema.parse(response.data.data);
     return data;
   }).catch((error: any) => {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -251,7 +238,6 @@ export const getBooking = async (token: any, id: string) => {
     const data = SingleBookingSchema.parse(res.data.data);
     return data;
   } catch (error: any) {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -268,7 +254,6 @@ export const getBookbyNo = async(token: any, bookNo: string) => {
     const data = res.data.data;
     return data;
   } catch(error: any){
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -322,7 +307,6 @@ export const getInvoiceByCustomer = async (token: any, body: BookByCustomer) => 
     console.log(data)
     return data;
   }).catch((error: any) => {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -341,7 +325,6 @@ export const getCustomerList = (token: any, body: CustomerListBody) => {
       return data;
     })
     .catch((error: any) => {
-      console.log(error.response.config.url)
       console.log(error.response.status)
       console.log(error.response.data.message)
       throw error;
@@ -359,7 +342,6 @@ export const getPaymentMethod = (token: any) => {
     const data = response.data.data;
     return data;
   }).catch((error: any) => {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -378,7 +360,6 @@ export const getPaymentStatus = (orderId: string) => {
     const data = response.data;
     return data;
   }).catch((error: any) => {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -396,7 +377,6 @@ export const getBranchList = async (token: any) => {
     console.log(data)
     return data;
   }).catch((error: any) => {
-    console.log(error.response.config.url)
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;

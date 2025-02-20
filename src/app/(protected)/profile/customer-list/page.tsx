@@ -66,7 +66,7 @@ async function CustomerListPage() {
             </span>
           </button>
         </Link>
-        <h3 className="font-bold text-sm text-foreground/75">Customer List</h3>
+        <h3 className="font-bold text-sm text-foreground/75">Rider List</h3>
         <div></div>
       </Container>
       <Container className="mt-4">

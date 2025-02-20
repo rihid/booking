@@ -21,7 +21,7 @@ async function InvoiceList({
   const invoiceBody = {
     customer_no: user.customer_no as string,
     type: "invoice",
-    begin: null,
+    begin: "2025-02-01",
     end: null
   }
 

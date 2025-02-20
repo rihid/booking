@@ -113,7 +113,7 @@ function EditInfoForm({
                   height={96}
                   className="w-full h-fullobject-contain rounded-full"
                 />
-                <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
+                <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" disabled />
               </div>
             </div>
           </div>
