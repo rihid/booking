@@ -103,7 +103,7 @@ function CustomerAddModal({
               Authorization: 'Bearer ' + user.token
             }
           });
-          toast.success(storeRes.data.message || "Success create riders");
+          toast.success(storeRes.data.message || "Success create rider");
           await onRevalidate();
         }
       } catch (error: any) {
@@ -114,48 +114,52 @@ function CustomerAddModal({
       }
     });
   };
-  
-  // const onSubmit = (values: z.infer<typeof FormSchema>) => {
-  //   startTransition(async () => {
-  //     axios.post(customerUrl, values, {
-  //       headers: {
-  //         Accept: 'application/json',
-  //         Authorization: 'Bearer ' + user.token
-  //       }
-  //     })
-  //       .then(response => {
-  //         const data = CustomerSchema.parse(response.data.data);
+
+  /*
+  const onSubmit = (values: z.infer<typeof FormSchema>) => {
+    startTransition(async () => {
+      axios.post(customerUrl, values, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + user.token
+        }
+      })
+        .then(response => {
+          const data = CustomerSchema.parse(response.data.data);
           
-  //         if (data) {
-  //           const body = {
-  //             user_id: user.id,
-  //             customer_no: data.customer_no,
-  //             type: 'child'
-  //           };
+          if (data) {
+            const body = {
+              user_id: user.id,
+              customer_no: data.customer_no,
+              type: 'child'
+            };
             
-  //           return axios.post(userUrl + '/store-customer', body, {
-  //             headers: {
-  //               Accept: 'application/json',
-  //               Authorization: 'Bearer ' + user.token
-  //             }
-  //           });
-  //         }
-  //       })
-  //       .then(response => {
-  //         if (response) {
-  //           toast.success(response.data.message);
-  //         }
-  //       })
-  //       .catch(error => {
-  //         console.error(error);
-  //         toast.error(error.response?.data?.message || "Error adding customer");
-  //       })
-  //       .finally(() => {
-  //         closeModal();
-  //         onRevalidate();
-  //       });
-  //   });
-  // };
+            return axios.post(userUrl + '/store-customer', body, {
+              headers: {
+                Accept: 'application/json',
+                Authorization: 'Bearer ' + user.token
+              }
+            });
+          }
+        })
+        .then(response => {
+          if (response) {
+            toast.success(response.data.message);
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          toast.error(error.response?.data?.message || "Error adding customer");
+        })
+        .finally(() => {
+          closeModal();
+          onRevalidate();
+        });
+    });
+  };
+  
+  */
+
   React.useEffect(() => {
     if (birthdayVal) {
       const birth = new Date(birthdayVal)

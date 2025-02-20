@@ -13,7 +13,7 @@ import { revalidatePath } from 'next/cache';
 async function CustomerListPage() {
   async function revalidation() {
     'use server'
-    revalidatePath('/profile/customer-list')
+    revalidatePath('/profile/rider-list', 'page')
   }
 
   async function CustomerList() {

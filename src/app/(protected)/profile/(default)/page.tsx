@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import ProfileCard from './module/profile-card';
 import { logout } from '@/lib/action/auth';
 import { getSession } from '@/lib/session';
-import CustomerDetailModal from '../customer-list/module/customer-detail-modal';
+import CustomerDetailModal from '../rider-list/module/customer-detail-modal';
 import axios from 'axios';
 import { customerUrl } from '@/lib/data/endpoints';
 import LoadingOverlay from '@/components/partial/loading-overlay';
@@ -47,7 +47,7 @@ async function Profile() {
           <div className="flex flex-col px-0 text-foreground/50 h-full">
             <ul className="bg-background border-b border-b-foreground-muted">
               <li className="border-b border-foreground/50">
-                <Link href="/profile/customer-list" className="flex items-center justify-between h-full w-full py-3">
+                <Link href="/profile/rider-list" className="flex items-center justify-between h-full w-full py-3">
                   <div className="flex items-center gap-2">
                     <CircleUserRound className="w-5 h-5" />
                     <span className="block tracking-tight font-normal text-xs">

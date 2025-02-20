@@ -3,7 +3,7 @@ import { decrypt } from '@/lib/session'
 import { cookies } from 'next/headers'
 
 // 1. Specify protected and public routes
-const protectedRoutes = ['/confirm-n-pay', '/profile', '/trips', '/invoice', '/profile/customer-list', '/confirmation']
+const protectedRoutes = ['/confirm-n-pay', '/profile', '/trips', '/invoice', '/profile/rider-list', '/confirmation']
 const publicRoutes = ['/login', '/register', '/p', '/explore', '/', '/forget', '/reset']
 const routesWithGlobalParams = ['/explore', '/p', '/confirm-n-pay', '/confirmation', '/profile', '/trips', '/invoice',]
 const routesInitialParams = ['/explore', '/profile']

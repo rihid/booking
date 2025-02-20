@@ -46,14 +46,14 @@ function CustomerListClient({
   const [selectedCustomer, setSelectedCustomer] = React.useState<CustomerType | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const handleClick = (value: CustomerType) => {
-    const view = 'customer-list-view';
+    const view = 'rider-list-view';
     setSelectedCustomer(value);
     setModalView(view);
     openModal(view);
   }
   const handelEdit = (value: CustomerType) => {
     console.log(value)
-    const view = 'customer-edit-view';
+    const view = 'rider-edit-view';
     setSelectedCustomer(value);
     setModalView(view)
     openModal(view)
@@ -108,18 +108,18 @@ function CustomerListClient({
       )}
       <div className="flex-shrink flex flex-col w-full mt-6 gap-2">
         <OpenModalButton
-          view="customer-add-view"
+          view="rider-add-view"
           variant='default'
           className='h-10 px-4 py-2'
         >
           Add New
         </OpenModalButton>
       </div>
-      {modalView === 'customer-add-view' && <CustomerAddModal user={user} onRevalidate={handleRevalidation} />}
+      {modalView === 'rider-add-view' && <CustomerAddModal user={user} onRevalidate={handleRevalidation} />}
       {selectedCustomer !== null &&
         <>
-          {modalView === 'customer-edit-view' && <CustomerEditModal user={user} customer={selectedCustomer} />}
-          {modalView === 'customer-list-view' && <CustomerDetailModal customerData={selectedCustomer} />}
+          {modalView === 'rider-edit-view' && <CustomerEditModal user={user} customer={selectedCustomer} />}
+          {modalView === 'rider-list-view' && <CustomerDetailModal customerData={selectedCustomer} />}
         </>
       }
     </div>
