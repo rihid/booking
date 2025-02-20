@@ -10,6 +10,7 @@ import CustomerDetailModal from './customer-detail-modal';
 import CustomerEditModal from './customer-edit-modal';
 import CustomerAddModal from './customer-add-modal';
 import OpenModalButton from '@/components/ui/button/open-modal-button';
+import { CustomerListLoader } from '@/components/partial/loader';
 
 export interface CustomerType {
   id: string | null,
@@ -35,12 +36,15 @@ export interface CustomerType {
 function CustomerListClient({
   user,
   customerList,
+  revalidation,
 }: {
   user: any;
   customerList: CustomerType[];
+  revalidation: () => Promise<void>;
 }) {
   const { openModal, setModalView, modalView } = useUiLayoutStore(state => state);
   const [selectedCustomer, setSelectedCustomer] = React.useState<CustomerType | null>(null);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const handleClick = (value: CustomerType) => {
     const view = 'customer-list-view';
     setSelectedCustomer(value);
@@ -54,10 +58,23 @@ function CustomerListClient({
     setModalView(view)
     openModal(view)
   }
+  const handleRevalidation = async () => {
+    setIsLoading(true);
+    try {
+      await revalidation();
+    } catch (error) {
+
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div>
-      {customerList.map((customer, index) => {
-        return (
+      {isLoading ? (
+        <CustomerListLoader />
+      ) : (
+        customerList.map((customer, index) => (
           <Card key={index} className="mb-4">
             <CardContent className="relative p-0 flex flex-col divide-y">
               <button type='button' onClick={() => handleClick(customer)} className="flex flex-col space-y-1.5 p-4">
@@ -87,8 +104,8 @@ function CustomerListClient({
               </div>
             </CardContent>
           </Card>
-        )
-      })}
+        ))
+      )}
       <div className="flex-shrink flex flex-col w-full mt-6 gap-2">
         <OpenModalButton
           view="customer-add-view"
@@ -98,9 +115,9 @@ function CustomerListClient({
           Add New
         </OpenModalButton>
       </div>
+      {modalView === 'customer-add-view' && <CustomerAddModal user={user} onRevalidate={handleRevalidation} />}
       {selectedCustomer !== null &&
         <>
-          {modalView === 'customer-add-view' && <CustomerAddModal user={user} />}
           {modalView === 'customer-edit-view' && <CustomerEditModal user={user} customer={selectedCustomer} />}
           {modalView === 'customer-list-view' && <CustomerDetailModal customerData={selectedCustomer} />}
         </>

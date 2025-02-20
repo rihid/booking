@@ -8,10 +8,15 @@ import { getSession } from '@/lib/session';
 import { getCustomerByNoMulti, getUserCustomerList } from '@/lib/data';
 import CustomerListClient from './module/customer-list-client';
 import { CustomerListLoader } from '@/components/partial/loader';
+import { revalidatePath } from 'next/cache';
 
 async function CustomerListPage() {
+  async function revalidation() {
+    'use server'
+    revalidatePath('/profile/customer-list')
+  }
 
-  const CustomerList = async () => {
+  async function CustomerList() {
     const session = await getSession();
     // @ts-ignore
     const { user } = session;
@@ -49,7 +54,7 @@ async function CustomerListPage() {
 
     return (
       <>
-        <CustomerListClient user={user} customerList={customerList} />
+        <CustomerListClient user={user} customerList={customerList} revalidation={revalidation} />
       </>
     )
   }

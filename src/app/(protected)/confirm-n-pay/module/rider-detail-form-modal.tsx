@@ -22,6 +22,7 @@ import axios from 'axios';
 import { customerUrl, userUrl } from '@/lib/data/endpoints';
 import { useBookStore } from '@/providers/store-providers/book-provider';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const FormSchema = z.object({
   id: z.optional(z.string().nullable()),
@@ -88,23 +89,30 @@ function RiderDetailFormModal({
               ...customers[idx],
               ...data,
             })
-            // update user customer
+            // update customer user
             const body = {
               user_id: user.id,
               customer_no: response.data.data.customer_no,
               type: 'child'
             }
-            axios.post(userUrl + '/store-customer', body, {
+            return axios.post(userUrl + '/store-customer', body, {
               headers: {
                 Accept: 'application/json',
                 Authorization: 'Bearer ' + user.token
               }
             })
+              .then(response => {
+                // console.log(respsone)
+              })
+              .catch(error => {
+                console.log(error)
+                toast.error("Error store customer")
+              })
 
           })
           .catch(error => {
             console.log(error);
-            throw error
+            toast.error("Errror adding rider")
           })
       } else {
         console.log('customer')
@@ -132,7 +140,7 @@ function RiderDetailFormModal({
       closeModal();
     })
   }
-  
+
   React.useEffect(() => {
     if (birthdayVal) {
       const birth = new Date(birthdayVal)

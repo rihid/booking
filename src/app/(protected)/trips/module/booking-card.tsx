@@ -102,8 +102,9 @@ function BookingCard({
   }
 
   const voidBooking = React.useCallback(async (id: string) => {
+    const formatBookNo = id.replace(/_/g, '/')
     try {
-      await axios.post(bookingUrl + '/book/void', { id: id }, {
+      await axios.post(bookingUrl + '/book/void', { id: formatBookNo }, {
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer ' + user.token
@@ -143,7 +144,7 @@ function BookingCard({
           </div>
           <div className="flex items-center justify-between">
             <div className="text-foreground/50">
-              <span className="text-sm  uppercase text-brand font-normal">On Schedule</span>
+              <span className="text-sm  uppercase text-brand font-normal">{booking?.status}</span>
             </div>
             <div className="flex items-center text-foreground/50 gap-x-2">
               <span className="text-xs font-normal">{product?.location}</span>
