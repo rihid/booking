@@ -21,7 +21,7 @@ import moment from 'moment';
 const FormSchema = z.object({
   id: z.optional(z.string().nullable()),
   customer_no: z.string().nullable(),
-  name: z.string(),
+  name: z.string().min(1, { message: "Name is required" }),
   address: z.string().nullable(),
   phone: z.string().nullable().refine((val) => val !== null && val.length >= 4, {
     message: "Phone number is required"
@@ -149,9 +149,28 @@ function EditInfoForm({
                     <FormControl>
                       <Input
                         {...field}
-                        required
                         disabled={isPending}
                         placeholder="Name"
+                        type="text"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex flex-col space-y-2">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-xs text-muted-foreground">Email</Label>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled
+                        placeholder="Email"
                         type="text"
                       />
                     </FormControl>

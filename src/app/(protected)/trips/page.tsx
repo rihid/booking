@@ -31,9 +31,6 @@ async function Trips() {
 
       <Tabs defaultValue='on-progress'>
         <Container className="py-6 sticky top-0 z-30 bg-background w-full flex justify-between items-center shrink-0">
-          {/* <button type="button">
-            <ChevronLeft className="w-5 h-5" />
-          </button> */}
           <div></div>
           <Heading variant="sm" className="text-foreground ml-4">Trips</Heading>
           <div></div>

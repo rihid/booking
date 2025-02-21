@@ -27,7 +27,7 @@ import { toast } from 'sonner';
 const FormSchema = z.object({
   id: z.optional(z.string().nullable()),
   customer_no: z.string().nullable(),
-  name: z.string(),
+  name: z.string().min(1, { message: "Name is required" }),
   address: z.string().nullable(),
   phone: z.string().nullable().refine((val) => val !== null && val.length >= 4, {
     message: "Phone is required"
@@ -88,6 +88,7 @@ function RiderDetailFormModal({
             editCustomer(idx, {
               ...customers[idx],
               ...data,
+              // rider_type: values.rider_type
             })
             // update customer user
             const body = {
@@ -101,22 +102,16 @@ function RiderDetailFormModal({
                 Authorization: 'Bearer ' + user.token
               }
             })
-              .then(response => {
-                // console.log(respsone)
-              })
-              .catch(error => {
-                console.log(error)
-                toast.error("Error store customer")
-              })
 
+          })
+          .then(response => {
+            toast.success(response.data.message || "Success add rider")
           })
           .catch(error => {
             console.log(error);
-            toast.error("Errror adding rider")
+            toast.success(error.response.data.message || "Error add rider")
           })
       } else {
-        console.log('customer')
-        console.log(customer)
         await axios.put(customerUrl + '/' + customer.customer_id, values, {
           headers: {
             Accept: 'application/json',
@@ -130,11 +125,12 @@ function RiderDetailFormModal({
             editCustomer(idx, {
               ...customers[idx],
               ...data,
+              // rider_type: values.rider_type
             })
           })
           .catch(error => {
             console.log(error);
-            throw error;
+            toast.success(error.response.data.message || "Error add rider")
           })
       }
       closeModal();
@@ -209,6 +205,26 @@ function RiderDetailFormModal({
                               disabled={isPending}
                               placeholder="Name"
                               type="text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label className="text-xs text-muted-foreground">Email</Label>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              disabled={isPending || user?.customer_no === customer?.customer_no}
+                              placeholder="Email"
+                              type="email"
                             />
                           </FormControl>
                           <FormMessage />

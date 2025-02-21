@@ -42,7 +42,7 @@ const initialData = {
 const FormSchema = z.object({
   id: z.optional(z.string().nullable()),
   customer_no: z.string().nullable(),
-  name: z.string(),
+  name: z.string().min(1, { message: "Name is required"}),
   address: z.string().nullable(),
   phone: z.string().nullable().refine((val) => val !== null && val.length >= 4, {
     message: "Phone number is required"
@@ -81,44 +81,7 @@ function CustomerAddModal({
 
   const onSubmit = (values: z.infer<typeof FormSchema>) => {
     startTransition(async () => {
-      try {
-        const customerRes = await axios.post(customerUrl, values, {
-          headers: {
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + user.token
-          }
-        });
-        const data = CustomerSchema.parse(customerRes.data.data);
-
-        if (data) {
-          const body = {
-            user_id: user.id,
-            customer_no: data.customer_no,
-            type: 'child'
-          };
-
-          const storeRes = await axios.post(userUrl + '/store-customer', body, {
-            headers: {
-              Accept: 'application/json',
-              Authorization: 'Bearer ' + user.token
-            }
-          });
-          toast.success(storeRes.data.message || "Success create rider");
-          await onRevalidate();
-        }
-      } catch (error: any) {
-        console.error(error);
-        toast.error(error.response?.data?.message || "Error adding customer");
-      } finally {
-        closeModal();
-      }
-    });
-  };
-
-  /*
-  const onSubmit = (values: z.infer<typeof FormSchema>) => {
-    startTransition(async () => {
-      axios.post(customerUrl, values, {
+      await axios.post(customerUrl, values, {
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer ' + user.token
@@ -126,14 +89,13 @@ function CustomerAddModal({
       })
         .then(response => {
           const data = CustomerSchema.parse(response.data.data);
-          
           if (data) {
             const body = {
               user_id: user.id,
               customer_no: data.customer_no,
               type: 'child'
             };
-            
+
             return axios.post(userUrl + '/store-customer', body, {
               headers: {
                 Accept: 'application/json',
@@ -144,21 +106,56 @@ function CustomerAddModal({
         })
         .then(response => {
           if (response) {
-            toast.success(response.data.message);
+            toast.success(response.data.message || "Succes create customer");
           }
         })
         .catch(error => {
           console.error(error);
-          toast.error(error.response?.data?.message || "Error adding customer");
+          toast.error(error.response?.data?.message || "Error add rider");
         })
-        .finally(() => {
-          closeModal();
-          onRevalidate();
-        });
+
+      closeModal();
+      await onRevalidate();
     });
   };
-  
-  */
+
+  /*
+ const onSubmit = (values: z.infer<typeof FormSchema>) => {
+   startTransition(async () => {
+     try {
+       const customerRes = await axios.post(customerUrl, values, {
+         headers: {
+           Accept: 'application/json',
+           Authorization: 'Bearer ' + user.token
+         }
+       });
+       const data = CustomerSchema.parse(customerRes.data.data);
+
+       if (data) {
+         const body = {
+           user_id: user.id,
+           customer_no: data.customer_no,
+           type: 'child'
+         };
+
+         const storeRes = await axios.post(userUrl + '/store-customer', body, {
+           headers: {
+             Accept: 'application/json',
+             Authorization: 'Bearer ' + user.token
+           }
+         });
+         toast.success(storeRes.data.message || "Success create rider");
+         await onRevalidate();
+       }
+     } catch (error: any) {
+       console.error(error);
+       toast.error(error.response?.data?.message || "Error adding customer");
+     } finally {
+       closeModal();
+     }
+   });
+ };
+ */
 
   React.useEffect(() => {
     if (birthdayVal) {
@@ -226,10 +223,31 @@ function CustomerAddModal({
                           <FormControl>
                             <Input
                               {...field}
-                              required
+                              // required
                               disabled={isPending}
                               placeholder="Name"
                               type="text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label className="text-xs text-muted-foreground">Email</Label>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              // required
+                              disabled={isPending}
+                              placeholder="Email"
+                              type="email"
                             />
                           </FormControl>
                           <FormMessage />

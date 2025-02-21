@@ -416,7 +416,6 @@ function ConfirmNPayClient({
     } else {
       setIsOts(false)
     };
-    console.log('cust opdate', customers)
     if (productBooked) {
       // riders
       let riderArr = [...bookingField.riders];

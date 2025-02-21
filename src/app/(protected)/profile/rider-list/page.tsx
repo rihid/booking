@@ -15,7 +15,6 @@ async function CustomerListPage() {
     'use server'
     revalidatePath('/profile/rider-list', 'page')
   }
-
   async function CustomerList() {
     const session = await getSession();
     // @ts-ignore
