@@ -19,6 +19,7 @@ function ProductSummary({
       <ProductSummaryLoader />
     )
   }
+  console.log(product)
   return (
     <Suspense fallback={<ProductSummaryLoader />}>
       <Container className="flex items-start bg-background py-6 gap-x-6">
@@ -47,7 +48,7 @@ function ProductSummary({
 
           <div className="flex items-center text-foreground/50 gap-x-2">
             <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-            <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
+            <p className="inline-block text-xs font-normal">{product.rating ? product.rating : '0.0'}</p>
           </div>
         </div>
       </Container>

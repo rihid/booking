@@ -14,6 +14,7 @@ import { getAllProductPublic, getCustomerByNo } from '@/lib/data';
 import NavbarTabList from './module/navbar-tablist';
 import WarningCompletion from '@/components/partial/warning-completion';
 import { getSession } from '@/lib/session';
+import LocationChecker from '@/components/partial/location-checker';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -137,6 +138,7 @@ async function Explore({
           )}
         </div>
       </Tabs>
+      <LocationChecker />
     </div>
   )
 }

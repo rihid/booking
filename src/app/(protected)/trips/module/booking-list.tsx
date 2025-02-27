@@ -18,7 +18,7 @@ import MidtransScript from './midtrans-script';
 import { BookingCardLoader } from '@/components/partial/loader';
 import PaymentLinkWatcher from './payment-link-watcher';
 
-async function BookingList({
+async function BookingListTest({
   user,
   products,
 }: {
@@ -42,6 +42,26 @@ async function BookingList({
 
     return res;
   }
+  const getPaymentStatus = (bookNo: string) => {
+    const midtransUrl = (process.env.NEXT_PUBLIC_MIDTRANS_API as string) + bookNo + '/status';
+    const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
+
+    const res = axios.get(midtransUrl, {
+      headers: {
+        accept: 'application/json',
+        authorization: 'Basic ' + encodeToken,
+      }
+    }).then(response => {
+      const data = response.data;
+
+      return data;
+    }).catch(error => {
+      console.log(error);
+      throw error;
+    })
+
+    return res;
+  }
 
   const bookingBody = {
     customer_no: user?.customer_no as string,
@@ -49,48 +69,34 @@ async function BookingList({
     begin: null,
     end: null
   }
-  const bookingData = await getBookByCustomer(user?.token, bookingBody);
-  const paymentMethod = await getPaymentMethod();
 
   const midtransRedirectUrl = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL as string;
+
+  const [bookings, paymentMethod] = await Promise.all([
+    getBookByCustomer(user?.token, bookingBody),
+    getPaymentMethod()
+  ]);
+
+  const bookingData = await Promise.all(
+    bookings.map(async (booking) => {
+      const product = booking.product_no ? products.find(p => p.product_no === booking.product_no) : null;
+      const formatBookNo = booking.book_no.replace(/\//g, '_');
+      const paymentStatus = await getPaymentStatus(formatBookNo);
+
+      let snapLink = null;
+      if (booking.downPayments.length > 0 && booking.downPayments[0].token) {
+        snapLink = midtransRedirectUrl + '/' + booking.downPayments[0].token;
+      }
+
+      return { booking, product, paymentStatus, snapLink }
+    })
+  );
 
   return (
     <>
       <Container className="space-y-6">
-        {bookingData.length > 0 ?
-          bookingData.map(async (booking) => {
-            const product = booking.product_no ? products.find(p => p.product_no === booking.product_no) : null;
-            let snapLink;
-            if (booking.downPayments.length > 0) {
-              const token = booking.downPayments[0].token;
-              if (token !== null) {
-                snapLink = midtransRedirectUrl + '/' + token;
-              } else {
-                snapLink = null
-              }
-            }
-            const formatBookNo = booking.book_no.replace(/\//g, '_')
-            const midtransUrl = (process.env.NEXT_PUBLIC_MIDTRANS_API as string) + formatBookNo + '/status';
-            const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
-            const getPaymentStatus = () => {
-              const res = axios.get(midtransUrl, {
-                headers: {
-                  accept: 'application/json',
-                  authorization: 'Basic ' + encodeToken,
-                }
-              }).then(response => {
-                const data = response.data;
-
-                return data;
-              }).catch(error => {
-                console.log(error);
-                throw error;
-              })
-
-              return res;
-            }
-            let paymentStatus = await getPaymentStatus();
-  
+        {bookings.length > 0 ?
+          bookingData.map(async ({ booking, product, paymentStatus, snapLink }) => {
             return (
               <div className='relative' key={booking.id}>
                 <BookingCard
@@ -112,7 +118,7 @@ async function BookingList({
                   width={320}
                   height={320}
                   alt="404 Illustration"
-                  />
+                />
               </div>
 
               <div className="grid gap-2 text-center">
@@ -131,10 +137,10 @@ async function BookingList({
           )
         }
       </Container>
-      <PaymentLinkWatcher bookings={bookingData} />
+      <PaymentLinkWatcher bookings={bookings} />
       {/* <MidtransScript /> */}
     </>
   )
 }
 
-export default BookingList;
+export default BookingListTest;

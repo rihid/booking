@@ -9,10 +9,6 @@ import Heading from '@/components/ui/heading';
 import { BookingListLoader } from '@/components/partial/loader';
 import InvoiceList from './module/invoice-list';
 import BookingDetailModal from './module/booking-detail-modal';
-import moment from 'moment';
-import { bookingUrl } from '@/lib/data/endpoints';
-import axios from 'axios';
-import { generateBasicToken } from '@/lib/helper';
 
 export const metadata: Metadata = {
   title: 'Trips',
@@ -23,7 +19,6 @@ async function Trips() {
   const session = await getSession();
   // @ts-ignore
   const { user } = session;
-  const encodeToken = generateBasicToken(process.env.MIDTRANS_SERVER_KEY + ':');
 
   const products = await getAllProductPublic();
   return (

@@ -29,7 +29,7 @@ function HomepageSearch({
     const params = new URLSearchParams(searchParams);
     if (params.has('query')) {
       params.delete('query');
-      replace(pathname)
+      replace(`${pathname}?${params.toString()}`);
     }
   }
   const handleSearch = useDebouncedCallback((term: string) => {
@@ -51,33 +51,6 @@ function HomepageSearch({
       setInputValue(searchParams.get('query')?.toString() as string)
     }
   }, [searchParams]);
-
-  // const handleSearch = (term: any) => {
-  //   const params = new URLSearchParams(searchParams);
-  //   if (term) {
-  //     setSearch(term)
-  //     params.set('query', term);
-  //   } else {
-  //     params.delete('query');
-  //   }
-  //   replace(`${pathname}?${params.toString()}`);
-  // }
-
-  // const handleSearch = (term: string) => {
-  //   setSearch(term);
-  //   setInputValue(term);
-  // }
-
-  // React.useEffect(() => {
-  //   console.log(search)
-  //   const params = new URLSearchParams(searchParams);
-  //   if (search) {
-  //     params.set('query', search);
-  //   } else {
-  //     params.delete('query');
-  //   }
-  //   replace(`${pathname}?${params.toString()}`);
-  // }, []);
 
   return (
     <div className="relative">

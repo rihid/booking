@@ -19,6 +19,7 @@ function ComboboxLocation({
   const { location, setLocation } = useFilterStore(state => state);
   const [selectedLocation, setSelectedLocation] = React.useState('');
   const [query, setQuery] = React.useState<string>('');
+  const [isActive, setIsactive] = React.useState<boolean>(false);
 
   const filteredLocation = query === '' ? locations : locations.filter((loc: any) => {
     return loc.name.toLowerCase().includes(query.toLowerCase())
@@ -36,15 +37,16 @@ function ComboboxLocation({
     }
     replace(`${pathname}?${params.toString()}`);
   }
+
   const onClickClear = () => {
     setQuery('')
     setSelectedLocation('')
     setLocation(null)
     const params = new URLSearchParams(searchParams);
-    if (params.has('location')) {
+    if (params.has('location') && !location) {
       params.delete('location');
-      replace(`${pathname}?${params.toString()}`);
     }
+    replace(`${pathname}?${params.toString()}`);
   }
 
   React.useEffect(() => {
@@ -63,7 +65,8 @@ function ComboboxLocation({
     <div className="relative">
       <Combobox
         value={selectedLocation}
-        onChange={(value: any) => handleLocationSelect(value)} onClose={() => setQuery('')}
+        onChange={(value: any) => handleLocationSelect(value)}
+        onClose={() => setQuery('')}
       >
         <div className="relative">
           <ComboboxInput

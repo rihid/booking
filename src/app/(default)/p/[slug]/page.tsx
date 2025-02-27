@@ -18,6 +18,7 @@ import ReserveButton from './module/reserve-button';
 import AboutDetailModal from './module/about-detail-modal';
 import ShareButton from './module/share-button';
 import Icon from '@/components/ui/icon';
+import Testimoni from '@/components/partial/testimoni';
 
 type Props = {
   params: { slug: string }
@@ -91,7 +92,7 @@ async function Detail({
                   </div>
                   <div className="flex justify-center items-center text-foreground/50 gap-x-2">
                     <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-                    <p className="inline-block text-xs font-normal">{product.rating} (0 reviews)</p>
+                    <p className="inline-block text-xs font-normal">{product.rating ? product.rating : '0.0'}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -119,14 +120,14 @@ async function Detail({
               </dl>
             </Container>
             <Container el="article" className="flex flex-col mx-auto mt-5">
-              <h3 className="font-bold text-sm text-foreground/75 mb-3">About</h3>
+              <Heading variant='sm' className="text-foreground/75 mb-3">About</Heading>
               <div className="text-foreground/50 font-normal text-xs">
                 <p className="">
                   {product.product_description}
                 </p>
               </div>
               <div className="bg-background mt-6">
-                <h3 className="font-semibold text-sm text-foreground/75">Riding Route</h3>
+                <Heading variant='sm' className="text-foreground/75 mb-3">Riding Route</Heading>
                 <div className="mt-2">
                   <ol className="relative text-gray-500 ms-2 border-s-2 border-dashed border-muted-foreground">
                     {product.routes.map((route: any) => (
@@ -140,7 +141,7 @@ async function Detail({
               </div>
             </Container>
             <Container className="flex flex-col w-full mx-auto mt-5">
-              <h3 className="font-bold text-sm text-foreground/75 mb-3">Includes</h3>
+              <Heading variant='sm' className="text-foreground/75 mb-3">Testimoni</Heading>
               <dl className="space-y-4">
                 {product.amenities.map((pa: any) => {
                   return (
@@ -148,7 +149,7 @@ async function Detail({
                       <div className="flex items-start gap-x-6 gap-y-4">
                         <dt className="text-sm font-medium text-foreground/50">
                           {/* <CupSoda className="w-5 h-5" /> */}
-                          <Icon name={pa.icon} className="w-5 h-5"/>
+                          <Icon name={pa.icon} className="w-5 h-5" />
                         </dt>
                         <dd className="text-foreground/75 mt-0 pt-0">
                           <h3 className="text-sm font-normal tracking-tight">{pa.amenity}</h3>
@@ -161,6 +162,9 @@ async function Detail({
                   )
                 })}
               </dl>
+            </Container>
+            <Container className="flex flex-col w-full mx-auto mt-5">
+              <Testimoni />
             </Container>
           </Suspense>
         </div>
