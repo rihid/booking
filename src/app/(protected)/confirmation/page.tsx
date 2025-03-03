@@ -10,7 +10,7 @@ import { getSession } from '@/lib/session';
 import axios from 'axios';
 import moment from 'moment';
 import { bookingUrl, masterUrl } from '@/lib/data/endpoints';
-import { getAllProductPublic, getBookByCustomer, getBookbyNo, getBooking } from '@/lib/data';
+import { getAllProductPublic, getBookbyNo } from '@/lib/data';
 import { midtransServerKey } from '@/lib/constants';
 import ActionComp from './module/action-comp';
 import ConfirmationContent from './module/confirmation-content';

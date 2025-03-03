@@ -30,11 +30,17 @@ async function InvoiceDetail({
   const session = await getSession();
   // @ts-ignore
   const { token, customer_no, org_no } = session.user;
+  // const invoiceBody = {
+  //   customer_no: customer_no as string,
+  //   type: "invoice",
+  //   begin: "2025-02-01",
+  //   end: null
+  // }
   const invoiceBody = {
-    customer_no: customer_no as string,
+    customer_no: "PSJ/CRM/00002583",
     type: "invoice",
-    begin: "2025-02-01",
-    end: null
+    begin: "2025-01-01",
+    end: "2025-02-28"
   }
 
   const organizations = await getOrganizations(token);
@@ -244,8 +250,7 @@ async function InvoiceDetail({
     )
   }
   return (
-    <div className="flex flex-col min-h-screen mb-20">
-      <TopTitle label='Invoice' />
+    <>
       <Container>
         {numbers?.map((invNumber: any) => {
           const productVal = products.find(p => p.product_no === invNumber.product_no);
@@ -288,7 +293,7 @@ async function InvoiceDetail({
                   </div>
                   <div className="flex items-center text-foreground/50 gap-x-2">
                     <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-                    <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
+                    <p className="inline-block text-xs font-normal">{productVal?.rating ? productVal?.rating : '0.0'}</p>
                   </div>
                 </div>
               </div>
@@ -319,7 +324,7 @@ async function InvoiceDetail({
       </Container>
       <PriceDetailComp />
       <DownloadInvoiceBtn user={session?.user} invoice={invoice} />
-    </div>
+    </>
   )
 }
 

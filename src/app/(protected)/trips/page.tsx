@@ -22,40 +22,26 @@ async function Trips() {
 
   const products = await getAllProductPublic();
   return (
-    <div className="flex flex-col min-h-screen">
-
-      <Tabs defaultValue='on-progress'>
-        <Container className="py-6 sticky top-0 z-30 bg-background w-full flex justify-between items-center shrink-0">
-          <div></div>
-          <Heading variant="sm" className="text-foreground ml-4">Trips</Heading>
-          <div></div>
-        </Container>
-        <Container el="nav" className="sticky top-0 z-30 bg-background pb-3 pt-1 border-b shadow-sm rounded-3xl">
-          <TabsList className="flex gap-6 justify-start bg-background text-foreground/50">
-            <TabsTrigger value='on-progress' className="font-bold">On Progress</TabsTrigger>
-            <TabsTrigger value='history' className="font-bold">History</TabsTrigger>
-          </TabsList>
-        </Container>
-        <div className="relative mt-6 mb-20">
-          {/* Tab on progress */}
-          <TabsContent value='on-progress'>
-            <Suspense fallback={<BookingListLoader />}>
-              <BookingList
-                products={products}
-                user={session?.user}
-              />
-            </Suspense>
-          </TabsContent>
-          {/* Tab history */}
-          <TabsContent value='history'>
-            <Suspense fallback={<BookingListLoader />}>
-              <InvoiceList user={session?.user} products={products} />
-            </Suspense>
-          </TabsContent>
-        </div>
-      </Tabs>
+    <>
+      <div className="relative mt-6 mb-20">
+        {/* Tab on progress */}
+        <TabsContent value='on-progress'>
+          <Suspense fallback={<BookingListLoader />}>
+            <BookingList
+              products={products}
+              user={session?.user}
+            />
+          </Suspense>
+        </TabsContent>
+        {/* Tab history */}
+        <TabsContent value='history'>
+          <Suspense fallback={<BookingListLoader />}>
+            <InvoiceList user={session?.user} products={products} />
+          </Suspense>
+        </TabsContent>
+      </div>
       <BookingDetailModal />
-    </div>
+    </>
   )
 }
 

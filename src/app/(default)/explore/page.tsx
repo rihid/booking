@@ -15,6 +15,7 @@ import NavbarTabList from './module/navbar-tablist';
 import WarningCompletion from '@/components/partial/warning-completion';
 import { getSession } from '@/lib/session';
 import LocationChecker from '@/components/partial/location-checker';
+import ErrorBoundaries from '@/components/partial/error-boundaries';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -30,17 +31,26 @@ async function ProductComp({
   tapGroup: any;
   locQuery: any;
 }) {
-  const products = await getAllProductPublic();
-  return (
-    <Suspense fallback={<ProductListLoader />}>
-      <ProductList
-        products={products}
-        tabGroup={tapGroup}
-        query={query}
-        locQuery={locQuery}
+  try {
+    const products = await getAllProductPublic();
+    return (
+      <Suspense fallback={<ProductListLoader />}>
+        <ProductList
+          products={products}
+          tabGroup={tapGroup}
+          query={query}
+          locQuery={locQuery}
+        />
+      </Suspense>
+    )
+  } catch(error: unknown) {
+    const errMessage = error instanceof Error ? error.message : "Unknow error"
+    return (
+      <ErrorBoundaries
+        message={errMessage}
       />
-    </Suspense>
-  )
+    )
+  }
 }
 
 async function Explore({
@@ -125,13 +135,11 @@ async function Explore({
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
           <NavbarTabList categories={categories} />
         </Container>
-        <div className="relative mt-6 mb-20">
+        <div className="relative h-full mt-6 mb-20">
           {categories.map((item: any, index: number) => {
             return (
               <TabsContent key={index} value={item.id}>
-                <Suspense fallback={<ProductListLoader />}>
-                  <ProductComp tapGroup={item.id} query={query} locQuery={locQuery} />
-                </Suspense>
+                <ProductComp tapGroup={item.id} query={query} locQuery={locQuery} />
               </TabsContent>
             )
           }

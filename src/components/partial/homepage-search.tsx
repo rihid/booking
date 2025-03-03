@@ -12,7 +12,7 @@ import { useFilterStore } from '@/providers/store-providers/filter-provider';
 function HomepageSearch({
   locations,
 }: {
-  query: any;
+  query?: any;
   locations: any;
 }) {
   const searchParams = useSearchParams();

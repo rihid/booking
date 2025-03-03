@@ -33,7 +33,6 @@ async function InvoiceList({
     const seconds = Math.round((duration % 60000) / 1000)
     return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2)
   }
-  console.log(invoiceData)
   return (
     <Container className="space-y-6">
       {invoiceData.length > 0 ?
@@ -52,7 +51,7 @@ async function InvoiceList({
                   <CardTitle className="text-foreground/75">{productVal?.product_name}</CardTitle>
                   <div className="flex items-center text-foreground/50 gap-x-2 !mt-0">
                     <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-                    <p className="inline-block text-xs font-normal">4.9 (120 reviews)</p>
+                    <p className="inline-block text-xs font-normal">{productVal?.rating ? productVal?.rating : '0.0'}</p>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-0.5">

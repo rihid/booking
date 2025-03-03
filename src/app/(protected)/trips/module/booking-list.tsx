@@ -138,7 +138,6 @@ async function BookingListTest({
         }
       </Container>
       <PaymentLinkWatcher bookings={bookings} />
-      {/* <MidtransScript /> */}
     </>
   )
 }
