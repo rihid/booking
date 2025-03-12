@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 export type LocationType = {
   id: string | null;
-  name: string | null;
+  name: string;
   longitude: string | null;
   latitude: string | null;
   org_no: string | null;

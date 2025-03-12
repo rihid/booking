@@ -1,56 +1,50 @@
 'use client';
 
-import React, { use } from 'react';
+import React from 'react';
 import { Search, XIcon } from 'lucide-react';
 import { Input } from '../ui/input';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
-import ComboboxLocation from './combobox-location ';
+import ComboboxLocation from './combobox-location';
 import { cn } from '@/assets/styles/utils';
 import { useFilterStore } from '@/providers/store-providers/filter-provider';
+import { useQueryParams } from '@/lib/hooks/use-query-params';
 
 function HomepageSearch({
   locations,
 }: {
-  query?: any;
   locations: any;
 }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace } = useRouter();
+  const router = useRouter();
 
-  const { search, setSearch } = useFilterStore(state => state)
-
-  const [inputValue, setInputValue] = React.useState<string>('')
+  const { search, setSearch } = useFilterStore(state => state);
 
   const onClickClear = () => {
-    setSearch('')
-    setInputValue('')
+    setSearch('');
     const params = new URLSearchParams(searchParams);
     if (params.has('query')) {
       params.delete('query');
-      replace(`${pathname}?${params.toString()}`);
+      router.replace(`${pathname}?${params.toString()}`);
     }
-  }
+  };
+
   const handleSearch = useDebouncedCallback((term: string) => {
     const params = new URLSearchParams(searchParams);
     if (term) {
-      setSearch(term)
-      setInputValue(term)
+      setSearch(term);
       params.set('query', term);
     } else {
       params.delete('query');
     }
-    replace(`${pathname}?${params.toString()}`);
+    router.replace(`${pathname}?${params.toString()}`);
   }, 50);
 
   React.useEffect(() => {
-    const params = new URLSearchParams(searchParams);
-    console.log(searchParams.get('query')?.toString())
-    if (params.has('query')) {
-      setInputValue(searchParams.get('query')?.toString() as string)
-    }
-  }, [searchParams]);
+    const initialQuery = searchParams.get('query')?.toString() || '';
+    setSearch(initialQuery);
+  }, [searchParams, setSearch]);
 
   return (
     <div className="relative">
@@ -63,17 +57,14 @@ function HomepageSearch({
             className={cn(
               'rounded-full pl-12 border-none bg-transparent text-sm font-normal text-muted-foreground focus-visible:ring-offset-0 focus-visible:ring-0'
             )}
-            onChange={(e) => {
-              handleSearch(e.target.value)
-              setInputValue(e.target.value)
-            }}
-            value={inputValue}
+            onChange={(e) => handleSearch(e.target.value)}
+            value={search}
           />
           <button
             type="button"
             className={cn(
               'group absolute inset-y-0 right-0 px-2.5 invisible',
-              inputValue ? 'visible' : ''
+              search ? 'visible' : ''
             )}
             onClick={onClickClear}
           >
@@ -83,7 +74,7 @@ function HomepageSearch({
         <ComboboxLocation locations={locations} />
       </div>
     </div>
-  )
+  );
 }
 
 export default HomepageSearch;

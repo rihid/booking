@@ -11,15 +11,16 @@ interface Coordinate {
 
 const initialCoordinate: Coordinate = {
   // Marina
-  latitude: -6.951320,
-  longitude: 110.389429
+  // latitude: -6.951320,
+  // longitude: 110.389429
+  latitude: -6.9932,
+  longitude: 110.4215
 }
 
 function LocationChecker() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { replace } = useRouter();
 
   const { location, setLocation } = useFilterStore(state => state);
   const [coordinate, setCoordinate] = React.useState<Coordinate>(initialCoordinate)
@@ -45,18 +46,19 @@ function LocationChecker() {
     let c = 2 * Math.asin(Math.sqrt(a));
     return rad * c;
   }
-  
+
   const setOtsParams = (isInRadius: boolean) => {
     const params = new URLSearchParams(searchParams.toString());
-    const hasOts = params.has('ots');
-    
-    if (isInRadius && !hasOts) {
+    if (isInRadius) {
       params.set('ots', 'true');
-      replace(`${pathname}?${params.toString()}`);
-    } else if (!isInRadius && hasOts) {
-      params.delete('ots');
-      replace(`${pathname}?${params.toString()}`);
+      router.replace(`${pathname}?${params.toString()}`);
+    } else {
+      if (params.has('ots')) {
+        params.delete('ots');
+        router.replace(`${pathname}?${params.toString()}`);
+      }
     }
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const checkLocation = async (): Promise<void> => {
@@ -80,8 +82,6 @@ function LocationChecker() {
           setOtsParams(isInRadius);
 
           console.log(`Jarak: ${distance.toFixed(2)} meter`);
-          console.log('current lat:', latitude)
-          console.log('current lon:', longitude)
         },
         (error: GeolocationPositionError) => {
           console.error('Error getting location:', error.message);

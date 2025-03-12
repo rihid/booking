@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+Disallow: /test-session/
+
+Sitemap: https://safari-booking.callistech.co.id/sitemap.xml

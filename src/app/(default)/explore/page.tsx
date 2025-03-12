@@ -130,7 +130,7 @@ async function Explore({
           <Suspense fallback={<UserAvatarLoader />}>
             <UserAvatar session={session} customer={customer} />
           </Suspense>
-          <HomepageSearch locations={locations} query={query} />
+          <HomepageSearch locations={locations} />
         </Container>
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
           <NavbarTabList categories={categories} />
@@ -146,7 +146,7 @@ async function Explore({
           )}
         </div>
       </Tabs>
-      <LocationChecker />
+      {/* <LocationChecker /> */}
     </div>
   )
 }
