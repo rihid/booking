@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { cn } from "@/assets/styles/utils";
 import { fontSans } from "@/assets/styles/fonts";
 import { Toaster } from "@/components/ui/sonner";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 // style
 import "@/assets/styles/globals.css";
@@ -15,6 +16,7 @@ import { BookStoreProvider } from "@/providers/store-providers/book-provider";
 import { PaymentStoreProvider } from "@/providers/store-providers/payment-provider";
 import { FilterStoreProvider } from "@/providers/store-providers/filter-provider";
 import { TripStoreProvider } from "@/providers/store-providers/trip-provider";
+import { LocationProvider } from "@/components/partial/location.context";
 
 export const metadata: Metadata = {
   title: {
@@ -38,7 +40,10 @@ const AppProviders = combineProviders([
   BookStoreProvider,
   PaymentStoreProvider,
   FilterStoreProvider,
-  TripStoreProvider
+  TripStoreProvider,
+
+  NuqsAdapter,
+  LocationProvider,
 ])
 
 export default function RootLayout({
