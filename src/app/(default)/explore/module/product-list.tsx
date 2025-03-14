@@ -17,79 +17,33 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 function ProductList({
   products,
   tabGroup,
-  query,
-  locQuery,
+  searchParam,
+  locParam,
 }: {
   products: any;
   tabGroup?: string;
-  query: any;
-  locQuery: any;
+  searchParam: any;
+  locParam: any;
 }) {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
-
-  const { location, search } = useFilterStore(state => state);
 
   const filteredProducts = React.useMemo(() => {
     return products.filter((product: any) => {
       if (product.category_id !== tabGroup) {
         return false;
       }
-      if (query) {
-        if (!product.product_name.toLowerCase().includes(query.toLowerCase())) {
+      if (searchParam) {
+        if (!product.product_name.toLowerCase().includes(searchParam.toLowerCase())) {
           return false;
         }
       }
-      if (locQuery) {
-        if (product?.location !== locQuery) {
+      if (locParam) {
+        if (product?.location !== locParam) {
           return false;
         }
       }
       return true;
     });
-  }, [products, tabGroup, query, locQuery]);
-
-  React.useEffect(() => {
-    const params = new URLSearchParams(searchParams);
-    if (search) {
-      params.set('query', search);
-      replace(`${pathname}?${params.toString()}`);
-    } else {
-      params.delete('query');
-    }
-    if (location) {
-      params.set('location', location?.name as string);
-      replace(`${pathname}?${params.toString()}`);
-    } else {
-      params.delete('location');
-    }
-
-  }, [location, search])
-
-  
-  // const filter = () => {
-  //   const productGrouping = products.filter((pg: any) => pg.category_id === tabGroup) // grouping by category
-  //   let productValues = productGrouping;
-  //   // search
-  //   if (search) {
-  //     productValues = productValues.filter((product: any) =>
-  //       product.product_name.toLowerCase().includes(search.toLowerCase())
-  //     );
-  //   }
-  //   // location
-  //   if(selectedLoc) {
-  //     productValues = productValues.filter((product: any) => product.location_id === selectedLoc.id);
-  //   }
-
-  //   return productValues;
-  // }
-  // const filteredProducts = filter();
-  // React.useEffect(() => {
-  //   if (location) {
-  //     setSelectedLoc(location)
-  //   }
-  // }, [location])
+  }, [products, tabGroup, searchParam, locParam]);
 
   return (
     <Container className="space-y-6">

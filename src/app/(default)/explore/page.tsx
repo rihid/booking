@@ -6,7 +6,6 @@ import { Suspense } from 'react';
 import ProductList from './module/product-list';
 import { ProductListLoader, UserAvatarLoader } from '@/components/partial/loader';
 import UserAvatar from './module/user-avatar';
-import HomepageSearch from '@/components/partial/homepage-search';
 import axios from 'axios';
 import { productUrl, locationUrl } from '@/lib/data/endpoints';
 import Icon from '@/components/ui/icon';
@@ -14,8 +13,12 @@ import { getAllProductPublic, getCustomerByNo } from '@/lib/data';
 import NavbarTabList from './module/navbar-tablist';
 import WarningCompletion from '@/components/partial/warning-completion';
 import { getSession } from '@/lib/session';
-import LocationChecker from '@/components/partial/location-checker';
 import ErrorBoundaries from '@/components/partial/error-boundaries';
+import LocationChecker from '@/components/partial/location-checker';
+import SearchFilter from '@/components/partial/filter/search-filter';
+import LocationFilter from '@/components/partial/filter/location-filter';
+import type { SearchParams } from 'nuqs/server';
+import { searchParamsCache } from '@/lib/searchparams-type';
 
 export const metadata: Metadata = {
   title: 'Explore',
@@ -23,13 +26,13 @@ export const metadata: Metadata = {
 }
 
 async function ProductComp({
-  query,
+  searchParam,
   tapGroup,
-  locQuery,
+  locParam,
 }: {
-  query: any;
+  searchParam: any;
   tapGroup: any;
-  locQuery: any;
+  locParam: any;
 }) {
   try {
     const products = await getAllProductPublic();
@@ -38,12 +41,12 @@ async function ProductComp({
         <ProductList
           products={products}
           tabGroup={tapGroup}
-          query={query}
-          locQuery={locQuery}
+          searchParam={searchParam}
+          locParam={locParam}
         />
       </Suspense>
     )
-  } catch(error: unknown) {
+  } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : "Unknow error"
     return (
       <ErrorBoundaries
@@ -56,12 +59,12 @@ async function ProductComp({
 async function Explore({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | null }
+  searchParams: Promise<SearchParams>
 }) {
   const session = await getSession();
 
-  const query = searchParams?.query;
-  const locQuery = searchParams?.location;
+  const searchParamsResolved = await searchParams;
+  const { search, location } = searchParamsCache.parse(searchParamsResolved);
   // data
   let customer = {
     id: "",
@@ -130,7 +133,13 @@ async function Explore({
           <Suspense fallback={<UserAvatarLoader />}>
             <UserAvatar session={session} customer={customer} />
           </Suspense>
-          <HomepageSearch locations={locations} />
+          <div className="relative">
+            <div className="grid grid-cols-2 divide-x item-center justify-between h-10 w-full rounded-full border border-input bg-background text-sm">
+              <SearchFilter />
+              <LocationFilter locations={locations} />
+            </div>
+          </div>
+          {/* end testing */}
         </Container>
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
           <NavbarTabList categories={categories} />
@@ -139,14 +148,14 @@ async function Explore({
           {categories.map((item: any, index: number) => {
             return (
               <TabsContent key={index} value={item.id}>
-                <ProductComp tapGroup={item.id} query={query} locQuery={locQuery} />
+                <ProductComp tapGroup={item.id} searchParam={search} locParam={location} />
               </TabsContent>
             )
           }
           )}
         </div>
       </Tabs>
-      {/* <LocationChecker /> */}
+      <LocationChecker locations={locations} />
     </div>
   )
 }

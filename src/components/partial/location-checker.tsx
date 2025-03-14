@@ -1,122 +1,57 @@
 'use client'
 
 import React from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useFilterStore } from '@/providers/store-providers/filter-provider';
+import { useQueryState } from 'nuqs';
+import { searchParams } from '@/lib/searchparams-type';
+import { useLocation } from './location.context';
 
-interface Coordinate {
-  latitude: number;
-  longitude: number;
-}
+function LocationChecker({ locations }: { locations: any }) {
+  const { checkTargetLocation, isLoading, error } = useLocation();
+  const [locParam] = useQueryState('location', searchParams.location);
 
-const initialCoordinate: Coordinate = {
-  // Marina
-  // latitude: -6.951320,
-  // longitude: 110.389429
-  latitude: -6.9932,
-  longitude: 110.4215
-}
-
-function LocationChecker() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const { location, setLocation } = useFilterStore(state => state);
-  const [coordinate, setCoordinate] = React.useState<Coordinate>(initialCoordinate)
-  const maxRadius = 20 // meters
-
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    /*
-      * using harvesine
-      * https://www.geeksforgeeks.org/haversine-formula-to-find-distance-between-two-points-on-a-sphere/
-    */
-    const rad = 6371e3;
-    let dLat = (lat2 - lat1) * Math.PI / 180.0;
-    let dLon = (lon2 - lon1) * Math.PI / 180.0;
-
-    lat1 = (lat1) * Math.PI / 180.0;
-    lat2 = (lat2) * Math.PI / 180.0;
-
-    let a = Math.pow(Math.sin(dLat / 2), 2) +
-      Math.pow(Math.sin(dLon / 2), 2) *
-      Math.cos(lat1) *
-      Math.cos(lat2);
-
-    let c = 2 * Math.asin(Math.sqrt(a));
-    return rad * c;
-  }
-
-  const setOtsParams = (isInRadius: boolean) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (isInRadius) {
-      params.set('ots', 'true');
-      router.replace(`${pathname}?${params.toString()}`);
-    } else {
-      if (params.has('ots')) {
-        params.delete('ots');
-        router.replace(`${pathname}?${params.toString()}`);
-      }
-    }
-    router.push(`${pathname}?${params.toString()}`);
+  // Find the selected location from the locations array
+  const location = locParam && locParam.trim() !== '' 
+    ? locations.find((loc: any) => 
+        loc.name?.toLowerCase().includes(locParam.toLowerCase())
+      )
+    : null;
+  
+  // Default coordinates if no location is selected
+  const defaultCoordinates = {
+    // Marina
+    // latitude: -6.951320,
+    // longitude: 110.389429
+    // current loc
+    latitude: -6.9932,
+    longitude: 110.4215
   };
+  
+  const maxRadius = 20; // meters
 
-  const checkLocation = async (): Promise<void> => {
-    try {
-      if (!navigator.geolocation) {
-        throw new Error('Geolocation not supported in this browser');
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position: GeolocationPosition) => {
-          const { latitude, longitude } = position.coords;
-
-          const distance = calculateDistance(
-            latitude,
-            longitude,
-            coordinate.latitude,
-            coordinate.longitude
-          );
-
-          const isInRadius = distance <= maxRadius;
-          setOtsParams(isInRadius);
-
-          console.log(`Jarak: ${distance.toFixed(2)} meter`);
-        },
-        (error: GeolocationPositionError) => {
-          console.error('Error getting location:', error.message);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0
-        }
-      );
-    } catch (error: any) {
-      if (error instanceof Error) {
-        console.error('Error:', error.message);
+  React.useEffect(() => {
+    const checkLocation = async () => {
+      if (location && location.latitude && location.longitude) {
+        console.log("Checking location:", location.name);
+        await checkTargetLocation(
+          parseFloat(location.latitude),
+          parseFloat(location.longitude),
+          maxRadius
+        );
       } else {
-        console.error('Unknown error:', error);
+        console.log("Checking default location");
+        await checkTargetLocation(
+          defaultCoordinates.latitude,
+          defaultCoordinates.longitude,
+          maxRadius
+        );
       }
-    }
-  };
-
-  React.useEffect(() => {
-    if (location && location.latitude && location.longitude) {
-      setCoordinate({
-        latitude: parseFloat(location.latitude),
-        longitude: parseFloat(location.longitude)
-      });
-    } else {
-      setCoordinate(initialCoordinate);
-    }
-  }, [location]);
-
-  React.useEffect(() => {
+    };
+    
     checkLocation();
-  }, [router, searchParams, coordinate]);
+  }, [location, checkTargetLocation, maxRadius, locParam]);
 
-  return null
+  // You can render something based on the location status if needed
+  return null;
 }
 
-export default LocationChecker
+export default LocationChecker;
