@@ -9,7 +9,7 @@ function LocationChecker({ locations }: { locations: any }) {
   const { checkTargetLocation, isLoading, error } = useLocation();
   const [locParam] = useQueryState('location', searchParams.location);
 
-  // Find selected locations from array location in db
+  // Find selected location from locations
   const location = locParam && locParam.trim() !== '' ? locations.find((loc: any) => loc.name?.toLowerCase().includes(locParam.toLowerCase())) : null;
   
   const defaultCoordinates = {

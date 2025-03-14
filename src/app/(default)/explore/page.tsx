@@ -126,7 +126,7 @@ async function Explore({
   locations = await getLocationPublic();
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen group">
       {session && !customer.phone && <WarningCompletion />}
       <Tabs defaultValue={categories[0].id}>
         <Container className="mt-6 mb-4 space-y-4">
@@ -144,7 +144,10 @@ async function Explore({
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
           <NavbarTabList categories={categories} />
         </Container>
-        <div className="relative h-full mt-6 mb-20">
+        <div className="relative h-full mt-6 mb-20 hidden group-has-[[data-pending]]:block">
+          <ProductListLoader />
+        </div>
+        <div className="relative h-full mt-6 mb-20 group-has-[[data-pending]]:hidden">
           {categories.map((item: any, index: number) => {
             return (
               <TabsContent key={index} value={item.id}>

@@ -65,7 +65,7 @@ function ComboboxLocation({
   }, [currentLocation]);
 
   return (
-    <div className="relative">
+    <div className="relative" data-pending={isPending ? true : undefined}>
       <Combobox value={currentLocation} onChange={handleLocationSelect}>
         <div className="relative">
           <ComboboxInput
@@ -77,12 +77,12 @@ function ComboboxLocation({
             displayValue={(loc: LocationType) => loc?.name || ''}
             onChange={(event) => setQuery(event.target.value)}
           />
-          {isPending && (
+          {/* {isPending && (
             <span className="absolute inset-y-0 right-7 flex items-center px-1.5">
               <Spinner size="xsmall" />
             </span>
-          )}
-          {!isPending && (query || currentLocation) && (
+          )} */}
+          {(query || currentLocation) && (
             <button
               type='button'
               className="absolute z-40 cursor-pointer inset-y-0 right-7 px-1.5"

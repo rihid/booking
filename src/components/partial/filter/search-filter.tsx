@@ -28,7 +28,7 @@ function SearchFilter() {
     debouncedSetSearch(value)
   }
   return (
-    <form className="relative">
+    <form className="relative" data-pending={isPending ? true : undefined}>
       {isPending ?
         <span className="absolute top-1/2 left-2 transform -translate-y-1/2">
           <Spinner size="xsmall" />
