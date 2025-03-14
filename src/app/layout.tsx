@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cn } from "@/assets/styles/utils";
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
 const combineProviders = (providers: React.ComponentType<{ children: React.ReactNode }>[]) => {
   return function CombinedProviders({ children }: { children: React.ReactNode }) {
     return providers.reduceRight(
-      (acc, CurrentProvider) => <CurrentProvider>{acc}</CurrentProvider>,
+      (acc, CurrentProvider) => <Suspense><CurrentProvider>{acc}</CurrentProvider></Suspense>,
       children
     );
   }
