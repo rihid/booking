@@ -133,13 +133,13 @@ async function Explore({
           <Suspense fallback={<UserAvatarLoader />}>
             <UserAvatar session={session} customer={customer} />
           </Suspense>
+          {/* filter */}
           <div className="relative">
             <div className="grid grid-cols-2 divide-x item-center justify-between h-10 w-full rounded-full border border-input bg-background text-sm">
               <SearchFilter />
               <LocationFilter locations={locations} />
             </div>
           </div>
-          {/* end testing */}
         </Container>
         <Container el="nav" className="sticky top-0 z-30 bg-background pb-4 pt-1 border-b shadow-md rounded-b-3xl">
           <NavbarTabList categories={categories} />

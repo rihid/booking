@@ -9,19 +9,15 @@ function LocationChecker({ locations }: { locations: any }) {
   const { checkTargetLocation, isLoading, error } = useLocation();
   const [locParam] = useQueryState('location', searchParams.location);
 
-  // Find the selected location from the locations array
-  const location = locParam && locParam.trim() !== '' 
-    ? locations.find((loc: any) => 
-        loc.name?.toLowerCase().includes(locParam.toLowerCase())
-      )
-    : null;
+  // Find selected locations from array location in db
+  const location = locParam && locParam.trim() !== '' ? locations.find((loc: any) => loc.name?.toLowerCase().includes(locParam.toLowerCase())) : null;
   
-  // Default coordinates if no location is selected
   const defaultCoordinates = {
     // Marina
     // latitude: -6.951320,
     // longitude: 110.389429
-    // current loc
+
+    // Kantor Puri for checking saja
     latitude: -6.9932,
     longitude: 110.4215
   };
@@ -38,7 +34,6 @@ function LocationChecker({ locations }: { locations: any }) {
           maxRadius
         );
       } else {
-        console.log("Checking default location");
         await checkTargetLocation(
           defaultCoordinates.latitude,
           defaultCoordinates.longitude,
@@ -50,7 +45,6 @@ function LocationChecker({ locations }: { locations: any }) {
     checkLocation();
   }, [location, checkTargetLocation, maxRadius, locParam]);
 
-  // You can render something based on the location status if needed
   return null;
 }
 
