@@ -8,7 +8,6 @@ import { ProductListLoader, UserAvatarLoader } from '@/components/partial/loader
 import UserAvatar from './module/user-avatar';
 import axios from 'axios';
 import { productUrl, locationUrl } from '@/lib/data/endpoints';
-import Icon from '@/components/ui/icon';
 import { getAllProductPublic, getCustomerByNo } from '@/lib/data';
 import NavbarTabList from './module/navbar-tablist';
 import WarningCompletion from '@/components/partial/warning-completion';
@@ -37,14 +36,12 @@ async function ProductComp({
   try {
     const products = await getAllProductPublic();
     return (
-      <Suspense fallback={<ProductListLoader />}>
-        <ProductList
-          products={products}
-          tabGroup={tapGroup}
-          searchParam={searchParam}
-          locParam={locParam}
-        />
-      </Suspense>
+      <ProductList
+        products={products}
+        tabGroup={tapGroup}
+        searchParam={searchParam}
+        locParam={locParam}
+      />
     )
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : "Unknow error"
@@ -151,7 +148,9 @@ async function Explore({
           {categories.map((item: any, index: number) => {
             return (
               <TabsContent key={index} value={item.id}>
-                <ProductComp tapGroup={item.id} searchParam={search} locParam={location} />
+                <Suspense fallback={<ProductListLoader />}>
+                  <ProductComp tapGroup={item.id} searchParam={search} locParam={location} />
+                </Suspense>
               </TabsContent>
             )
           }

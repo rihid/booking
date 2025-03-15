@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 const combineProviders = (providers: React.ComponentType<{ children: React.ReactNode }>[]) => {
   return function CombinedProviders({ children }: { children: React.ReactNode }) {
     return providers.reduceRight(
-      (acc, CurrentProvider) => <Suspense><CurrentProvider>{acc}</CurrentProvider></Suspense>,
+      (acc, CurrentProvider) => <><CurrentProvider>{acc}</CurrentProvider></>,
       children
     );
   }
@@ -58,14 +58,14 @@ export default function RootLayout({
         fontSans.variable
       )}>
         <AppProviders>
-        <>
-          <LocationProvider>
-            <main className="wrapper bg-background flex flex-col justify-between w-full h-full min-h-screen">
-              {children}
-            </main>
-            <Toaster />
-          </LocationProvider>
-        </>
+          <Suspense>
+            <LocationProvider>
+              <main className="wrapper bg-background flex flex-col justify-between w-full h-full min-h-screen">
+                {children}
+              </main>
+              <Toaster />
+            </LocationProvider>
+          </Suspense>
         </AppProviders>
       </body>
     </html>
