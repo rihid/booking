@@ -22,7 +22,7 @@ import { LocationProvider } from "@/components/partial/location.context";
 export const metadata: Metadata = {
   title: {
     template: ' %s | Booking Safari',
-    default: 'BRP Commerce', 
+    default: 'BRP Commerce',
   },
   description: "Sewa jetski, Rental Jetski, main jetski di Semarang",
 };
@@ -44,7 +44,6 @@ const AppProviders = combineProviders([
   TripStoreProvider,
 
   NuqsAdapter,
-  LocationProvider,
 ])
 
 export default function RootLayout({
@@ -59,10 +58,14 @@ export default function RootLayout({
         fontSans.variable
       )}>
         <AppProviders>
-          <main className="wrapper bg-background flex flex-col justify-between w-full h-full min-h-screen">
-            {children}
-          </main>
-          <Toaster/>
+        <>
+          <LocationProvider>
+            <main className="wrapper bg-background flex flex-col justify-between w-full h-full min-h-screen">
+              {children}
+            </main>
+            <Toaster />
+          </LocationProvider>
+        </>
         </AppProviders>
       </body>
     </html>
