@@ -14,12 +14,12 @@ function LocationChecker({ locations }: { locations: any }) {
   
   const defaultCoordinates = {
     // Marina
-    // latitude: -6.951320,
-    // longitude: 110.389429
+    latitude: -6.951320,
+    longitude: 110.389429
 
     // Kantor Puri for checking saja
-    latitude: -6.9932,
-    longitude: 110.4215
+    // latitude: -6.9932,
+    // longitude: 110.4215
   };
   
   const maxRadius = 20; // meters

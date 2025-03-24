@@ -650,33 +650,27 @@ function ConfirmNPayClient({
               </div>
               <OpenModalButton variant='link' view='rider-select-view'>Edit</OpenModalButton>
             </div>
-            {/* 
-              <div className="flex flex-wrap items-start justify-between w-full">
-                <div className="text-foreground/75 w-full flex-grow">
-                  <h4 className="font-semibold text-sm">Add Ons</h4>
-                </div>
-                <ToggleGroup type="multiple" className="mt-3 gap-4">
-                  <ToggleGroupItem
-                    value="drone"
-                    className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
-                  >
-                    Drone
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="food"
-                    className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
-                  >
-                    Food
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="profesional-photos"
-                    className="text-xs font-normal text-foreground/75 px-5 py-2.5 h-auto border border-transparent rounded-sm data-[state=on]:border data-[state=on]:border-brand data-[state=on]:bg-transparent data-[state=on]:text-accent-foreground hover:border hover:border-brand/90 hover:bg-transparent box-border"
-                  >
-                    Profesional Photos
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              </div> 
-            */}
+
+            <div className="flex flex-wrap items-start justify-between w-full">
+              <div className="text-foreground/75 w-full flex-grow">
+                <h4 className="font-semibold text-sm">Add Ons</h4>
+              </div>
+              <ToggleGroup type="multiple" className="mt-3 gap-4">
+                {productBooked?.addons.map((pa: any) => {
+                  return (
+                    <ToggleGroupItem
+                      key={pa.id}
+                      disabled
+                      value={pa.id}
+                      className="w-full justify-center border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50 data-[state=on]:bg-brand data-[state=on]:text-background data-[state=on]:border-brand"
+                    >
+                      {pa.type}
+                    </ToggleGroupItem>
+                  )
+                })}
+              </ToggleGroup>
+            </div>
+
           </div>
         </Container>
         <Container className="border-t-4 border-slate-100 bg-background py-8">

@@ -58,6 +58,7 @@ async function Detail({
   return (
     <>
       <div className="flex flex-col min-h-screen">
+        {/* <pre>{JSON.stringify(product, null, 2)}</pre> */}
         <div className="relative">
           <HeaaderDetailCarousel pictures={selectedProd.pictures} />
           <div className="absolute z-30 top-6 left-0 right-0 px-[30px] flex items-center justify-between">
@@ -141,7 +142,7 @@ async function Detail({
               </div>
             </Container>
             <Container className="flex flex-col w-full mx-auto mt-5">
-              <Heading variant='sm' className="text-foreground/75 mb-3">Testimoni</Heading>
+              <Heading variant='sm' className="text-foreground/75 mb-3">Amenities</Heading>
               <dl className="space-y-4">
                 {product.amenities.map((pa: any) => {
                   return (
@@ -164,7 +165,30 @@ async function Detail({
               </dl>
             </Container>
             <Container className="flex flex-col w-full mx-auto mt-5">
-              <Testimoni />
+              <Heading variant='sm' className="text-foreground/75 mb-3">Addons</Heading>
+              <dl className="space-y-4">
+                {product.addons.map((addon: any) => {
+                  return (
+                    <React.Fragment key={addon.id}>
+                    <div className="flex items-start gap-x-6 gap-y-4">
+                      <dt className="text-sm font-medium text-foreground/50">
+                        {/* <CupSoda className="w-5 h-5" /> */}
+                        <Icon name={"circle-plus"} className="w-5 h-5" />
+                      </dt>
+                      <dd className="text-foreground/75 mt-0 pt-0">
+                        <h3 className="text-sm font-normal tracking-tight capitalize">{addon.type}</h3>
+                        {/* <p className="text-xs text-foreground/50">
+                          Kita sudah menyediakan Handuk, Sampo, Sabun dan Sunblock jika diperlukan
+                        </p> */}
+                      </dd>
+                    </div>
+                  </React.Fragment>
+                  )
+                })}
+              </dl>
+            </Container>
+            <Container className="flex flex-col w-full mx-auto mt-5">
+              <Testimoni productNo={product.product_no} />
             </Container>
           </Suspense>
         </div>
