@@ -202,9 +202,10 @@ function ConfirmNPayClient({
       }
     }).then(response => {
       console.log(response.data)
+      window.location.href = '/explore'
     }).catch(error => {
       console.log(error);
-      throw error;
+      window.location.href = '/explore'
     })
     console.log('customer closed the popup without finishing the payment');
   }
@@ -237,7 +238,6 @@ function ConfirmNPayClient({
         },
         onClose: () => {
           closePayment(bookId)
-          window.location.href = '/explore'
         },
       });
     } catch (error) {
