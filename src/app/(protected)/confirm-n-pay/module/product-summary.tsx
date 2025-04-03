@@ -19,7 +19,6 @@ function ProductSummary({
       <ProductSummaryLoader />
     )
   }
-  console.log(product)
   return (
     <Suspense fallback={<ProductSummaryLoader />}>
       <Container className="flex items-start bg-background py-6 gap-x-6">

@@ -173,10 +173,10 @@ async function Detail({
                     <div className="flex items-start gap-x-6 gap-y-4">
                       <dt className="text-sm font-medium text-foreground/50">
                         {/* <CupSoda className="w-5 h-5" /> */}
-                        <Icon name={"circle-plus"} className="w-5 h-5" />
+                        <Icon name={"ticket-plus"} className="w-5 h-5" />
                       </dt>
                       <dd className="text-foreground/75 mt-0 pt-0">
-                        <h3 className="text-sm font-normal tracking-tight capitalize">{addon.type}</h3>
+                        <h3 className="text-sm font-normal tracking-tight capitalize">{addon.addon_name}</h3>
                         {/* <p className="text-xs text-foreground/50">
                           Kita sudah menyediakan Handuk, Sampo, Sabun dan Sunblock jika diperlukan
                         </p> */}

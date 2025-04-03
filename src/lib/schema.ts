@@ -40,25 +40,8 @@ export const BookingFieldSchema = z.object({
   penalty: z.string().nullable(),
   numbers: z.array(z.any()),
   riders: z.array(z.any()),
-  payments: z.array(
-    z.object({
-      id: z.string().nullable(),
-      payment_no: z.string().nullable(),
-      book_no: z.string().nullable(),
-      payment_date: z.string().nullable(),
-      method_id: z.string().nullable(),
-      amount: z.string(),
-      promo_id: z.string().nullable(),
-      round: z.string().nullable(),
-      discount: z.string().nullable(),
-      total: z.string().nullable(),
-      org_no: z.string().nullable(),
-      payment_type: z.string().nullable(),
-      note: z.string().nullable(),
-      cash_id: z.string().nullable(),
-      promo: z.array(z.any())
-    })
-  )
+  payments: z.array(z.any()),
+  addons: z.array(z.any())
 });
 export const CustomerFieldSchema = z.object({
   id: z.optional(z.string().nullable()),

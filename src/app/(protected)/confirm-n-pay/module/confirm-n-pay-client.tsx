@@ -52,6 +52,8 @@ function ConfirmNPayClient({
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [index, setIndex] = React.useState<number>(0);
   const [isOts, setIsOts] = React.useState<boolean>(false);
+  const [selectedAddOns, setSelectedAddOns] = React.useState<string[]>([]);
+
 
   const [voucherCode, setVoucherCode] = React.useState<string>('');
   const [voucherData, setVoucherData] = React.useState<any>({});
@@ -114,6 +116,14 @@ function ConfirmNPayClient({
       router.push('/explore');
     }
   };
+  const handleToggleAddOn = (id: string, addOnData: any) => {
+    const isSelected = bookingField.addons.some((item) => item.id === id);
+
+    const updatedAddOns = isSelected ? bookingField.addons.filter((item) => item.id !== id) : [...bookingField.addons, addOnData];
+
+    updateBookingField({ addons: updatedAddOns });
+  };
+
   const handdleCheckedChange = async (checked: boolean) => {
     if (checked) {
       const crm = customerData;
@@ -325,7 +335,7 @@ function ConfirmNPayClient({
   // onmount
   React.useEffect(() => {
     if (productBooked) {
-      const numberArr = []
+      const numberArr = [];
       const variants = productBooked.variants;
       if (variants) {
         for (let i = 0; i < variants.length; i++) {
@@ -443,18 +453,24 @@ function ConfirmNPayClient({
         customer_no: customers[i]?.customer_no || rider.customer_no,
         type: customers[i]?.rider_type || rider.type
       }));
-      // numbers
-      let numberArr = [...bookingField.numbers]
-      if (numberArr.length > 0) {
-        numberArr = numberArr.map((number, i) => {
+      // numbers & unit qty
+      let numberArray = [...bookingField.numbers];
+      if (numberArray.length > 0) {
+        numberArray = numberArray.map((number, i) => {
           const total = parseFloat(number.qty) * parseFloat(number.price)
           return ({
             ...number,
             total: total.toString()
           })
         })
+        // unit quantity
+        const unitQty = numberArray.reduce((acc, val) => {
+          const qty = parseFloat(val.qty)
+          return acc + qty
+        }, 1)
         updateBookingField({
-          numbers: numberArr,
+          numbers: numberArray,
+          unit_qty: unitQty > 1 ? unitQty.toString() : '0',
         })
       }
 
@@ -509,8 +525,8 @@ function ConfirmNPayClient({
       ots,
       productBooked,
       totalRiders,
-      updateBookingField,
       customers,
+      updateBookingField,
       addCustomer,
       updateCustomerList,
       isAddRider,
@@ -543,19 +559,25 @@ function ConfirmNPayClient({
             })}
           </dl>
         </div>
-        {/* <div>
-          <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
-          <dl className="space-y-4">
-            <div className="flex items-center justify-between gap-x-6 gap-y-4">
-              <dt className="text-sm font-medium text-foreground/50">
-                Rp 000.000 x 0 Single Ride
-              </dt>
-              <dd className="text-foreground/50 text-sm">
-                Rp 000,000
-              </dd>
-            </div>
-          </dl>
-        </div> */}
+        {bookingField.addons.length > 0 &&
+          <div>
+            <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
+            <dl className="space-y-4">
+              {bookingField.addons.map((addon, index) => {
+                return (
+                  <div className="flex items-center justify-between gap-x-6 gap-y-4">
+                    <dt className="text-sm font-medium text-foreground/50">
+                      {addon.addon_name}
+                    </dt>
+                    <dd className="text-foreground/50 text-sm">
+                      {currency(0)}
+                    </dd>
+                  </div>
+                )
+              })}
+            </dl>
+          </div>
+        }
         <hr className="border border-slate-200" />
         <div className="space-y-4">
           <dl className="space-y-4">
@@ -660,11 +682,11 @@ function ConfirmNPayClient({
                   return (
                     <ToggleGroupItem
                       key={pa.id}
-                      disabled
                       value={pa.id}
+                      onClick={() => handleToggleAddOn(pa.id, pa)}
                       className="w-full justify-center border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50 data-[state=on]:bg-brand data-[state=on]:text-background data-[state=on]:border-brand"
                     >
-                      {pa.type}
+                      {pa.addon_name}
                     </ToggleGroupItem>
                   )
                 })}
