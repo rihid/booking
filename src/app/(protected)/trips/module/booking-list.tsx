@@ -13,7 +13,7 @@ import BookingCard from './booking-card';
 import { QRCodeSVG } from 'qrcode.react';
 import axios from 'axios';
 import { generateBasicToken } from '@/lib/helper';
-import { masterUrl } from '@/lib/data/endpoints';
+import { bookingUrl, masterUrl } from '@/lib/data/endpoints';
 import MidtransScript from './midtrans-script';
 import { BookingCardLoader } from '@/components/partial/loader';
 import PaymentLinkWatcher from './payment-link-watcher';
@@ -25,7 +25,6 @@ async function BookingListTest({
   user: any;
   products: z.infer<typeof ProductSchema>[];
 }) {
-
   const getPaymentMethod = () => {
     const res = axios.get(masterUrl + '/payment-method', {
       headers: {

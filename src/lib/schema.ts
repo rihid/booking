@@ -41,7 +41,6 @@ export const BookingFieldSchema = z.object({
   numbers: z.array(z.any()),
   riders: z.array(z.any()),
   payments: z.array(z.any()),
-  addons: z.array(z.any())
 });
 export const CustomerFieldSchema = z.object({
   id: z.optional(z.string().nullable()),

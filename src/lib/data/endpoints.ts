@@ -19,3 +19,5 @@ export const bookingUrl = domain + '/api/v1/booking-service'
 export const bookingUrl2 = domain + '/api/v2/booking-service'
 export const customerUrl = bookingUrl + '/customer'
 export const voucherUrl = bookingUrl2 + '/promo/get-voucher'
+// unit service
+export const unitPublicUrl = domain + '/api/v2/unit-service'

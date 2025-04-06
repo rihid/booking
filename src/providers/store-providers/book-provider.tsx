@@ -31,7 +31,8 @@ export const BookStoreProvider = ({
       // storeRef.current?.persist.clearStorage();
       storeRef.current?.setState((state) => ({
         ...state,
-        bookingField: defaultInitState.bookingField
+        bookingField: defaultInitState.bookingField,
+        customers: defaultInitState.customers
       }));
     }
   }, [pathname]);

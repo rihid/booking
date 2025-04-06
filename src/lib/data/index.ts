@@ -243,9 +243,9 @@ export const getBooking = async (token: any, id: string) => {
     throw error;
   }
 }
-export const getBookbyNo = async(token: any, bookNo: string) => {
-  try{
-    const res = await axios.post(bookingUrl + '/book/get-by-no', {book_no: bookNo}, {
+export const getBookbyNo = async (token: any, bookNo: string) => {
+  try {
+    const res = await axios.post(bookingUrl + '/book/get-by-no', { book_no: bookNo }, {
       headers: {
         Accept: 'application/json',
         Authorization: 'Bearer ' + token
@@ -253,7 +253,7 @@ export const getBookbyNo = async(token: any, bookNo: string) => {
     })
     const data = res.data.data;
     return data;
-  } catch(error: any){
+  } catch (error: any) {
     console.log(error.response.status)
     console.log(error.response.data.message)
     throw error;
@@ -275,6 +275,30 @@ export const getBookByCustomer = async (token: any, body: BookByCustomer) => {
   })
   return res;
 }
+// export const getBookByCustomer = async (token: any, body: BookByCustomer) => {
+//   try {
+//     const response = await fetch(bookingUrl + '/book/customer', {
+//       method: 'POST',
+//       headers: {
+//         'Accept': 'application/json',
+//         'Content-Type': 'application/json',
+//         'Authorization': 'Bearer ' + token
+//       },
+//       body: JSON.stringify(body),
+//       next: {
+//         revalidate: 60 // 5 menit = 300 detik
+//       }
+//     });
+
+//     const responseData = await response.json();
+//     const data = BookByCustomerSchema.parse(responseData.data);
+//     console.log('Booking data fetched successfully:', new Date().toISOString());
+//     return data;
+//   } catch (error: any) {
+//     console.log(error);
+//     throw error;
+//   }
+// }
 export const getEmployees = async (token: any) => {
   try {
     const response = await axios.get(bookingUrl + "/employee", { headers: { Accept: 'application/json', Authorization: 'Bearer ' + token } })

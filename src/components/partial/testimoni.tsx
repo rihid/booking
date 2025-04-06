@@ -37,8 +37,7 @@ function Testimoni({
       const data = response.data.data;
       setRatingArr(data);
     } catch (error: any) {
-      console.log("Error fetching testimonials:", error);
-      setError(error.response?.data?.message || "Failed to load testimonials");
+      setError(error.message || "Failed to load testimonials");
       setRatingArr([]);
     } finally {
       setIsLoading(false);

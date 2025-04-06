@@ -70,7 +70,6 @@ export const defaultInitState: BookState = {
       type: ''
     }],
     payments: [],
-    addons: []
   },
   productBooked: null,
   customers: [],

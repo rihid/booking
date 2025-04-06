@@ -87,7 +87,7 @@ function BookingCard({
         Authorization: 'Bearer ' + user.token
       }
     }).then(response => {
-      console.log(response.data);
+      // console.log(response.data);
       const data = response.data;
       if (data) {
         router.refresh();
@@ -112,16 +112,133 @@ function BookingCard({
       })
     } catch (error) {
       console.error(error);
-      throw error;
     }
   }, [user.token])
   React.useEffect(() => {
     // void booking
     if (paymentStatus.status_code === '407' && booking.status !== 'void') {
+      // console.log('voidBooking() jalan')
       voidBooking(paymentStatus.order_id)
     }
   }, [paymentStatus, booking])
 
+  const CardFooterContent = () => {
+    return (
+      <>
+        {booking.payments.length > 0 && transaction_status === "settlement" &&
+          <></>
+        }
+        {booking.payments.length === 0 && transaction_status === "settlement" &&
+          <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90" disabled={loadingConfirm} onClick={handlePaymentConfirm}>
+            {loadingConfirm &&
+              <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
+            }
+            Confirm Payment
+          </Button>
+        }
+        {booking.payments.length > 0 && transaction_status === "pending" &&
+          <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
+            {snapLink ?
+              <Link
+                href={snapLink}
+                target='_blank'
+                className="w-full"
+              >
+                Pay Now
+              </Link>
+              :
+              <>Payment Expired</>
+            }
+          </Button>
+        }
+        {booking.payments.length === 0 && transaction_status === "pending" &&
+          <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90">
+            <Link
+              href={createSnapLink()}
+              className="w-full"
+            >
+              Pay Now
+            </Link>
+          </Button>
+        }
+        {transaction_status === "expire" &&
+          <Button type='button' variant="outline" disabled className="cursor-not-allowed">
+            Payment Expired
+          </Button>
+        }
+        {transaction_status === "cancel" &&
+          <Button type='button' variant="outline" disabled>
+            Payment Canceled
+          </Button>
+        }
+        {booking.payment_amount === 0 && status_code === '404' &&
+          <Button type='button' variant="outline" disabled>
+            Cash Payment
+          </Button>
+        }
+      </>
+    )
+  }
+  const CardFooterContentNew = () => {
+    return (
+      <>
+        {booking.status === 'void' &&
+          <></>
+        }
+        {booking.payments.length > 0 && transaction_status === "settlement" &&
+          <></>
+        }
+        {booking.payments.length === 0 && transaction_status === "settlement" &&
+          <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90" disabled={loadingConfirm} onClick={handlePaymentConfirm}>
+            {loadingConfirm &&
+              <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
+            }
+            Confirm Payment
+          </Button>
+        }
+        {/* {booking.payments.length > 0 && transaction_status === "pending" &&
+          <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
+            {snapLink ?
+              <Link
+                href={snapLink}
+                target='_blank'
+                className="w-full"
+              >
+                Pay Now
+              </Link>
+              :
+              <>Payment Expired</>
+            }
+          </Button>
+        } */}
+        {/* {booking.payments.length === 0 && transaction_status === "pending" &&
+          <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90">
+            <Link
+              href={createSnapLink()}
+              className="w-full"
+            >
+              Pay Now
+            </Link>
+          </Button>
+        } */}
+        {transaction_status === "expire" &&
+          <Button type='button' variant="outline" disabled className="cursor-not-allowed">
+            Payment Expired
+          </Button>
+        }
+        {transaction_status === "cancel" &&
+          <Button type='button' variant="outline" disabled>
+            Payment Canceled
+          </Button>
+        }
+        {booking.payment_amount === 0 && status_code === '404' &&
+          <Button type='button' variant="outline" disabled>
+            Cash Payment
+          </Button>
+        }
+      </>
+    )
+  }
   return (
     <>
       <Card className="border-slate-300">
@@ -144,7 +261,9 @@ function BookingCard({
           </div>
           <div className="flex items-center justify-between">
             <div className="text-foreground/50">
-              <span className="text-sm  uppercase text-brand font-normal">{booking?.status}</span>
+              {booking?.status === 'void' && <span className="text-sm  uppercase text-yellow-500 font-normal">{booking?.status}</span>}
+              {booking?.status === 'open' && <span className="text-sm  uppercase text-brand font-normal">{booking?.status}</span>}
+              {booking?.status === 'finish' && <span className="text-sm  uppercase text-green-500 font-normal">{booking?.status}</span>}
             </div>
             <div className="flex items-center text-foreground/50 gap-x-2">
               <span className="text-xs font-normal">{product?.location}</span>
@@ -181,57 +300,8 @@ function BookingCard({
           }
         </CardContent>
         <CardFooter className="grid grid-cols-1 w-full gap-3">
-          {booking.payments.length > 0 && transaction_status === "settlement" &&
-            <></>
-          }
-          {booking.payments.length === 0 && transaction_status === "settlement" &&
-            <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90" disabled={loadingConfirm} onClick={handlePaymentConfirm}>
-              {loadingConfirm &&
-                <Loader2 className={cn('h-4 w-4 animate-spin', 'mr-2')} />
-              }
-              Confirm Payment
-            </Button>
-          }
-          {booking.payments.length > 0 && transaction_status === "pending" &&
-            <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
-              {snapLink ?
-                <Link
-                  href={snapLink}
-                  target='_blank'
-                  className="w-full"
-                >
-                  Pay Now
-                </Link>
-                :
-                <>Payment Expired</>
-              }
-            </Button>
-          }
-          {booking.payments.length === 0 && transaction_status === "pending" &&
-            <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90">
-              <Link
-                href={createSnapLink()}
-                className="w-full"
-              >
-                Pay Now
-              </Link>
-            </Button>
-          }
-          {transaction_status === "expire" &&
-            <Button type='button' variant="outline" disabled className="cursor-not-allowed">
-              Payment Expired
-            </Button>
-          }
-          {transaction_status === "cancel" &&
-            <Button type='button' variant="outline" disabled>
-              Payment Canceled
-            </Button>
-          }
-          {booking.payment_amount === 0 && status_code === '404' &&
-            <Button type='button' variant="outline" disabled>
-              Cash Payment
-            </Button>
-          }
+          {/* <CardFooterContent /> */}
+          <CardFooterContentNew />
         </CardFooter>
       </Card>
     </>

@@ -53,6 +53,7 @@ function ConfirmNPayClient({
   const [index, setIndex] = React.useState<number>(0);
   const [isOts, setIsOts] = React.useState<boolean>(false);
   const [selectedAddOns, setSelectedAddOns] = React.useState<string[]>([]);
+  const [addonsValue, setAddonsValue] = React.useState<any>([])
 
 
   const [voucherCode, setVoucherCode] = React.useState<string>('');
@@ -64,7 +65,7 @@ function ConfirmNPayClient({
   const [form, setForm] = React.useState<any>(null);
   // calculation
   const totalRiders = React.useMemo(() => {
-    const bn = bookingField.numbers;
+    const bn = bookingField.numbers.filter(n => n.type !== 'addon');
     const sum = bn.reduce((acc, val) => {
       const qty = parseInt(val.qty);
       const totalRider = parseInt(val.total_rider)
@@ -81,15 +82,24 @@ function ConfirmNPayClient({
     return sum;
   }, [bookingField.numbers]);
   const totalPrice = React.useMemo(() => {
-    const subtotal = bookingField.numbers.reduce((acc, val) => {
+
+    const subtotal = bookingField.numbers.filter(n => n.type !== 'addon').reduce((acc, val) => {
       return acc + parseFloat(val.price.replace(/\./g, '')) * parseFloat(val.qty);
     }, 0);
+
+    const addonsArr = bookingField.numbers.filter((number) => number.type === 'addon')
+    const addonsTotal = addonsArr.reduce((acc, val) => {
+      return acc + parseFloat(val.price.replace(/\./g, '')) * parseFloat(val.qty);
+    }, 0)
+    // console.log('addonsArr', addonsArr)
+    // console.log('addonsTotal', addonsTotal)
+    const subtotalCombined = subtotal + addonsTotal
 
     let discountAmount = 0;
     let discount = '0';
     if (voucherData.active) {
       if (voucherData.type === "percentage") {
-        discountAmount = (subtotal * parseFloat(voucherData.percentage)) / 100;
+        discountAmount = (subtotalCombined * parseFloat(voucherData.percentage)) / 100;
         discount = voucherData.percentage + '%'
       } else if (voucherData.type === "amount") {
         discountAmount = parseFloat(voucherData.amount);
@@ -100,10 +110,10 @@ function ConfirmNPayClient({
       }
     }
     const object = {
-      subtotal: subtotal,
+      subtotal: subtotalCombined,
       dicount: discount,
       discountAmout: discountAmount,
-      total: subtotal - discountAmount
+      total: subtotalCombined - discountAmount
     }
     return object;
   }, [bookingField.numbers, voucherData]);
@@ -116,13 +126,36 @@ function ConfirmNPayClient({
       router.push('/explore');
     }
   };
-  const handleToggleAddOn = (id: string, addOnData: any) => {
-    const isSelected = bookingField.addons.some((item) => item.id === id);
-
-    const updatedAddOns = isSelected ? bookingField.addons.filter((item) => item.id !== id) : [...bookingField.addons, addOnData];
-
-    updateBookingField({ addons: updatedAddOns });
+  const handleToggleAddOn = (prodNo: string, addOnData: any) => {
+    const addonArr = bookingField.numbers.filter((number) => number.type === 'addon')
+    const isSelected = addonArr.some((item) => item.product_no === prodNo);
+    const selectedAddon = {
+      id: null,
+      book_no: null,
+      type: "addon",
+      qty: '1',
+      product_no: addOnData.addon_product_no,
+      product_sku: "",
+      variant: "",
+      price: addOnData.amount,
+      subtotal: addOnData.amount,
+      discount: "0",
+      tax: "0",
+      tax_id: null,
+      total: "",
+      is_guided: false,
+      ref_no: null,
+      check: false,
+      uom_id: "",
+      description: "",
+      total_rider: ""
+    }
+    const updatedAddOns = isSelected ? bookingField.numbers.filter((item) => item.product_no !== prodNo) : [...bookingField.numbers, selectedAddon];
+    console.log('numbers', bookingField.numbers)
+    console.log('updatedAddons', updatedAddOns)
+    // updateBookingField({ numbers: [...bookingField.numbers, updatedAddOns] });
   };
+
 
   const handdleCheckedChange = async (checked: boolean) => {
     if (checked) {
@@ -242,9 +275,16 @@ function ConfirmNPayClient({
           window.location.href = `/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`
         },
         onPending: (result: any) => {
-          toast.warning("Payment pending! wait for redirection")
-          console.log('resutl', result)
-          window.location.href = `/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`
+          // sementara tidak dipakai
+          /*
+            toast.warning("Payment pending! wait for redirection")
+            console.log('resutl', result)
+            window.location.href = `/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`
+          */
+
+          //  pending payment voided
+          toast.warning("Payment failed! try to booking again");
+          window.location.href = `/explore`
         },
         onClose: () => {
           closePayment(bookId)
@@ -337,6 +377,32 @@ function ConfirmNPayClient({
     if (productBooked) {
       const numberArr = [];
       const variants = productBooked.variants;
+      const addons = productBooked.addons;
+      if (addons.length > 0) {
+        for (let i = 0; i < addons.length; i++) {
+          numberArr.push({
+            id: null,
+            book_no: null,
+            type: "addon",
+            qty: "0",
+            product_no: addons[i].addon_product_no,
+            product_sku: "",
+            variant: "",
+            price: addons[i].amount,
+            subtotal: addons[i].amount,
+            discount: "0",
+            tax: "0",
+            tax_id: null,
+            total: "",
+            is_guided: false,
+            ref_no: null,
+            check: false,
+            uom_id: "",
+            description: "",
+            total_rider: 0
+          })
+        }
+      }
       if (variants) {
         for (let i = 0; i < variants.length; i++) {
           const variant = variants[i];
@@ -453,10 +519,45 @@ function ConfirmNPayClient({
         customer_no: customers[i]?.customer_no || rider.customer_no,
         type: customers[i]?.rider_type || rider.type
       }));
+
+      // addons
+      // if (bookingField.numbers.length > 0) {
+      //   const numberAddons = bookingField.numbers.map(item => {
+      //     if (item.type === "addons") {
+      //       const addonQty = addonsValue.includes(item.product_no) ? "1" : "0";
+      //       return { ...item, qty: addonQty };
+      //     }
+      //     return item;
+      //   });
+
+      //   console.log('addonvalue', addonsValue);
+      //   console.log('selected addons', numberAddons);
+
+      //   if (numberAddons.length > 0) {
+      //     console.log('ini jalan')
+      //     updateBookingField({
+      //       numbers: numberAddons
+      //     });
+      //   }
+      // }
+
       // numbers & unit qty
       let numberArray = [...bookingField.numbers];
+
       if (numberArray.length > 0) {
-        numberArray = numberArray.map((number, i) => {
+        // addons
+        numberArray = numberArray.map(item => {
+          if (item.type === 'addon') {
+            const addonQty = addonsValue.includes(item.product_no) ? "1" : "0";
+            return ({
+              ...item,
+              qty: addonQty
+            })
+          }
+          return item
+        });
+
+        numberArray = numberArray.map((number) => {
           const total = parseFloat(number.qty) * parseFloat(number.price)
           return ({
             ...number,
@@ -468,6 +569,7 @@ function ConfirmNPayClient({
           const qty = parseFloat(val.qty)
           return acc + qty
         }, 1)
+
         updateBookingField({
           numbers: numberArray,
           unit_qty: unitQty > 1 ? unitQty.toString() : '0',
@@ -531,6 +633,7 @@ function ConfirmNPayClient({
       updateCustomerList,
       isAddRider,
       voucherData,
+      addonsValue,
     ]
   );
 
@@ -540,7 +643,7 @@ function ConfirmNPayClient({
         <div>
           <h3 className="font-bold text-base text-foreground/75 mb-3">Price Details</h3>
           <dl className="space-y-4">
-            {bookingField.numbers.map((number, idx) => {
+            {bookingField.numbers.filter(n => n.type !== 'addon').map((number, idx) => {
               const subTotal = number.price.replace(/\./g, '') * number.qty;
               return (
                 <React.Fragment key={idx}>
@@ -559,25 +662,48 @@ function ConfirmNPayClient({
             })}
           </dl>
         </div>
-        {bookingField.addons.length > 0 &&
+        {/* {bookingField.numbers.length > 0 &&
           <div>
             <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
             <dl className="space-y-4">
-              {bookingField.addons.map((addon, index) => {
+              {bookingField.numbers.map((item, index) => {
                 return (
-                  <div className="flex items-center justify-between gap-x-6 gap-y-4">
+                  <div className="flex items-center justify-between gap-x-6 gap-y-4" key={index}>
                     <dt className="text-sm font-medium text-foreground/50">
                       {addon.addon_name}
                     </dt>
                     <dd className="text-foreground/50 text-sm">
-                      {currency(0)}
+                      {currency(addon.amount)}
                     </dd>
                   </div>
                 )
               })}
             </dl>
           </div>
-        }
+        } */}
+        {bookingField.numbers.filter(item => item.type === 'addon' && item.qty !== "0").length > 0 && (
+          <div>
+            <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
+            <dl className="space-y-4">
+              {bookingField.numbers
+                .filter(item => item.type === 'addon' && item.qty !== "0")
+                .map((item, index) => {
+                  // Find the matching addon from productBooked.addons to get the name
+                  const addonInfo = productBooked?.addons.find((addon: any) => addon.addon_product_no === item.product_no);
+                  return (
+                    <div className="flex items-center justify-between gap-x-6 gap-y-4" key={index}>
+                      <dt className="text-sm font-medium text-foreground/50">
+                        {addonInfo?.addon_name || "Add-on"}
+                      </dt>
+                      <dd className="text-foreground/50 text-sm">
+                        {currency(parseInt(item.price.replace(/\./g, '')))}
+                      </dd>
+                    </div>
+                  );
+                })}
+            </dl>
+          </div>
+        )}
         <hr className="border border-slate-200" />
         <div className="space-y-4">
           <dl className="space-y-4">
@@ -677,13 +803,20 @@ function ConfirmNPayClient({
               <div className="text-foreground/75 w-full flex-grow">
                 <h4 className="font-semibold text-sm">Add Ons</h4>
               </div>
-              <ToggleGroup type="multiple" className="mt-3 gap-4">
+              <ToggleGroup
+                type="multiple"
+                className="mt-3 gap-4"
+                value={addonsValue}
+                onValueChange={(value) => {
+                  if (value) setAddonsValue(value);
+                }}
+              >
                 {productBooked?.addons.map((pa: any) => {
                   return (
                     <ToggleGroupItem
-                      key={pa.id}
-                      value={pa.id}
-                      onClick={() => handleToggleAddOn(pa.id, pa)}
+                      key={pa.addon_product_no}
+                      value={pa.addon_product_no}
+                      // onClick={() => handleToggleAddOn(pa.addon_product_no, pa)}
                       className="w-full justify-center border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50 data-[state=on]:bg-brand data-[state=on]:text-background data-[state=on]:border-brand"
                     >
                       {pa.addon_name}
@@ -960,7 +1093,7 @@ function ConfirmNPayClient({
           </div>
         </Container>
       </form>
-      {modalView === 'dates-select-view' && <DatesFormModal dates={bookingField.schedule_check_in_date as string} />}
+      {modalView === 'dates-select-view' && <DatesFormModal user={user} dates={bookingField.schedule_check_in_date as string} />}
       {modalView === 'rider-select-view' && <RiderFormModal numbers={bookingField.numbers} />}
       {modalView === 'rider-info-view' && <RiderInfoModal idx={index} customer={customer} user={user} />}
       {modalView === 'rider-detail-view' && <RiderDetailFormModal user={user} idx={index} customer={customer} />}

@@ -88,19 +88,24 @@ function RiderFormModal({
         </SheetHeader>
         <ScrollArea className="flex-grow w-full">
           <div className="mt-6 w-full space-y-6">
-            {numbers.map((number: any, idx: number) => {
+            {numbers.filter((number: any) => number.type !== 'addon').map((number: any, idx: number) => {
+              const matchIdx = bookingField.numbers.findIndex(
+                item => item.product_no === number.product_no &&
+                  item.variant === number.variant &&
+                  item.type === 'product'
+              );
               const handleCountChange = (countVal: number) => {
                 console.log(countVal)
                 const numberArr = [...bookingField.numbers];
-                numberArr[idx] = {
-                  ...numberArr[idx],
+                numberArr[matchIdx] = {
+                  ...numberArr[matchIdx],
                   qty: countVal.toString(),
                 };
                 updateBookingField({ numbers: numberArr });
                 console.log(bookingField)
               };
               return (
-                <Card key={idx} className='flex items-center justify-between py-3 px-8'>
+                <Card key={matchIdx} className='flex items-center justify-between py-3 px-8'>
                   <div>
                     <Heading variant='sm' className="text-muted-foreground">{number.variant} Riders ({number.total_rider})</Heading>
                     <div className="font-normal text-xs text-foreground/50">
