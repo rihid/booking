@@ -88,7 +88,7 @@ function RiderFormModal({
         </SheetHeader>
         <ScrollArea className="flex-grow w-full">
           <div className="mt-6 w-full space-y-6">
-            {numbers.filter((number: any) => number.type !== 'addon').map((number: any, idx: number) => {
+            {numbers.filter((number: any) => number.type === 'product').map((number: any, idx: number) => {
               const matchIdx = bookingField.numbers.findIndex(
                 item => item.product_no === number.product_no &&
                   item.variant === number.variant &&

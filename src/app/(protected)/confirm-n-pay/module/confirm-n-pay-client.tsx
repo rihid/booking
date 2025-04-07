@@ -65,7 +65,7 @@ function ConfirmNPayClient({
   const [form, setForm] = React.useState<any>(null);
   // calculation
   const totalRiders = React.useMemo(() => {
-    const bn = bookingField.numbers.filter(n => n.type !== 'addon');
+    const bn = bookingField.numbers.filter(n => n.type === 'product');
     const sum = bn.reduce((acc, val) => {
       const qty = parseInt(val.qty);
       const totalRider = parseInt(val.total_rider)
@@ -82,12 +82,13 @@ function ConfirmNPayClient({
     return sum;
   }, [bookingField.numbers]);
   const totalPrice = React.useMemo(() => {
-
-    const subtotal = bookingField.numbers.filter(n => n.type !== 'addon').reduce((acc, val) => {
+    // products
+    const subtotal = bookingField.numbers.filter(n => n.type === 'product').reduce((acc, val) => {
       return acc + parseFloat(val.price.replace(/\./g, '')) * parseFloat(val.qty);
     }, 0);
 
-    const addonsArr = bookingField.numbers.filter((number) => number.type === 'addon')
+    // addons
+    const addonsArr = bookingField.numbers.filter((number) => number.type !== 'product')
     const addonsTotal = addonsArr.reduce((acc, val) => {
       return acc + parseFloat(val.price.replace(/\./g, '')) * parseFloat(val.qty);
     }, 0)
@@ -155,7 +156,6 @@ function ConfirmNPayClient({
     console.log('updatedAddons', updatedAddOns)
     // updateBookingField({ numbers: [...bookingField.numbers, updatedAddOns] });
   };
-
 
   const handdleCheckedChange = async (checked: boolean) => {
     if (checked) {
@@ -380,27 +380,51 @@ function ConfirmNPayClient({
       const addons = productBooked.addons;
       if (addons.length > 0) {
         for (let i = 0; i < addons.length; i++) {
-          numberArr.push({
-            id: null,
-            book_no: null,
-            type: "addon",
-            qty: "0",
-            product_no: addons[i].addon_product_no,
-            product_sku: "",
-            variant: "",
-            price: addons[i].amount,
-            subtotal: addons[i].amount,
-            discount: "0",
-            tax: "0",
-            tax_id: null,
-            total: "",
-            is_guided: false,
-            ref_no: null,
-            check: false,
-            uom_id: "",
-            description: "",
-            total_rider: 0
-          })
+          if(addons[i].type === 'service') {
+            numberArr.push({
+              id: null,
+              book_no: null,
+              type: "addon",
+              qty: "0",
+              product_no: addons[i].addon_product_no,
+              product_sku: "",
+              variant: "",
+              price: addons[i].amount,
+              subtotal: addons[i].amount,
+              discount: "0",
+              tax: "0",
+              tax_id: null,
+              total: "",
+              is_guided: false,
+              ref_no: null,
+              check: false,
+              uom_id: "",
+              description: "",
+              total_rider: 0
+            })
+          } else {
+            numberArr.push({
+              id: null,
+              book_no: null,
+              type: "peripheral",
+              qty: "0",
+              product_no: addons[i].addon_product_no,
+              product_sku: "",
+              variant: "",
+              price: addons[i].amount,
+              subtotal: addons[i].amount,
+              discount: "0",
+              tax: "0",
+              tax_id: null,
+              total: "",
+              is_guided: false,
+              ref_no: null,
+              check: false,
+              uom_id: "",
+              description: "",
+              total_rider: 0
+            })
+          }
         }
       }
       if (variants) {
@@ -547,11 +571,14 @@ function ConfirmNPayClient({
       if (numberArray.length > 0) {
         // addons
         numberArray = numberArray.map(item => {
-          if (item.type === 'addon') {
-            const addonQty = addonsValue.includes(item.product_no) ? "1" : "0";
+          if (item.type !== 'product') {
+            const productMatch = addonsValue.includes(item.product_no)
+            const itemQty = productMatch ? "1" : "0";
+            const isCheck = productMatch ? true : false;
             return ({
               ...item,
-              qty: addonQty
+              qty: itemQty,
+              check: isCheck
             })
           }
           return item
@@ -643,7 +670,7 @@ function ConfirmNPayClient({
         <div>
           <h3 className="font-bold text-base text-foreground/75 mb-3">Price Details</h3>
           <dl className="space-y-4">
-            {bookingField.numbers.filter(n => n.type !== 'addon').map((number, idx) => {
+            {bookingField.numbers.filter(n => n.type === 'product').map((number, idx) => {
               const subTotal = number.price.replace(/\./g, '') * number.qty;
               return (
                 <React.Fragment key={idx}>
@@ -681,12 +708,12 @@ function ConfirmNPayClient({
             </dl>
           </div>
         } */}
-        {bookingField.numbers.filter(item => item.type === 'addon' && item.qty !== "0").length > 0 && (
+        {bookingField.numbers.filter(item => item.type !== 'product' && item.qty !== "0").length > 0 && (
           <div>
             <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
             <dl className="space-y-4">
               {bookingField.numbers
-                .filter(item => item.type === 'addon' && item.qty !== "0")
+                .filter(item => item.type !== 'product' && item.qty !== "0")
                 .map((item, index) => {
                   // Find the matching addon from productBooked.addons to get the name
                   const addonInfo = productBooked?.addons.find((addon: any) => addon.addon_product_no === item.product_no);

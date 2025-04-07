@@ -55,7 +55,7 @@ function Tnc() {
         {dataTnC.map((data, index) => {
           const lists = data.list;
           return (
-            <Disclosure as="div" className="w-full max-w-md" key={index}>
+            <Disclosure as="div" className="w-full max-w-md" key={index} defaultOpen={true}>
               {({ open }) => (
                 <>
                   <DisclosureButton className="w-full flex items-center justify-between border-b pb-1">

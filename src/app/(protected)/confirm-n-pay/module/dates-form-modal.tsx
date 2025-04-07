@@ -107,14 +107,19 @@ function DatesFormModal({
   }
 
   const handleValueChange = (val: string) => {
-    if (!val) return
-    const dateWithHour = date?.setHours(parseInt(val));
-    const newDate = moment(dateWithHour).format('YYYY-MM-DD H:mm:ss')
-    console.log('newDate', newDate)
+    if (!val || !date) return
+    const newDate = new Date(date.getTime());
+    // const dateWithHour = date?.setHours(parseInt(val));
+    newDate.setHours(parseInt(val));
+    const formatDate = moment(newDate).format('YYYY-MM-DD H:mm:ss')
+    console.log('input date', formatDate)
     updateBookingField({
-      schedule_check_in_date: newDate
+      schedule_check_in_date: formatDate
     })
-    closeModal();
+
+    setTimeout(() => {
+      closeModal();
+    }, 0)
   }
   const handleDateSelect = (newDate: Date | undefined) => {
     setDate(newDate);
@@ -210,9 +215,15 @@ function DatesFormModal({
   */
 
   React.useEffect(() => {
+    let isMounted = true;
+    
     setSummaryHour(date);
-    console.log(user.org_no)
-  }, [date])
+    
+    return () => {
+      isMounted = false;
+      latestRequestRef.current = Date.now();
+    };
+  }, [date]);
 
   return (
     <Sheet
@@ -263,7 +274,7 @@ function DatesFormModal({
                       <ToggleGroupItem
                         key={idx}
                         value={item.hour}
-                        disabled={isTimeDisabled(item.hour) || item.unit_rest === 0}
+                        disabled={isTimeDisabled(item.hour) || item.unit_rest <= 0}
                       >
                         {item.label}
                       </ToggleGroupItem>
