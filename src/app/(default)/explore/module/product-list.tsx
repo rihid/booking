@@ -73,6 +73,8 @@ function ProductList({
         </div>
       }
       {filteredProducts.map((product: any) => {
+        const descLength = product.product_description !== null ? product.product_description.length : 0;
+        const descSubs = descLength > 155 ? `${product.product_description.substring(0, 150)}...` : product.product_description;
         return (
           <Card
             key={product.id}
@@ -94,7 +96,8 @@ function ProductList({
                       <span className="ml-1">{product.location}</span>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground font-normal truncate">{product.product_description}</p>
+                  {/* <p className="text-xs text-muted-foreground font-normal truncate">{product.product_description}</p> */}
+                  <p className="text-xs text-muted-foreground font-normal">{descSubs}</p>
                 </div>
 
                 <div className="flex items-center text-muted-foreground">

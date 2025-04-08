@@ -37,7 +37,8 @@ function Testimoni({
       const data = response.data.data;
       setRatingArr(data);
     } catch (error: any) {
-      setError(error.message || "Failed to load testimonials");
+      console.log(error.message)
+      setError("Failed to load testimonial!");
       setRatingArr([]);
     } finally {
       setIsLoading(false);
@@ -66,11 +67,11 @@ function Testimoni({
                       className="origin-top transition duration-200 ease-in-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
                     >
                       {isLoading ? (
-                        <div className="py-4 text-center">Loading...</div>
+                        <span className="py-4 block text-center">Loading...</span>
                       ) : error ? (
-                        <div className="py-4 text-center text-red-500">{error}</div>
+                        <span className="py-4 block text-center">{error}</span>
                       ) : ratingArr.length === 0 ? (
-                        <div className="py-4 text-center">No Data</div>
+                        <span className="py-4 block text-center">No Data</span>
                       ) : (
                         <div className="mt-4 space-y-3">
                           {ratingArr.map((rating: any, index: number) => (

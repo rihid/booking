@@ -149,7 +149,6 @@ async function Detail({
                     <React.Fragment key={pa.id}>
                       <div className="flex items-start gap-x-6 gap-y-4">
                         <dt className="text-sm font-medium text-foreground/50">
-                          {/* <CupSoda className="w-5 h-5" /> */}
                           <Icon name={pa.icon} className="w-5 h-5" />
                         </dt>
                         <dd className="text-foreground/75 mt-0 pt-0">
