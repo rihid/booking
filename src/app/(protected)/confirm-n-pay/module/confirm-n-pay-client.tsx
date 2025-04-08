@@ -1047,7 +1047,7 @@ function ConfirmNPayClient({
                         </ToggleGroupItem>
 
                         <ToggleGroupItem
-                          disabled={true}
+                          disabled={false}
                           value="cash"
                           className="w-full justify-start border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50 data-[state=on]:bg-brand data-[state=on]:text-background data-[state=on]:border-brand"
                         >

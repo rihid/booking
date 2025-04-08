@@ -9,10 +9,10 @@ const dataTnC = [
     name: "General",
     list: [
       {
-        value: "Rider: Umur minimal 17<sup>th</sup> (atau minimal 14<sup>th</sup> dengan tinggi badan min 130cm dan disertai persetujuan orang tua/wali yang tertulis di waiver)."
+        value: "Rider: Umur minimal 17 Tahun (atau minimal 14 Tahun dengan tinggi badan min 130cm dan disertai persetujuan orang tua/wali yang tertulis di waiver)."
       },
       {
-        value: "Passanger: Umur minimal 12<sup>th</sup> atau dibawah 12<sup>th</sup> dengan syarat vest yang tersedia sesuai dengan ukuran badan passanger."
+        value: "Passanger: Umur minimal 12 Tahun atau dibawah 12 Tahun dengan syarat vest yang tersedia sesuai dengan ukuran badan passanger."
       },
       {
         value: "Customer datang maks. 45 menit lebih awal, sebelum booking trip yang sudah dipesan."
@@ -37,7 +37,7 @@ const dataTnC = [
         value: "Pembayaran tagihan “Lunas” ketika booking (by Aplikasi)"
       },
       {
-        value: "Metode pembayaran Non Tunai/Transfer ke rekening BCA an PT Pesona Safari Jaya 898-5555-539, QRIS dan EDC (a.n Heru) yang disediakan."
+        value: "Metode pembayaran Non Tunai/Transfer ke rekening BCA an PT Pesona Safari Jaya 898-5555-539, QRIS dan EDC (a.n PT. Pesona Safari Jaya) yang disediakan."
       },
       {
         value: "Transaksi Booking dinyatakan Sah , ketika sudah dilakukan Full Payment"
