@@ -28,7 +28,8 @@ const RegisterFormSchema = z.object({
   password: z.string()
     .min(8, { message: "At least 8 characters" })
     .regex(new RegExp(/(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*+-])/), { message: " At least contains number & special expression" }),
-  avatar: z.string().nullable()
+  avatar: z.string().nullable(),
+  active: z.boolean().nullable()
 })
 
 function RegisterForm() {
@@ -44,7 +45,8 @@ function RegisterForm() {
       branch_no: null,
       username: null,
       password: "",
-      avatar: null
+      avatar: null,
+      active: true
     }
   });
 

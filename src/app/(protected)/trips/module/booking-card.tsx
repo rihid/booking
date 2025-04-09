@@ -231,14 +231,16 @@ function BookingCard({
             Payment Canceled
           </Button>
         }
-        {booking.payment_amount === 0 && status_code === '404' &&
+        {/* {booking.payment_amount === 0 && status_code === '404' &&
           <Button type='button' variant="outline" disabled>
             Cash Payment
           </Button>
-        }
+        } */}
       </>
     )
   }
+  const cashMethod = paymentMethod.find((pm: any) => pm.name.toLowerCase() === 'tunai');
+  // const isCashPayment = booking.payments.length > 0 && booking.payments[0].method_id === cashMethod.id;
   return (
     <>
       <Card className="border-slate-300">
@@ -287,7 +289,18 @@ function BookingCard({
             </div>
           }
           {/* cash */}
-          {booking.payment_amount > 0 && status_code === '404' &&
+          {/* {booking.payment_amount > 0 && status_code === '404' &&
+            <div className="flex items-center justify-center">
+              <div className="my-2">
+                <QRCodeSVG
+                  value={booking.book_no}
+                  size={200}
+                  level='M'
+                />
+              </div>
+            </div>
+          } */}
+          {status_code === '404' &&
             <div className="flex items-center justify-center">
               <div className="my-2">
                 <QRCodeSVG

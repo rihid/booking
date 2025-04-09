@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 
 // 1. Specify protected and public routes
 const protectedRoutes = ['/confirm-n-pay', '/profile', '/trips', '/invoice', '/profile/rider-list', '/confirmation']
-const publicRoutes = ['/login', '/register', '/p', '/explore', '/', '/forget', '/reset']
+const publicRoutes = ['/login', '/register', '/p', '/explore', '/forget', '/reset']
 const routesWithGlobalParams = ['/explore', '/p', '/confirm-n-pay', '/confirmation', '/profile', '/trips', '/invoice',]
 const routesInitialParams = ['/explore', '/profile']
 
@@ -31,8 +31,8 @@ export default async function middleware(req: NextRequest) {
   if (
     isPublicRoute &&
     session &&
-    !req.nextUrl.pathname.startsWith('/explore') &&
-    !req.nextUrl.pathname.startsWith('/')
+    !req.nextUrl.pathname.startsWith('/explore')
+    // !req.nextUrl.pathname.startsWith('/')
   ) {
     return NextResponse.redirect(new URL('/explore', req.nextUrl))
   }
