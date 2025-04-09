@@ -377,10 +377,11 @@ function ConfirmNPayClient({
     if (productBooked) {
       const numberArr = [];
       const variants = productBooked.variants;
+      console.log('variants', variants)
       const addons = productBooked.addons;
       if (addons.length > 0) {
         for (let i = 0; i < addons.length; i++) {
-          if(addons[i].type === 'service') {
+          if (addons[i].type === 'service') {
             numberArr.push({
               id: null,
               book_no: null,
@@ -428,8 +429,9 @@ function ConfirmNPayClient({
         }
       }
       if (variants) {
-        for (let i = 0; i < variants.length; i++) {
-          const variant = variants[i];
+        const activeVariants = variants.filter((v: any) => v.active === true)
+        for (let i = 0; i < activeVariants.length; i++) {
+          const variant = activeVariants[i];
           numberArr.push({
             id: null,
             book_no: null,
