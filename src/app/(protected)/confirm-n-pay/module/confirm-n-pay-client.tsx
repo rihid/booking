@@ -429,7 +429,17 @@ function ConfirmNPayClient({
         }
       }
       if (variants) {
-        const activeVariants = variants.filter((v: any) => v.active === true)
+        const activeVariants = variants.filter((v: any) => v.active === true).sort((a: any, b:any) => {
+          const nameA = a.product_sku.toUpperCase();
+          const nameB = b.product_sku.toUpperCase();
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        })
         for (let i = 0; i < activeVariants.length; i++) {
           const variant = activeVariants[i];
           numberArr.push({
