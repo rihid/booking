@@ -14,8 +14,8 @@ function LocationChecker({ locations }: { locations: any }) {
   
   const defaultCoordinates = {
     // Marina
-    latitude: -6.951320,
-    longitude: 110.389429
+    latitude: -6.950975743443678,
+    longitude: 110.38958014761504
 
     // Kantor Puri for checking saja
     // latitude: -6.9932,
