@@ -137,19 +137,25 @@ function BookingCard({
           </Button>
         }
         {booking.payments.length > 0 && transaction_status === "pending" &&
-          <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
-            {snapLink ?
-              <Link
-                href={snapLink}
-                target='_blank'
-                className="w-full"
-              >
-                Pay Now
-              </Link>
-              :
-              <>Payment Expired</>
-            }
-          </Button>
+          <>
+            {snapLink ? (
+              <Button className="text-xs h-auto bg-brand hover:bg-brand/90">
+                <Link
+                  href={snapLink}
+                  target='_blank'
+                  className="w-full"
+                >
+                  Pay Now
+                </Link>
+              </Button>
+
+            ) : (
+              <Button type='button' variant="outline" disabled className="cursor-not-allowed">
+                Payment Expired
+              </Button>
+            )}
+
+          </>
         }
         {booking.payments.length === 0 && transaction_status === "pending" &&
           <Button type='button' className="text-xs h-auto bg-brand hover:bg-brand/90">
@@ -317,8 +323,8 @@ function BookingCard({
           }
         </CardContent>
         <CardFooter className="grid grid-cols-1 w-full gap-3">
-          {/* <CardFooterContent /> */}
-          <CardFooterContentNew />
+          <CardFooterContent />
+          {/* <CardFooterContentNew /> */}
         </CardFooter>
       </Card>
     </>

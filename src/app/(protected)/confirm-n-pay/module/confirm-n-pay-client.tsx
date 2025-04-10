@@ -276,14 +276,12 @@ function ConfirmNPayClient({
         },
         onPending: (result: any) => {
           // sementara tidak dipakai
-          /*
             toast.warning("Payment pending! wait for redirection")
             console.log('resutl', result)
             window.location.href = `/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`
-          */
 
           //  pending payment voided
-          toast.warning("Payment failed! try to booking again");
+          // toast.warning("Payment failed! try to booking again");
           window.location.href = `/explore`
         },
         onClose: () => {

@@ -53,6 +53,7 @@ const NavbarMenu = () => {
           >
             <Link
               href={menu.path}
+              prefetch={true}
               className="flex flex-col gap-0.5 items-center justify-center outline-none focus:outline-none"
             >
               {menu.icon}
