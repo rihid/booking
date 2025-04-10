@@ -44,7 +44,7 @@ async function InvoiceDetail({
       const numbers = []
       if (numberArr.length > 0) {
         for (let n = 0; n < numberArr.length; n++) {
-          const productVal = products.find(p => p.product_no === numberArr[n].product_no)
+          const productVal = products.find(p => p.product_no === numberArr[n].product_no);
           const obj = {
             id: numberArr[n].id,
             book_no: numberArr[n].book_no,
@@ -181,28 +181,28 @@ async function InvoiceDetail({
           </dl>
         </div>
         {addonNumbers.length > 0 &&
-        <div>
-          <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
-          <dl className="space-y-4">
-            {addonNumbers.map((addon, idx) => {
-              const subTotal = addon.price.replace(/\./g, '') * addon.qty;
-              return (
-                <React.Fragment key={idx}>
-                  {addon.qty > 0 &&
-                    <div className="flex items-center justify-between gap-x-6 gap-y-4">
-                      <dt className="text-sm font-medium text-foreground/50">
-                        {addon.product}
-                      </dt>
-                      <dd className="text-foreground/50 text-sm">
-                        {currency(subTotal)}
-                      </dd>
-                    </div>
-                  }
-                </React.Fragment>
-              )
-            })}
-          </dl>
-        </div>
+          <div>
+            <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
+            <dl className="space-y-4">
+              {addonNumbers.map((addon, idx) => {
+                const subTotal = addon.price.replace(/\./g, '') * addon.qty;
+                return (
+                  <React.Fragment key={idx}>
+                    {addon.qty > 0 &&
+                      <div className="flex items-center justify-between gap-x-6 gap-y-4">
+                        <dt className="text-sm font-medium text-foreground/50">
+                          {addon.product}
+                        </dt>
+                        <dd className="text-foreground/50 text-sm">
+                          {currency(subTotal)}
+                        </dd>
+                      </div>
+                    }
+                  </React.Fragment>
+                )
+              })}
+            </dl>
+          </div>
         }
         <hr className="border border-slate-200" />
         <div>
@@ -253,6 +253,7 @@ async function InvoiceDetail({
       <Container>
         {productNumbers?.map((invNumber: any) => {
           const productVal = products.find(p => p.product_no === invNumber.product_no);
+          const variantVal = productVal?.variants ? productVal.variants.find((pv: any) => pv.product_sku === invNumber.product_sku) : null;
           // const getSingle
           let ratingVal = {
             rating: null,
@@ -267,7 +268,6 @@ async function InvoiceDetail({
           }
           return (
             <React.Fragment key={invNumber.id}>
-              {/* <pre>{JSON.stringify(invoice, null, 2)}</pre> */}
               <div className="flex items-start bg-background py-6 gap-x-6">
                 <div className="w-32 flex-shrink-0 overflow-hidden rounded-md">
                   <Link href={"#"}>
@@ -289,6 +289,7 @@ async function InvoiceDetail({
                     <h4 className="text-base font-semibold text-foreground/75 truncate">
                       {productVal?.product_name}
                     </h4>
+                    {variantVal && <span className="text-xs font-normal capitalize">{variantVal?.variant_name}</span>}
                     <p className="text-xs text-foreground/50 font-normal mt-1 truncate">{productVal?.product_description}</p>
                   </div>
                   <div className="flex items-center text-foreground/50 gap-x-2">
