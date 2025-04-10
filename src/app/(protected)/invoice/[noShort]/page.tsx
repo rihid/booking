@@ -4,18 +4,12 @@ import Container from '@/components/ui/container';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button/button';
-import Heading from '@/components/ui/heading';
 import RatingForm from './module/rating-form';
 import { getAllProductPublic, getBooking, getInvoiceByCustomer, getOrganizations, getEmployeeByNo } from '@/lib/data';
 import { getSession } from '@/lib/session';
 import { currency } from '@/lib/helper';
-import { Ratings } from '@/components/ui/ratings';
-import TopTitle from './module/top-title';
 import DownloadInvoiceBtn from './module/download-invoice-btn';
-import axios from 'axios';
-import { bookingUrl } from '@/lib/data/endpoints';
-import CaptainRatingForm from './module/captain-rating-form';
+import CaptainRatingNewForm from './module/captain-rating-form-new';
 
 export const metadata: Metadata = {
   title: 'Invoice',
@@ -124,7 +118,9 @@ async function InvoiceDetail({
   }
 
   const invoice = invoices.find(inv => inv.invoice_no.split('/').pop() === params.noShort);
-  const numbers = invoice?.numbers.filter((number: any) => number.qty !== '0');
+  const numbers = invoice?.numbers.filter((number: any) => number.qty !== '0') || [];
+  const productNumbers = numbers.filter((pn: any) => pn.type === 'product') || [];
+  const addonNumbers = numbers.filter((pn: any) => pn.type !== 'product') || [];
   const unitCrew = invoice?.units.filter(unit => unit.crews.length > 0);
 
   let booking = null;
@@ -159,28 +155,13 @@ async function InvoiceDetail({
     return acc + parseInt(val.price.replace(/\./g, '')) * parseInt(val.qty);
   }, 0);
 
-  const getEmployee = (token: any, id: any) => {
-    const result = axios.post(bookingUrl + "/employee/get-by-no", { employee_no: id }, { headers: { Accept: 'application/json', Authorization: `Bearer ${token}` } })
-      .then(response => {
-        const data = response.data.data;
-        return data;
-      })
-      .catch(error => {
-        console.log(error.response.status)
-        console.log(error.response.data.message)
-        throw error;
-      })
-
-    return result;
-  }
-
   const PriceDetailComp = () => {
     return (
       <Container className="border-t-4 border-slate-100 bg-background py-8 space-y-6">
         <div>
           <h3 className="font-bold text-base text-foreground/75 mb-3">Price Details</h3>
           <dl className="space-y-4">
-            {invoice?.numbers.map((number, idx) => {
+            {productNumbers.map((number, idx) => {
               const subTotal = number.price.replace(/\./g, '') * number.qty;
               return (
                 <React.Fragment key={idx}>
@@ -199,6 +180,30 @@ async function InvoiceDetail({
             })}
           </dl>
         </div>
+        {addonNumbers.length > 0 &&
+        <div>
+          <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
+          <dl className="space-y-4">
+            {addonNumbers.map((addon, idx) => {
+              const subTotal = addon.price.replace(/\./g, '') * addon.qty;
+              return (
+                <React.Fragment key={idx}>
+                  {addon.qty > 0 &&
+                    <div className="flex items-center justify-between gap-x-6 gap-y-4">
+                      <dt className="text-sm font-medium text-foreground/50">
+                        {addon.product}
+                      </dt>
+                      <dd className="text-foreground/50 text-sm">
+                        {currency(subTotal)}
+                      </dd>
+                    </div>
+                  }
+                </React.Fragment>
+              )
+            })}
+          </dl>
+        </div>
+        }
         <hr className="border border-slate-200" />
         <div>
           <dl className="space-y-4">
@@ -246,7 +251,7 @@ async function InvoiceDetail({
   return (
     <>
       <Container>
-        {numbers?.map((invNumber: any) => {
+        {productNumbers?.map((invNumber: any) => {
           const productVal = products.find(p => p.product_no === invNumber.product_no);
           // const getSingle
           let ratingVal = {
@@ -262,6 +267,7 @@ async function InvoiceDetail({
           }
           return (
             <React.Fragment key={invNumber.id}>
+              {/* <pre>{JSON.stringify(invoice, null, 2)}</pre> */}
               <div className="flex items-start bg-background py-6 gap-x-6">
                 <div className="w-32 flex-shrink-0 overflow-hidden rounded-md">
                   <Link href={"#"}>
@@ -307,7 +313,7 @@ async function InvoiceDetail({
           {crews.map((crew, i) => {
             return (
               <React.Fragment key={i}>
-                <CaptainRatingForm
+                <CaptainRatingNewForm
                   user={session?.user}
                   crew={crew}
                 />

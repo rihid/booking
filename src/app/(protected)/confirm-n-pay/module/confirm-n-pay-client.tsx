@@ -701,25 +701,6 @@ function ConfirmNPayClient({
             })}
           </dl>
         </div>
-        {/* {bookingField.numbers.length > 0 &&
-          <div>
-            <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
-            <dl className="space-y-4">
-              {bookingField.numbers.map((item, index) => {
-                return (
-                  <div className="flex items-center justify-between gap-x-6 gap-y-4" key={index}>
-                    <dt className="text-sm font-medium text-foreground/50">
-                      {addon.addon_name}
-                    </dt>
-                    <dd className="text-foreground/50 text-sm">
-                      {currency(addon.amount)}
-                    </dd>
-                  </div>
-                )
-              })}
-            </dl>
-          </div>
-        } */}
         {bookingField.numbers.filter(item => item.type !== 'product' && item.qty !== "0").length > 0 && (
           <div>
             <h3 className="font-bold text-base text-foreground/75 mb-3">Add Ons</h3>
