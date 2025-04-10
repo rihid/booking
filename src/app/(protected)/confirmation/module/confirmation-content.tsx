@@ -125,6 +125,8 @@ function ConfirmationContent({
       if (paymentStatus.payment_type === 'bank_transfer') {
         const midtransBankVal = paymentStatus.va_numbers[0].bank;
         methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
+      } else if(paymentStatus.payment_type === 'qris') {
+        methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === 'qris');
       }
       const payment = booking.payment_dp;
       const body = {

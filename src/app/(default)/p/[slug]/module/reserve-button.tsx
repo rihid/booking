@@ -20,17 +20,36 @@ function ReserveButton({
   const { productBooked, addBooking } = useBookStore((state) => state);
   const { product_no, product_sku, amount, uom_id } = product.prices[0];
 
-  const handleAddBooking = async() => {
+  const handleAddBooking = async () => {
     setIsLoading(true)
     await addBooking(product);
     router.push('/confirm-n-pay');
     // setIsLoading(false)
   }
+
+  const priceRange = React.useMemo(() => {
+    if (!product?.variants?.length) return { min: 0, max: 0, isMulti: false };
+    
+    const activeVariants = product.variants.filter((v: any) => v.active === true);
+    if (activeVariants.length === 0) return { min: 0, max: 0, isMulti: false };
+    
+    const prices = activeVariants.map((v: any) => v.price ? parseFloat(v.price.replace(/\./g, '')) : 0);
+    return {
+      min: Math.min(...prices),
+      max: Math.max(...prices),
+      isMulti: prices.length > 1
+    };
+  }, [product]);
   return (
     <div className="wrapper fixed flex items-center z-40 bottom-0 h-[76px] border-t-2 border-t-slate-100 shadow-sm w-full bg-background pb-2">
       <Container className="flex items-center justify-between">
         <div className="text-foreground/50 text-xs space-y-[2px]">
-          <h4 className="font-semibold text-base text-foreground/75 text-start tracking-tight leading-none">{currency(parseInt(amount))}</h4>
+        {priceRange.isMulti ? (
+          <h4 className="font-semibold text-sm text-foreground/75 text-start tracking-tight leading-none">{currency(priceRange.min)} &mdash; {currency(priceRange.max)}</h4>
+
+        ) : (
+          <h4 className="font-semibold text-sm text-foreground/75 text-start tracking-tight leading-none">{currency(priceRange.min)}</h4>
+        )}
           <p className="capitalize">{product.product_name}</p>
         </div>
         <Button

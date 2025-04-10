@@ -104,7 +104,7 @@ function ProductList({
                   <p className="text-base font-medium text-foreground/75">
                     {currency(parseInt(product.price))}
                   </p>
-                  <span className="text-xs">/{product.variant}</span>
+                  <span className="text-xs">&nbsp;/&nbsp;{product.variant}</span>
                 </div>
               </div>
             </div>

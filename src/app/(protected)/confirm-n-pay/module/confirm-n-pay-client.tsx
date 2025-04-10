@@ -842,9 +842,10 @@ function ConfirmNPayClient({
               <div className="text-foreground/75 w-full flex-grow">
                 <h4 className="font-semibold text-sm">Add Ons</h4>
               </div>
+              {/* flex-wrap justify-start mt-4 gap-2 text-xs text-foregorund/50 rounded-sm */}
               <ToggleGroup
                 type="multiple"
-                className="mt-3 gap-4"
+                className="flex-wrap justify-start mt-3 gap-4"
                 value={addonsValue}
                 onValueChange={(value) => {
                   if (value) setAddonsValue(value);
@@ -855,10 +856,11 @@ function ConfirmNPayClient({
                     <ToggleGroupItem
                       key={pa.addon_product_no}
                       value={pa.addon_product_no}
-                      // onClick={() => handleToggleAddOn(pa.addon_product_no, pa)}
-                      className="w-full justify-center border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50 data-[state=on]:bg-brand data-[state=on]:text-background data-[state=on]:border-brand"
+                      className="border border-foreground/50 rounded px-4 py-3 text-xs text-start font-normal font-foreground/50 data-[state=on]:bg-brand data-[state=on]:text-background data-[state=on]:border-brand"
                     >
-                      {pa.addon_name}
+                      <span>{pa.addon_name}</span>
+                      &nbsp;
+                      <span>({currency(parseFloat(pa.amount))})</span>
                     </ToggleGroupItem>
                   )
                 })}

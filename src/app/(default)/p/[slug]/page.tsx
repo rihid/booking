@@ -93,7 +93,7 @@ async function Detail({
                   </div>
                   <div className="flex justify-center items-center text-foreground/50 gap-x-2">
                     <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
-                    <p className="inline-block text-xs font-normal">{product.rating ? product.rating : '0.0'}</p>
+                    <p className="inline-block text-xs font-normal">{product.rating ? product.rating : '5.0'}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -116,6 +116,15 @@ async function Detail({
                   <dd className="text-foreground/75 mt-0 pt-0">
                     <h3 className="text-sm font-normal tracking-tight">Captain Companion</h3>
                     <p className="text-xs text-foreground/50">You trip guided by our captain</p>
+                  </dd>
+                </div>
+                <div className="flex items-start gap-x-6 gap-y-4">
+                  <dt className="text-sm font-medium text-foreground/50">
+                    <Check className="w-5 h-5" />
+                  </dt>
+                  <dd className="text-foreground/75 mt-0 pt-0">
+                    <h3 className="text-sm font-normal tracking-tight">Single or Couple Package</h3>
+                    <p className="text-xs text-foreground/50">You can choose between solo ride or bring your partner</p>
                   </dd>
                 </div>
               </dl>

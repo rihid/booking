@@ -22,7 +22,7 @@ function LocationChecker({ locations }: { locations: any }) {
     // longitude: 110.4215
   };
   
-  const maxRadius = 20; // meters
+  const maxRadius = 100; // meters
 
   React.useEffect(() => {
     const checkLocation = async () => {

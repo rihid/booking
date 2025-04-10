@@ -265,7 +265,11 @@ function BookingCard({
             <div className="text-foreground/50">
               {booking?.status === 'void' && <span className="text-sm  uppercase text-yellow-500 font-normal">{booking?.status}</span>}
               {booking?.status === 'open' && <span className="text-sm  uppercase text-brand font-normal">{booking?.status}</span>}
+              {booking?.status === 'schedule' && <span className="text-sm  uppercase text-blue-500 font-normal">{booking?.status}</span>}
               {booking?.status === 'finish' && <span className="text-sm  uppercase text-green-500 font-normal">{booking?.status}</span>}
+              {!['void', 'open', 'schedule', 'finish'].includes(booking?.status ?? '') && (
+                <span className="text-sm uppercase text-slate-500 font-normal">{booking?.status}</span>
+              )}
             </div>
             <div className="flex items-center text-foreground/50 gap-x-2">
               <span className="text-xs font-normal">{product?.location}</span>
@@ -300,7 +304,7 @@ function BookingCard({
               </div>
             </div>
           } */}
-          {status_code === '404' &&
+          {booking.status !== 'void' && status_code === '404' &&
             <div className="flex items-center justify-center">
               <div className="my-2">
                 <QRCodeSVG
