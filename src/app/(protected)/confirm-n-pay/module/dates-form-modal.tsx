@@ -15,6 +15,7 @@ import { useBookStore } from '@/providers/store-providers/book-provider';
 import axios from 'axios';
 import { bookingUrl2, unitPublicUrl } from '@/lib/data/endpoints';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type Props = {
   user: any;
@@ -26,48 +27,7 @@ type TypeToogleItem = {
   total_unit: number;
   unit_rest: number;
 }
-const toggleItems = [
-  {
-    label: "6:00AM",
-    value: "6"
-  },
-  {
-    label: "7:00AM",
-    value: "7"
-  },
-  {
-    label: "8:00AM",
-    value: "8"
-  },
-  {
-    label: "9:00AM",
-    value: "9"
-  },
-  {
-    label: "10:00AM",
-    value: "10"
-  },
-  {
-    label: "11:00AM",
-    value: "11"
-  },
-  {
-    label: "1:00PM",
-    value: "13"
-  },
-  {
-    label: "2:00PM",
-    value: "14"
-  },
-  {
-    label: "3:00PM",
-    value: "15"
-  },
-  {
-    label: "4:00PM",
-    value: "16"
-  }
-];
+
 function DatesFormModal({
   user,
   dates,
@@ -170,7 +130,7 @@ function DatesFormModal({
           const hourNum = parseInt(item.hour, 10);
           const isPM = hourNum >= 12;
           const displayHour = hourNum % 12 === 0 ? 12 : hourNum % 12;
-          const label = `${displayHour}:00${isPM ? "PM" : "AM"}`;
+          const label = `${displayHour}:00 ${isPM ? "PM" : "AM"}`;
           // add unit rest
           let unitRest;
           if (totalUnit) {
@@ -216,9 +176,9 @@ function DatesFormModal({
 
   React.useEffect(() => {
     let isMounted = true;
-    
+
     setSummaryHour(date);
-    
+
     return () => {
       isMounted = false;
       latestRequestRef.current = Date.now();
@@ -270,15 +230,44 @@ function DatesFormModal({
                     className="flex-wrap justify-start mt-4 gap-2 text-xs text-foregorund/50 rounded-sm"
                     onValueChange={value => handleValueChange(value)}
                   >
-                    {sumHour.map((item, idx) => (
-                      <ToggleGroupItem
-                        key={idx}
-                        value={item.hour}
-                        disabled={isTimeDisabled(item.hour) || item.unit_rest <= 0}
-                      >
-                        {item.label}
-                      </ToggleGroupItem>
-                    ))}
+                    {sumHour.map((item, idx) => {
+                      const isDisabled = isTimeDisabled(item.hour);
+                      const isUnitEmpty = item.unit_rest < 2; // minimal sisa 2 unit
+
+                      return (
+                        <React.Fragment key={idx}>
+                          {!isUnitEmpty ? (
+                            <ToggleGroupItem
+                              value={item.hour}
+                              disabled={isDisabled}
+                              className="h-12 flex-col"
+                            >
+                              {item.label}
+                              <span className="text-[11px] -mt-1 text-muted-foreground">{item.unit_rest} unit left</span>
+                            </ToggleGroupItem>
+
+                          ) : !isDisabled ? (
+                            <ToggleGroupItem
+                              value={item.hour}
+                              disabled={isUnitEmpty}
+                              className="h-12 flex-col border-red-500 text-red-500"
+                            >
+                              {item.label}
+                              <span className="text-[11px] -mt-1 text-red-500">full booked</span>
+                            </ToggleGroupItem>
+                          ) : (
+                            <ToggleGroupItem
+                              value={item.hour}
+                              disabled={isDisabled}
+                              className="h-12 flex-col"
+                            >
+                              {item.label}
+                              <span className="text-[11px] -mt-1 text-muted-foreground">{item.unit_rest} unit left</span>
+                            </ToggleGroupItem>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
                   </ToggleGroup>
                 )}
               </div>
