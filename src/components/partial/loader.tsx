@@ -40,14 +40,17 @@ export function ProductCardLoader() {
 }
 export function ProductDetailContentLoader() {
   return (
-    <>
-      <Container className="flex items-center justify-between">
+    <div className="flex flex-col min-h-screen">
+      <div>
+        <Skeleton className="w-full h-80 rounded-b-[40px]" />
+      </div>
+      <Container className="flex items-center justify-between mt-7">
         <Skeleton className="h-4 w-48" />
         <Skeleton className="h-4 w-24" />
       </Container>
 
       <Container>
-        <Card className="my-4">
+        <Card className="my-5">
           <CardContent className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-x-2">
               <Skeleton className="h-5 w-5" />
@@ -78,13 +81,13 @@ export function ProductDetailContentLoader() {
 
       <Container className="flex flex-col w-full mx-auto mt-5">
         <Skeleton className="h-4 w-24 mb-3" />
-        <div className="space-y-0.5">
+        <div className="space-y-1">
           <Skeleton className="h-3 w-full" />
           <Skeleton className="h-3 w-11/12" />
           <Skeleton className="h-3 w-1/2" />
         </div>
       </Container>
-    </>
+    </div>
   )
 }
 export function ReserveButtonLoader() {

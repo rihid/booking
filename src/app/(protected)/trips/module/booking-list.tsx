@@ -1,29 +1,18 @@
 import React from 'react';
 import Container from '@/components/ui/container';
-import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
-import { Star, Clock, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import moment from 'moment';
-import { z } from 'zod';
-import { BookByCustomerSchema, ProductSchema } from '@/lib/schema';
-import { Button } from '@/components/ui/button';
-import { getBookByCustomer } from '@/lib/data';
+import { getAllProductPublic, getBookByCustomer } from '@/lib/data';
 import BookingCard from './booking-card';
-import { QRCodeSVG } from 'qrcode.react';
 import axios from 'axios';
 import { generateBasicToken } from '@/lib/helper';
 import { bookingUrl, masterUrl } from '@/lib/data/endpoints';
-import MidtransScript from './midtrans-script';
-import { BookingCardLoader } from '@/components/partial/loader';
 import PaymentLinkWatcher from './payment-link-watcher';
 
 async function BookingListTest({
   user,
-  products,
 }: {
   user: any;
-  products: z.infer<typeof ProductSchema>[];
 }) {
   const getPaymentMethod = () => {
     const res = axios.get(masterUrl + '/payment-method', {
@@ -71,7 +60,8 @@ async function BookingListTest({
 
   const midtransRedirectUrl = process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL as string;
 
-  const [bookings, paymentMethod] = await Promise.all([
+  const [products, bookings, paymentMethod] = await Promise.all([
+    getAllProductPublic(),
     getBookByCustomer(user?.token, bookingBody),
     getPaymentMethod()
   ]);

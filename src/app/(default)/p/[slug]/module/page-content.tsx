@@ -1,0 +1,187 @@
+import React from 'react';
+import Container from '@/components/ui/container';
+import { MapPin, Clock, Star, Check, ChevronLeft } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import HeaaderDetailCarousel from '@/components/partial/header/header-detail-carousel';
+import OpenModalButton from '@/components/ui/button/open-modal-button';
+import Heading from '@/components/ui/heading';
+import { Button } from '@/components/ui/button/button';
+import Link from 'next/link';
+import { getSingleProductPublic, getAllProductPublic } from '@/lib/data';
+import { msToTime, secondsToTime } from '@/lib/helper';
+import { Suspense } from 'react';
+import { ReserveButtonLoader, ProductDetailContentLoader } from '@/components/partial/loader';
+import Icon from '@/components/ui/icon';
+import Testimoni from '@/components/partial/testimoni';
+import ShareButton from './share-button';
+import ReserveButton from './reserve-button';
+import AboutDetailModal from './about-detail-modal';
+
+async function PageContent({
+  slug,
+}: {
+  slug: any;
+}) {
+  const prodArr = await getAllProductPublic();
+  const selectedProd = prodArr.find(product => product.slug === slug);
+  if (!selectedProd) {
+    return (
+      <div>Product not found</div>
+    )
+  }
+  const product = await getSingleProductPublic(selectedProd.id);
+  const validTripDuration = product.duration_trip !== null ? product.duration_trip : '0';
+  return (
+    <>
+      <div className="flex flex-col min-h-screen">
+        <div className="relative">
+          <HeaaderDetailCarousel pictures={selectedProd.pictures} />
+          <div className="absolute z-30 top-6 left-0 right-0 px-[30px] flex items-center justify-between">
+            <Button
+              type='button'
+              variant="outline"
+              size="icon"
+              className="bg-background/50 rounded-full h-7 w-7 p-1"
+            >
+              <Link href="/explore">
+                <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+              </Link>
+            </Button>
+            <ShareButton />
+          </div>
+        </div>
+        <div className="flex-1 w-full py-7 mb-20">
+          <Suspense fallback={<ProductDetailContentLoader />}>
+            <Container className="flex items-center justify-between">
+              <Heading variant='base' className="text-brand truncate mr-4">{product.product_name}</Heading>
+              <div className="flex items-center text-xs font-normal text-foreground/50">
+                <span className="mr-1">{product?.location}</span>
+                <MapPin className="inline-block text-brand w-4 h-4" />
+              </div>
+            </Container>
+            <Container>
+              <Card className="my-4">
+                <CardContent className="p-3 flex items-center justify-between">
+                  <div className="flex items-center text-foreground/50 gap-x-2">
+                    <Clock className="inline-block w-5 h-5" />
+                    <span className="font-normal text-xs">Duration {secondsToTime(parseInt(validTripDuration))} Hours</span>
+                  </div>
+                  <div className="flex justify-center items-center text-foreground/50 gap-x-2">
+                    <Star className="w-4 h-4" fill="#F6891F" strokeWidth={0} />
+                    <p className="inline-block text-xs font-normal">{product.rating ? product.rating : '5.0'}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Container>
+            <Container className="mt-1">
+              <dl className="space-y-4">
+                <div className="flex items-start gap-x-6 gap-y-4">
+                  <dt className="text-sm font-medium text-foreground/50">
+                    <Check className="w-5 h-5" />
+                  </dt>
+                  <dd className="text-foreground/75 mt-0 pt-0">
+                    <h3 className="text-sm font-normal tracking-tight">Self Riding</h3>
+                    <p className="text-xs text-foreground/50">You can ride your own Jetsky</p>
+                  </dd>
+                </div>
+                <div className="flex items-start gap-x-6 gap-y-4">
+                  <dt className="text-sm font-medium text-foreground/50">
+                    <Check className="w-5 h-5" />
+                  </dt>
+                  <dd className="text-foreground/75 mt-0 pt-0">
+                    <h3 className="text-sm font-normal tracking-tight">Captain Companion</h3>
+                    <p className="text-xs text-foreground/50">You trip guided by our captain</p>
+                  </dd>
+                </div>
+                <div className="flex items-start gap-x-6 gap-y-4">
+                  <dt className="text-sm font-medium text-foreground/50">
+                    <Check className="w-5 h-5" />
+                  </dt>
+                  <dd className="text-foreground/75 mt-0 pt-0">
+                    <h3 className="text-sm font-normal tracking-tight">Single or Couple Package</h3>
+                    <p className="text-xs text-foreground/50">You can choose between solo ride or bring your partner</p>
+                  </dd>
+                </div>
+              </dl>
+            </Container>
+            <Container el="article" className="flex flex-col mx-auto mt-5">
+              <Heading variant='sm' className="text-foreground/75 mb-3">About</Heading>
+              <div className="text-foreground/50 font-normal text-xs">
+                <p className="">
+                  {product.product_description}
+                </p>
+              </div>
+              <div className="bg-background mt-6">
+                <Heading variant='sm' className="text-foreground/75 mb-3">Riding Route</Heading>
+                <div className="mt-2">
+                  <ol className="relative text-gray-500 ms-2 border-s-2 border-dashed border-muted-foreground">
+                    {product.routes.map((route: any) => (
+                      <li key={route.id} className="mb-5 ms-6">
+                        <span className="absolute flex items-center justify-center w-4 h-4 border-2 border-muted-foreground bg-background rounded-full -start-2 ring-2 ring-background" />
+                        <p className="text-xs tracking-tight">{route.name}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+            </Container>
+            <Container className="flex flex-col w-full mx-auto mt-5">
+              <Heading variant='sm' className="text-foreground/75 mb-3">Amenities</Heading>
+              <dl className="space-y-4">
+                {product.amenities.map((pa: any) => {
+                  return (
+                    <React.Fragment key={pa.id}>
+                      <div className="flex items-start gap-x-6 gap-y-4">
+                        <dt className="text-sm font-medium text-foreground/50">
+                          <Icon name={pa.icon} className="w-5 h-5" />
+                        </dt>
+                        <dd className="text-foreground/75 mt-0 pt-0">
+                          <h3 className="text-sm font-normal tracking-tight">{pa.amenity}</h3>
+                          {/* <p className="text-xs text-foreground/50">
+                          Kita sudah menyediakan Handuk, Sampo, Sabun dan Sunblock jika diperlukan
+                        </p> */}
+                        </dd>
+                      </div>
+                    </React.Fragment>
+                  )
+                })}
+              </dl>
+            </Container>
+            <Container className="flex flex-col w-full mx-auto mt-5">
+              <Heading variant='sm' className="text-foreground/75 mb-3">Addons</Heading>
+              <dl className="space-y-4">
+                {product.addons.map((addon: any) => {
+                  return (
+                    <React.Fragment key={addon.id}>
+                      <div className="flex items-start gap-x-6 gap-y-4">
+                        <dt className="text-sm font-medium text-foreground/50">
+                          {/* <CupSoda className="w-5 h-5" /> */}
+                          <Icon name={"ticket-plus"} className="w-5 h-5" />
+                        </dt>
+                        <dd className="text-foreground/75 mt-0 pt-0">
+                          <h3 className="text-sm font-normal tracking-tight capitalize">{addon.addon_name}</h3>
+                          {/* <p className="text-xs text-foreground/50">
+                        Kita sudah menyediakan Handuk, Sampo, Sabun dan Sunblock jika diperlukan
+                      </p> */}
+                        </dd>
+                      </div>
+                    </React.Fragment>
+                  )
+                })}
+              </dl>
+            </Container>
+            <Container className="flex flex-col w-full mx-auto mt-5">
+              <Testimoni productNo={product.product_no} />
+            </Container>
+          </Suspense>
+        </div>
+      </div>
+      <Suspense fallback={<ReserveButtonLoader />}>
+        <ReserveButton product={product} />
+      </Suspense>
+      {/* <AboutDetailModal data={product.routes} /> */}
+    </>
+  )
+}
+
+export default PageContent;

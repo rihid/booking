@@ -19,24 +19,19 @@ async function Trips() {
   const session = await getSession();
   // @ts-ignore
   const { user } = session;
-
-  const products = await getAllProductPublic();
   return (
     <>
       <div className="relative mt-6 mb-20">
         {/* Tab on progress */}
         <TabsContent value='on-progress'>
           <Suspense fallback={<BookingListLoader />}>
-            <BookingList
-              products={products}
-              user={session?.user}
-            />
+            <BookingList user={session?.user} />
           </Suspense>
         </TabsContent>
         {/* Tab history */}
         <TabsContent value='history'>
           <Suspense fallback={<BookingListLoader />}>
-            <InvoiceList user={session?.user} products={products} />
+            <InvoiceList user={session?.user} />
           </Suspense>
         </TabsContent>
       </div>

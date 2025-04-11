@@ -398,7 +398,6 @@ export const getBranchList = async (token: any) => {
     }
   }).then(response => {
     const data = branchSchema.parse(response.data.data);
-    console.log(data)
     return data;
   }).catch((error: any) => {
     console.log(error.response.status)

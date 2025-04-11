@@ -4,18 +4,14 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock, MapPin, Star } from 'lucide-react';
 import Image from 'next/image';
-import { ProductSchema } from '@/lib/schema';
-import { z } from 'zod';
-import { getBranchList, getInvoiceByCustomer } from '@/lib/data';
+import { getAllProductPublic, getBranchList, getInvoiceByCustomer } from '@/lib/data';
 import { msToTime } from '@/lib/helper';
 import moment from 'moment';
 
 async function InvoiceList({
   user,
-  products,
 }: {
   user: any;
-  products: z.infer<typeof ProductSchema>[];
 }) {
 
   const invoiceBody = {
@@ -25,14 +21,10 @@ async function InvoiceList({
     end: null
   }
 
+  const products = await getAllProductPublic();
   const invoiceData = await getInvoiceByCustomer(user?.token, invoiceBody);
   const branches = await getBranchList(user?.token);
-  const formatDuration = (duration: any) => {
-    const hours = Math.floor((duration % 86400000) / 3600000)
-    const minutes = Math.round(((duration % 86400000) % 3600000) / 60000)
-    const seconds = Math.round((duration % 60000) / 1000)
-    return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2)
-  }
+
   return (
     <Container className="space-y-6">
       {invoiceData.length > 0 ?
