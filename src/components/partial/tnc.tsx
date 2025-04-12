@@ -40,7 +40,7 @@ const dataTnC = [
         value: "Metode pembayaran Non Tunai/Transfer ke rekening BCA an PT Pesona Safari Jaya 898-5555-539, QRIS dan EDC (a.n PT. Pesona Safari Jaya) yang disediakan."
       },
       {
-        value: "Transaksi Booking dinyatakan Sah , ketika sudah dilakukan Full Payment"
+        value: "Transaksi Booking dinyatakan Sah, ketika sudah dilakukan Full Payment"
       },
     ]
   },

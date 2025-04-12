@@ -218,9 +218,9 @@ function DatesFormModal({
                 </h4>
                 {loadingTime ? (
                   <div className="flex-col mt-4 space-y-2">
-                    <Skeleton className="h-10 w-5/6 rounded-sm" />
-                    <Skeleton className="h-10 w-11/12 rounded-sm" />
-                    <Skeleton className="h-10 w-3/5 rounded-sm" />
+                    <Skeleton className="h-12 w-5/6 rounded-sm" />
+                    <Skeleton className="h-12 w-11/12 rounded-sm" />
+                    <Skeleton className="h-12 w-3/5 rounded-sm" />
                   </div>
                 ) : (
                   <ToggleGroup

@@ -33,13 +33,24 @@ function CaptainRatingForm({
   user: any;
   crew: any;
 }) {
-  console.log('crew', crew)
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [loader, setLoader] = React.useState<boolean>(false);
-  const [employee, setEmployee] = React.useState<any>({});
-  const [ratingVal, setRatingVal] = React.useState({ rating: crew.rating, rating_notes: crew.rating_notes });
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isEmployeeLoading, setIsEmployeeLoading] = React.useState(false);
+  const [employee, setEmployee] = React.useState({ name: '', position: '' });
+  const [submittedRating, setSubmittedRating] = React.useState({
+    rating: crew.rating || null,
+    rating_notes: crew.rating_notes || ''
+  });
 
-  const { control, register, handleSubmit, setValue, reset, formState: { errors }, } = useForm<z.infer<typeof FormFieldSchema>>({
+  const isMounted = React.useRef(true);
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<z.infer<typeof FormFieldSchema>>({
     resolver: zodResolver(FormFieldSchema),
     defaultValues: {
       id: '',
@@ -47,59 +58,99 @@ function CaptainRatingForm({
       rating_notes: crew.rating_notes || ''
     }
   });
+
   const onSubmit = async (values: z.infer<typeof FormFieldSchema>) => {
     setIsLoading(true);
     const body = {
       ...values,
       id: crew.id,
-    }
-    console.log(body)
-    axios.post(bookingUrl + '/book/unit/crew/rating', body, { headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token } })
-      .then(response => {
-        const data = response.data.data;
-        setRatingVal({
+    };
+
+    try {
+      const response = await axios.post(bookingUrl + '/book/unit/crew/rating', body,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${user.token}`
+          }
+        }
+      );
+      const data = response.data.data;
+      console.log(data)
+      if (isMounted.current) {
+        setSubmittedRating({
           rating: data.rating,
           rating_notes: data.rating_notes,
-        })
+        });
         toast.success(response.data.message);
-      }).catch(error => {
-        console.log(error);
-        toast.error(error.response.data.message);
-        throw error;
-      }).finally(() => {
         reset();
+      }
+    } catch (error: any) {
+      if (isMounted.current) {
+        toast.error(error.response?.data?.message || 'Error');
+      }
+    } finally {
+      if (isMounted.current) {
         setIsLoading(false);
-      })
+      }
+    }
   };
 
-  const getEmployee = () => {
-    setLoader(true);
-    axios.post(bookingUrl + "/employee/get-by-no", { employee_no: crew.employee_no }, { headers: { Accept: 'application/json', Authorization: `Bearer ${user.token}` } })
-      .then(response => {
-        const data = response.data.data;
-        setEmployee(data);
-      })
-      .catch(error => {
-        console.log(error.response.status)
-        console.log(error.response.data.message)
-        throw error;
-      })
-      .finally(() => {
-        setLoader(false)
-      })
-  }
+  const getEmployee = async () => {
+    if (!crew.employee_no) return;
+
+    setIsEmployeeLoading(true);
+    try {
+      const response = await axios.post(bookingUrl + '/employee/get-by-no', { employee_no: crew.employee_no },
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${user.token}`
+          }
+        }
+      )
+
+      if (isMounted.current) {
+        setEmployee(response.data.data);
+      }
+    } catch (error: any) {
+      if (isMounted.current) {
+        toast.error(error.response?.data?.message || 'Failed to load employee data');
+      }
+    } finally {
+      if (isMounted.current) {
+        setIsEmployeeLoading(false);
+      }
+    }
+  };
 
   React.useEffect(() => {
-    getEmployee()
-  }, [crew])
+    getEmployee();
 
-  if (loader) {
-    return <RatingLoader />
+    return () => {
+      isMounted.current = false;
+    };
+  }, [crew.employee_no]);
+
+  React.useEffect(() => {
+    setSubmittedRating({
+      rating: crew.rating || null,
+      rating_notes: crew.rating_notes || ''
+    });
+    setValue('rating', crew.rating || '');
+    setValue('rating_notes', crew.rating_notes || '');
+  }, [crew, setValue]);
+
+  if (isEmployeeLoading) {
+    return <RatingLoader />;
   }
+
+  const employeeName = employee.name || '';
+  const firstName = employeeName ? employeeName.split(' ')[0] : '';
 
   return (
     <>
-      {ratingVal.rating !== null && ratingVal.rating_notes ?
+      {submittedRating.rating !== null && submittedRating.rating_notes ? (
         <div className="space-y-6 py-4">
           <div className="flex items-center gap-4 justify-center">
             <Image
@@ -110,28 +161,32 @@ function CaptainRatingForm({
               className="object-contain rounded-full"
             />
             <div className="">
-              <p className="text-sm font-medium">{employee.name}</p>
+              <p className="text-sm font-medium">{employeeName}</p>
               <p className="text-xs font-normal text-muted-foreground">
-                {employee.position}
+                {employee?.position}
               </p>
             </div>
           </div>
           <div className="flex flex-col gap-4 justify-center items-center mb-8">
             <Heading variant="base" className="font-semibold">
-
-              How&apos;s {employee.name ? employee.name.split(' ')[0] : ''}&apos;s Service
+              {firstName ? `How's ${firstName}'s Service` : "Service Rating"}
             </Heading>
           </div>
           <div className="flex flex-col items-center">
-            <Ratings rating={parseInt(crew.rating || "0")} variant="yellow" size={32} disabled />
+            <Ratings
+              rating={parseInt(submittedRating.rating.toString() || "0")}
+              variant="yellow"
+              size={32}
+              disabled
+            />
           </div>
           <div className="flex items-center justify-center">
             <blockquote className="text-sm italic text-muted-foreground">
-              <p>&quot;{crew.rating_notes}&quot;</p>
+              <p>&quot;{submittedRating.rating_notes}&quot;</p>
             </blockquote>
           </div>
         </div>
-        :
+      ) : (
         <form className="space-y-6 py-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-4 justify-center items-center mb-8">
             <div className="flex items-center gap-4 justify-center">
@@ -143,31 +198,33 @@ function CaptainRatingForm({
                 className="object-contain rounded-full"
               />
               <div className="">
-                <p className="text-sm font-medium">{employee.name}</p>
+                <p className="text-sm font-medium">{employeeName}</p>
                 <p className="text-xs font-normal text-muted-foreground">
                   {employee.position}
                 </p>
               </div>
             </div>
-            <Heading variant='base' className="font-semibold">
-              How&apos;s {employee.name ? employee.name.split(' ')[0] : ''}&apos;s Service
+            <Heading variant="base" className="font-semibold">
+              {firstName ? `How's ${firstName}'s Service` : "Service Rating"}
             </Heading>
             <div className="flex flex-col items-center">
               <Controller
-                name='rating'
+                name="rating"
                 control={control}
                 render={({ field }) => (
                   <Ratings
                     {...field}
                     rating={parseInt(field.value) || 0}
                     onRatingChange={(value) => setValue('rating', value.toString())}
-                    variant='yellow'
+                    variant="yellow"
                     size={32}
                   />
                 )}
               />
               {errors.rating && (
-                <span role="alert" className="text-xs font-normal text-destructive">Rating is required</span>
+                <span role="alert" className="text-xs font-normal text-destructive">
+                  {errors.rating.message}
+                </span>
               )}
             </div>
             <div className="w-full">
@@ -175,12 +232,16 @@ function CaptainRatingForm({
                 placeholder="Type your feedback here."
                 {...register('rating_notes')}
               />
-
+              {errors.rating_notes && (
+                <span role="alert" className="text-xs font-normal text-destructive">
+                  {errors.rating_notes.message}
+                </span>
+              )}
             </div>
 
             <div className="w-full flex items-center justify-center">
               <Button
-                type='submit'
+                type="submit"
                 disabled={isLoading}
                 className="w-full bg-brand hover:bg-brand/90"
               >
@@ -190,9 +251,9 @@ function CaptainRatingForm({
             </div>
           </div>
         </form>
-      }
+      )}
     </>
-  )
+  );
 }
 
 export default CaptainRatingForm;

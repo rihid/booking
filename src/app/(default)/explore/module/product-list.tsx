@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import Heading from '@/components/ui/heading';
 import { MapPin } from 'lucide-react';
-import { currency } from '@/lib/helper';
+import { currency, truncateDescription } from '@/lib/helper';
 import { getAllProductPublic } from '@/lib/data';
 import Image from 'next/image';
 import { useFilterStore } from '@/providers/store-providers/filter-provider';
@@ -73,8 +73,7 @@ function ProductList({
         </div>
       }
       {filteredProducts.map((product: any) => {
-        const descLength = product.product_description !== null ? product.product_description.length : 0;
-        const descSubs = descLength > 155 ? `${product.product_description.substring(0, 150)}...` : product.product_description;
+        const description = truncateDescription(product.product_description)
         return (
           <Card
             key={product.id}
@@ -97,7 +96,7 @@ function ProductList({
                     </div>
                   </div>
                   {/* <p className="text-xs text-muted-foreground font-normal truncate">{product.product_description}</p> */}
-                  <p className="text-xs text-muted-foreground font-normal">{descSubs}</p>
+                  <p className="text-xs text-muted-foreground font-normal">{description}</p>
                 </div>
 
                 <div className="flex items-center text-muted-foreground">

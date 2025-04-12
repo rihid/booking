@@ -1,9 +1,9 @@
 'use client';
 
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import Heading from '@/components/ui/heading';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 
 export default function Error({
   error,

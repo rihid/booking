@@ -1,26 +1,36 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getSession } from '@/lib/session';
 import ConfirmNPayClient from './module/confirm-n-pay-client';
-import { getCustomerByNo, getCustomerByNoMulti, getCustomerList, getUserCustomerList } from '@/lib/data';
+import { getCustomerByNo } from '@/lib/data';
+import { ConfirmPayLoader } from '@/components/partial/loader';
 
 export const metadata: Metadata = {
   title: 'Confirm & Pay',
   description: 'Sewa jetski, Rental Jetski, main jetski di Semarang'
 }
 
-async function ConfirmNPay() {
+async function PageContent() {
   const session = await getSession();
   // @ts-ignore
   const { token, customer_no } = session?.user;
-  
+
   let customerData = {};
-  if(customer_no) {
+  if (customer_no) {
     customerData = await getCustomerByNo(token, customer_no)
   }
+  return (
+    <ConfirmNPayClient user={session?.user} customerData={customerData} />
+  )
+}
+async function ConfirmNPay() {
 
-  return <ConfirmNPayClient user={session?.user} customerData={customerData} />;
+  return (
+    <Suspense fallback={<ConfirmPayLoader />}>
+      <PageContent />
+    </Suspense>
+  )
 }
 
 export default ConfirmNPay;

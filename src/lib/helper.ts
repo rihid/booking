@@ -74,3 +74,13 @@ export const generateBasicToken = (token: any) => {
   }
   return base64(token);
 }
+
+export const truncateDescription = (description: any, maxLength: number = 150): string => {
+  if (!description) return '';
+  
+  if (description.length <= maxLength) return description;
+  const lastSpace = description.substring(0, maxLength).lastIndexOf(' ');
+  const truncatedText = description.substring(0, lastSpace > 0 ? lastSpace : maxLength);
+  
+  return `${truncatedText}...`;
+};

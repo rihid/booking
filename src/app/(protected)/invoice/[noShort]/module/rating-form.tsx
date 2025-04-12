@@ -70,7 +70,12 @@ function RatingForm({
     }
     axios.post(bookingUrl + '/book/number/set-rating-number', body, { headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token } })
       .then(response => {
-        console.log(response.data);
+        console.log(response.data.data);
+        const data = response.data.data;
+        setRatingValue({
+          rating: data.rating,
+          rating_notes: data.rating_notes
+        });
         toast.success(response.data.message);
         getBookingData();
       }).catch(error => {

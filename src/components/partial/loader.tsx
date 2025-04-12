@@ -2,7 +2,7 @@ import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Container from '@/components/ui/container';
-import ToopTitle from '@/app/(protected)/invoice/[noShort]/module/top-title';
+import { ChevronLeft } from 'lucide-react';
 
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
@@ -126,6 +126,75 @@ export function ProductDetailLoader() {
     </>
   )
 }
+export function ConfirmPayLoader() {
+  return (
+    <div className="flex flex-col min-h-screen mb-20">
+      <Container className="py-6 sticky top-0 z-30 bg-background w-full border-b border-foreground-muted flex justify-between items-center shrink-0">
+        <button
+          type="button"
+        >
+          <span>
+            <ChevronLeft className="w-5 h-5" />
+          </span>
+        </button>
+        <h3 className="font-bold text-sm text-foreground/75">Confirm & Pay</h3>
+        <div></div>
+      </Container>
+      <ProductSummaryLoader />
+      <Container className="border-t-4 border-slate-100 bg-background py-8">
+        <Skeleton className="h-5 w-20 mb-4" />
+        <div className="space-y-6">
+          <div className="flex items-start justify-between w-full">
+            <div>
+              <Skeleton className="h-4 w-16 mb-2" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+            <Skeleton className="h-4 w-8" />
+          </div>
+          <div className="flex items-start justify-between w-full">
+            <div>
+              <Skeleton className="h-4 w-16 mb-2" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+            <Skeleton className="h-4 w-8" />
+          </div>
+          <div className="flex flex-wrap items-start justify-between w-full">
+            <div className="w-full flex-grow">
+              <Skeleton className="h-4 w-16 mb-3" />
+            </div>
+            <div className="flex flex-wrap gap-4 mt-3 w-full">
+              <Skeleton className="h-10 w-24 rounded" />
+              <Skeleton className="h-10 w-28 rounded" />
+              <Skeleton className="h-10 w-20 rounded" />
+              <Skeleton className="h-10 w-26 rounded" />
+            </div>
+          </div>
+        </div>
+      </Container>
+      <Container className="border-t-4 border-slate-100 bg-background py-8">
+      <Skeleton className="h-5 w-32 mb-3" />
+      <div className="flex items-center justify-between mb-6">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-5 w-10 rounded-full" />
+      </div>
+      
+      <div className="space-y-6">
+        <div className="flex items-start justify-between w-full">
+          <div>
+            <Skeleton className="h-4 w-40 mb-2" />
+            <div className="flex items-center justify-start gap-2">
+              <Skeleton className="h-3 w-32" />
+              <Skeleton className="h-3 w-2" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+          <Skeleton className="h-5 w-5" />
+        </div>
+      </div>
+    </Container>
+    </div>
+  )
+}
 export function ProductSummaryLoader() {
   return (
     <Container className="flex items-start bg-background py-6 gap-x-6">
@@ -225,7 +294,6 @@ export function CustomerListLoader() {
 export function InvoiceLoader() {
   return (
     <div className="flex flex-col min-h-screen">
-      <ToopTitle label='Invoice' />
       <Container>
         <div className="flex items-start bg-background py-6 gap-x-6">
           <div className="w-32 flex-shrink-0">
@@ -242,8 +310,15 @@ export function InvoiceLoader() {
         <div className="flex flex-col gap-3 justify-center items-center mb-8">
           <Skeleton className="w-44 h-6" />
           <Skeleton className="w-44 h-8" />
-          <Skeleton className="h-3 w-60" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-3 w-60" />
+            <Skeleton className="h-3 w-60" />
+            <Skeleton className="h-3 w-60" />
+          </div>
         </div>
+      </Container>
+      <Container className="border-t-4 border-slate-100 bg-background py-4">
+        <RatingLoader />
       </Container>
     </div>
   )
@@ -283,6 +358,14 @@ export function CaptainRatingLoader() {
     </div>
   )
 }
+export function BookingListLoader() {
+  return (
+    <Container className="space-y-6">
+      <BookingCardLoader />
+      <BookingCardLoader />
+    </Container>
+  )
+}
 export default function DashboardSkeleton() {
   return (
     <>
@@ -298,12 +381,4 @@ export default function DashboardSkeleton() {
       </div>
     </>
   );
-}
-export function BookingListLoader() {
-  return (
-    <Container className="space-y-6">
-      <BookingCardLoader />
-      <BookingCardLoader />
-    </Container>
-  )
 }
