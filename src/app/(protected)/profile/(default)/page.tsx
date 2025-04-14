@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import Container from '@/components/ui/container';
 import Image from 'next/image';
@@ -18,6 +18,17 @@ import { getCustomerByNo } from '@/lib/data';
 export const metadata: Metadata = {
   title: 'Profile',
   description: 'Sewa jetski, Rental Jetski, main jetski di semarang'
+}
+
+async function ProfileContent({
+  user,
+}: {
+  user: any;
+}) {
+  const customer = await getCustomerByNo(user.token, user.customer_no);
+  return (
+    <ProfileCard user={user} customer={customer} />
+  )
 }
 
 async function Profile() {
@@ -40,7 +51,9 @@ async function Profile() {
             <Heading variant='lg' className="text-foreground/75">Profile</Heading>
             <Bell className="w-6 h-6" />
           </div>
-          <ProfileCard user={user} customer={customer} />
+          <Suspense fallback={null}>
+            <ProfileContent user={session?.user} />
+          </Suspense>
         </Container>
         <Container className="bg-background">
           <h3 className="font-semibold text-sm text-foreground/75">Menu</h3>
