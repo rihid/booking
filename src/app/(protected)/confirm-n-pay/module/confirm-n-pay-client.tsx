@@ -276,9 +276,9 @@ function ConfirmNPayClient({
         },
         onPending: (result: any) => {
           // sementara tidak dipakai
-            toast.warning("Payment pending! wait for redirection")
-            console.log('resutl', result)
-            window.location.href = `/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`
+          toast.warning("Payment pending! wait for redirection")
+          console.log('resutl', result)
+          window.location.href = `/confirmation?order_id=${body.orderId}&transaction_id=${result.transaction_id}`
 
           //  pending payment voided
           // toast.warning("Payment failed! try to booking again");
@@ -352,11 +352,15 @@ function ConfirmNPayClient({
     for (let i = 0; i < totalRiders; i++) {
       const inputName = 'rider' + i;
       const phoneInput = 'phone_' + inputName;
+      const idNoInput = 'idNo_' + inputName;
       if (errors[inputName]) {
         toast.warning('Rider ' + (i + 1) + ' is empty')
       }
       if (errors[phoneInput]) {
         toast.warning('Phone number for Rider ' + (i + 1) + ' is required')
+      }
+      if (errors[idNoInput]) {
+        toast.warning('Identity number for Rider ' + (i + 1) + ' is required')
       }
     }
     if (isOts && errors.payment_select) {
@@ -427,7 +431,7 @@ function ConfirmNPayClient({
         }
       }
       if (variants) {
-        const activeVariants = variants.filter((v: any) => v.active === true).sort((a: any, b:any) => {
+        const activeVariants = variants.filter((v: any) => v.active === true).sort((a: any, b: any) => {
           const nameA = a.product_sku.toUpperCase();
           const nameB = b.product_sku.toUpperCase();
           if (nameA < nameB) {
@@ -861,6 +865,7 @@ function ConfirmNPayClient({
           <div className="space-y-6">
             {customers.map((customer, idx) => {
               const inputName = 'rider' + idx;
+              // console.log('customer', customer)
               return (
                 <React.Fragment key={idx}>
                   <div className="flex items-start justify-between w-full">
@@ -887,6 +892,19 @@ function ConfirmNPayClient({
                               />
                             </div>
                           )}
+                        </div>
+                        <div>
+                          {!customer.identity_number &&
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs font-normal text-destructive">Identity Number is required</p>
+                              <input
+                                type="text"
+                                id={`idNo_${inputName}`}
+                                {...register(`idNo_${inputName}`, { required: true })}
+                                className="hidden"
+                              />
+                            </div>
+                          }
                         </div>
                       </div>
                       :
