@@ -51,9 +51,10 @@ function ConfirmationContent({
   const orderId = searchParams.get('order_id')
   const { paymentLinks } = usePaymentStore((store) => store);
   const [tokenPay, setTokenPay] = React.useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = React.useState<boolean>(false);
 
   const hasPostedRef = React.useRef(false);
-  console.log('booking', booking)
+  // console.log('booking', booking)
   // methods
   const findTokenSnap = () => {
     const formatBookNo = booking.book_no.replace(/\//g, '_')

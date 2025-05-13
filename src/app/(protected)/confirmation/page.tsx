@@ -14,6 +14,7 @@ import { getAllProductPublic, getBookbyNo } from '@/lib/data';
 import { midtransServerKey } from '@/lib/constants';
 import ActionComp from './module/action-comp';
 import ConfirmationContent from './module/confirmation-content';
+import ConfirmationContent2 from './module/confirmation-content2';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -200,7 +201,7 @@ async function Confirmation({
     <div className="flex flex-col min-h-screen">
       <StatusCard />
       {booking &&
-        <ConfirmationContent
+        <ConfirmationContent2
           user={session?.user}
           product={productVal}
           booking={booking}
