@@ -282,7 +282,7 @@ function ConfirmNPayClient({
 
           //  pending payment voided
           // toast.warning("Payment failed! try to booking again");
-          window.location.href = `/explore`
+          // window.location.href = `/explore`
         },
         onClose: () => {
           closePayment(bookId)

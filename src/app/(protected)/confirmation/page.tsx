@@ -201,7 +201,7 @@ async function Confirmation({
     <div className="flex flex-col min-h-screen">
       <StatusCard />
       {booking &&
-        <ConfirmationContent2
+        <ConfirmationContent
           user={session?.user}
           product={productVal}
           booking={booking}

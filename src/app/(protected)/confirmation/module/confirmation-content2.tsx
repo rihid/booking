@@ -32,7 +32,7 @@ interface PaymentType {
   cash_id: string | null;
 }
 
-function ConfirmationContent2({
+function ConfirmationContent({
   user,
   product,
   booking,
@@ -66,7 +66,7 @@ function ConfirmationContent2({
   }
   
   const postPayment = async (body: PaymentType) => {
-    // double check di sini
+    // Cek jika pembayaran sudah ada berdasarkan settlement_id atau book_no
     const paymentVal = payments.find((p: any) => 
       p.book_no === booking.book_no && 
       (body.settlement_id ? p.settlement_id === body.settlement_id : true)
@@ -74,15 +74,17 @@ function ConfirmationContent2({
     
     try {
       if (!paymentVal) {
+        console.log('Posting new payment', body);
         const response = await axios.post(bookingUrl + '/book/payment', body, {
           headers: {
             Accept: 'application/json',
             Authorization: 'Bearer ' + user.token
           }
         });
-        console.log('Post:', response.data);
+        console.log('Payment posted successfully:', response.data);
         return response.data;
       } else {
+        console.log('Updating existing payment', paymentVal.payment_no);
         const obj = {
           payment_no: paymentVal.payment_no,
           book_no: body.book_no,
@@ -106,18 +108,21 @@ function ConfirmationContent2({
             Authorization: 'Bearer ' + user.token
           }
         });
-        console.log('Put:', response.data);
+        console.log('Payment updated successfully:', response.data);
         return response.data;
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error processing payment:', error);
       throw error;
     }
   }
   
   const handleAddpayment = async () => {
-    // Jangan diproses jika sudah ada
-    if (isProcessing || hasPostedRef.current) return;
+    // Jika sudah dalam proses atau sudah diproses sebelumnya, jangan proses lagi
+    if (isProcessing || hasPostedRef.current) {
+      console.log('Payment already processing or processed, skipping...');
+      return;
+    }
     
     try {
       setIsProcessing(true);
@@ -130,6 +135,8 @@ function ConfirmationContent2({
         } else if(paymentStatus.payment_type === 'qris') {
           methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === 'qris');
         }
+        
+        // Cek jika pembayaran dengan settlement_id ini sudah ada
         const existingPayment = payments.find((p: any) => 
           p.settlement_id === paymentStatus.transaction_id
         );
@@ -154,10 +161,10 @@ function ConfirmationContent2({
             token_payment: findTokenSnap(),
             cash_id: null
           };
-          console.log('200', body);
+          console.log('Processing status 200 payment', body);
           await postPayment(body);
         } else {
-          console.log('Payment with settlement_id already exists');
+          console.log('Payment with settlement_id already exists, skipping post');
         }
       } else if (paymentStatus.status_code === '201') {
         let methodVal;
@@ -165,6 +172,8 @@ function ConfirmationContent2({
           const midtransBankVal = paymentStatus.va_numbers[0].bank;
           methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
         }
+        
+        // Cek jika pembayaran dengan settlement_id ini sudah ada
         const existingPayment = payments.find((p: any) => 
           p.settlement_id === paymentStatus.transaction_id
         );
@@ -188,12 +197,13 @@ function ConfirmationContent2({
             token_payment: findTokenSnap(),
             cash_id: null
           };
-          console.log('201', body);
+          console.log('Processing status 201 payment', body);
           await postPayment(body);
         } else {
-          console.log('Payment with settlement_id already exists');
+          console.log('Payment with settlement_id already exists, skipping post');
         }
       } else if (booking && paymentStatus.status_code === '404') {
+        // Cek jika sudah ada pembayaran untuk booking ini
         const existingPayment = payments.find((p: any) => p.book_no === booking.book_no);
         
         if (!existingPayment) {
@@ -217,15 +227,17 @@ function ConfirmationContent2({
             token_payment: null,
             cash_id: null
           };
-          console.log('404', body);
+          console.log('Processing status 404 payment', body);
           await postPayment(body);
         } else {
-          console.log('Payment for this booking already exists');
+          console.log('Payment for this booking already exists, skipping post');
         }
       }
+      
+      // Tandai bahwa pembayaran sudah diproses
       hasPostedRef.current = true;
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error in handleAddpayment:', error);
     } finally {
       setIsProcessing(false);
     }
@@ -300,4 +312,4 @@ function ConfirmationContent2({
   )
 }
 
-export default ConfirmationContent2;
+export default ConfirmationContent;

@@ -121,6 +121,9 @@ function ConfirmationContent({
     }
   }
   const handleAddpayment = async () => {
+    if(hasPostedRef.current) return;
+    hasPostedRef.current = true;
+
     if (paymentStatus.status_code === '200') {
       let methodVal;
       if (paymentStatus.payment_type === 'bank_transfer') {
@@ -177,8 +180,8 @@ function ConfirmationContent({
       console.log('201', body)
       await postPayment(body);
     } else if (booking && paymentStatus.status_code === '404') {
-      if (hasPostedRef.current) return;
-      hasPostedRef.current = true;
+      // if (hasPostedRef.current) return;
+      // hasPostedRef.current = true;
       let methodVal = null;
       methodVal = paymentMethod.find((pm: any) => pm.category.toLowerCase() === 'cash');
       const body = {
@@ -203,12 +206,19 @@ function ConfirmationContent({
       await postPayment(body);
     }
   }
+  // React.useEffect(() => {
+  //   if (paymentLinks.length > 0) {
+  //     setTokenPay(findTokenSnap())
+  //     handleAddpayment()
+  //   }
+  // }, [paymentLinks])
   React.useEffect(() => {
-    if (paymentLinks.length > 0) {
-      setTokenPay(findTokenSnap())
-      handleAddpayment()
+    if (paymentLinks.length > 0 && !hasPostedRef.current) {
+      setTokenPay(findTokenSnap());
+      handleAddpayment();
     }
-  }, [paymentLinks])
+  }, [paymentLinks]);
+  
   return (
     <Container className="mt-8">
       <Heading variant='base' className="text-muted-foreground">Order Detail</Heading>
