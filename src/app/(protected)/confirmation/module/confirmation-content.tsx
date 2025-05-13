@@ -51,10 +51,8 @@ function ConfirmationContent({
   const orderId = searchParams.get('order_id')
   const { paymentLinks } = usePaymentStore((store) => store);
   const [tokenPay, setTokenPay] = React.useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = React.useState<boolean>(false);
 
   const hasPostedRef = React.useRef(false);
-  // console.log('booking', booking)
   // methods
   const findTokenSnap = () => {
     const formatBookNo = booking.book_no.replace(/\//g, '_')
@@ -123,7 +121,6 @@ function ConfirmationContent({
   const handleAddpayment = async () => {
     if(hasPostedRef.current) return;
     hasPostedRef.current = true;
-
     if (paymentStatus.status_code === '200') {
       let methodVal;
       if (paymentStatus.payment_type === 'bank_transfer') {
@@ -206,18 +203,12 @@ function ConfirmationContent({
       await postPayment(body);
     }
   }
-  // React.useEffect(() => {
-  //   if (paymentLinks.length > 0) {
-  //     setTokenPay(findTokenSnap())
-  //     handleAddpayment()
-  //   }
-  // }, [paymentLinks])
   React.useEffect(() => {
-    if (paymentLinks.length > 0 && !hasPostedRef.current) {
+    if (paymentLinks.length > 0 && booking?.book_no && !hasPostedRef.current) {
       setTokenPay(findTokenSnap());
       handleAddpayment();
     }
-  }, [paymentLinks]);
+  }, [paymentLinks, booking?.book_no]);
   
   return (
     <Container className="mt-8">

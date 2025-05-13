@@ -51,205 +51,181 @@ function ConfirmationContent({
   const orderId = searchParams.get('order_id')
   const { paymentLinks } = usePaymentStore((store) => store);
   const [tokenPay, setTokenPay] = React.useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = React.useState<boolean>(false);
+  const [processPayment, setProcessPayment] = React.useState<boolean>(false)
+
   const hasPostedRef = React.useRef(false);
-  
   // methods
   const findTokenSnap = () => {
     const formatBookNo = booking.book_no.replace(/\//g, '_')
     const plValue = paymentLinks.find((pl: any) => pl.order_id === formatBookNo)
-    if(plValue) {
+    if (plValue) {
       return plValue.payment_token
     } else {
       return null
     }
   }
-  
-  const postPayment = async (body: PaymentType) => {
-    // Cek jika pembayaran sudah ada berdasarkan settlement_id atau book_no
-    const paymentVal = payments.find((p: any) => 
-      p.book_no === booking.book_no && 
-      (body.settlement_id ? p.settlement_id === body.settlement_id : true)
-    );
-    
-    try {
-      if (!paymentVal) {
-        console.log('Posting new payment', body);
-        const response = await axios.post(bookingUrl + '/book/payment', body, {
-          headers: {
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + user.token
-          }
-        });
-        console.log('Payment posted successfully:', response.data);
-        return response.data;
-      } else {
-        console.log('Updating existing payment', paymentVal.payment_no);
-        const obj = {
-          payment_no: paymentVal.payment_no,
-          book_no: body.book_no,
-          payment_date: body.payment_date,
-          method_id: body.method_id,
-          amount: body.amount,
-          promo_id: body.promo_id,
-          round: body.round,
-          discount: body.discount,
-          total: body.total,
-          org_no: user.org_no,
-          branch_no: body.branch_no,
-          settlement_id: body.settlement_id,
-          payment_type: body.payment_type,
-          note: body.note,
-          cash_id: body.cash_id
-        };
-        const response = await axios.put(bookingUrl + '/book/payment/' + paymentVal.id, obj, {
-          headers: {
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + user.token
-          }
-        });
-        console.log('Payment updated successfully:', response.data);
-        return response.data;
+  const postPayment = (body: PaymentType) => {
+    const paymentVal = payments.find((p: any) => p.book_no === booking.book_no);
+    if (!paymentVal) {
+      console.log('post')
+      console.log(body)
+      const res = axios.post(bookingUrl + '/book/payment', body, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + user.token
+        }
+      }).then(response => {
+        console.log(response.data);
+        const data = response.data;
+        return data;
+      }).catch(error => {
+        console.log(error);
+        throw error;
+      })
+      return res;
+    } else {
+      console.log('put')
+      const obj = {
+        payment_no: paymentVal.payment_no,
+        book_no: body.book_no,
+        payment_date: body.payment_date,
+        method_id: body.method_id,
+        amount: body.amount,
+        promo_id: body.promo_id,
+        round: body.round,
+        discount: body.discount,
+        total: body.total,
+        org_no: user.org_no,
+        branch_no: body.branch_no,
+        settlement_id: body.settlement_id,
+        payment_type: body.payment_type,
+        note: body.note,
+        cash_id: body.cash_id
       }
-    } catch (error) {
-      console.error('Error processing payment:', error);
-      throw error;
+      console.log(obj)
+      const res = axios.put(bookingUrl + '/book/payment/' + paymentVal.id, obj, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + user.token
+        }
+      }).then(response => {
+        console.log(response.data);
+        const data = response.data;
+        return data;
+      }).catch(error => {
+        console.log(error);
+        throw error;
+      })
+      return res;
     }
   }
-  
   const handleAddpayment = async () => {
-    // Jika sudah dalam proses atau sudah diproses sebelumnya, jangan proses lagi
-    if (isProcessing || hasPostedRef.current) {
-      console.log('Payment already processing or processed, skipping...');
-      return;
-    }
-    
+    if (hasPostedRef.current && paymentStatus.status_code !== '201') return;
+    setProcessPayment(true);
     try {
-      setIsProcessing(true);
-      
+      hasPostedRef.current = true;
       if (paymentStatus.status_code === '200') {
         let methodVal;
         if (paymentStatus.payment_type === 'bank_transfer') {
           const midtransBankVal = paymentStatus.va_numbers[0].bank;
           methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
-        } else if(paymentStatus.payment_type === 'qris') {
+        } else if (paymentStatus.payment_type === 'qris') {
           methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === 'qris');
         }
-        
-        // Cek jika pembayaran dengan settlement_id ini sudah ada
-        const existingPayment = payments.find((p: any) => 
-          p.settlement_id === paymentStatus.transaction_id
-        );
-        
-        if (!existingPayment) {
-          const payment = booking.payment_dp;
-          const body = {
-            payment_no: null,
-            book_no: booking.book_no,
-            payment_date: paymentStatus.settlement_time,
-            method_id: methodVal ? methodVal.id : null,
-            amount: paymentStatus.gross_amount.replace(/\.00$/, ''),
-            promo_id: payment ? payment.promo_id : null,
-            round: payment ? payment.round : null,
-            discount: payment ? payment.discount : null,
-            total: paymentStatus.gross_amount.replace(/\.00$/, ''),
-            org_no: null,
-            branch_no: null,
-            payment_type: "down_payment",
-            note: null,
-            settlement_id: paymentStatus.transaction_id,
-            token_payment: findTokenSnap(),
-            cash_id: null
-          };
-          console.log('Processing status 200 payment', body);
-          await postPayment(body);
-        } else {
-          console.log('Payment with settlement_id already exists, skipping post');
+        const payment = booking.payment_dp;
+        const body = {
+          payment_no: null,
+          book_no: booking.book_no,
+          payment_date: paymentStatus.settlement_time,
+          method_id: methodVal ? methodVal.id : null,
+          amount: paymentStatus.gross_amount.replace(/\.00$/, ''),
+          promo_id: payment ? payment.promo_id : null,
+          round: payment ? payment.round : null,
+          discount: payment ? payment.discount : null,
+          total: paymentStatus.gross_amount.replace(/\.00$/, ''),
+          org_no: null,
+          branch_no: null,
+          payment_type: "down_payment",
+          note: null,
+          settlement_id: paymentStatus.transaction_id,
+          token_payment: findTokenSnap(),
+          cash_id: null
         }
+        console.log('200', body)
+        await postPayment(body);
+
       } else if (paymentStatus.status_code === '201') {
         let methodVal;
         if (paymentStatus.payment_type === 'bank_transfer') {
           const midtransBankVal = paymentStatus.va_numbers[0].bank;
           methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
         }
-        
-        // Cek jika pembayaran dengan settlement_id ini sudah ada
-        const existingPayment = payments.find((p: any) => 
-          p.settlement_id === paymentStatus.transaction_id
-        );
-        
-        if (!existingPayment) {
-          const body = {
-            payment_no: null,
-            book_no: booking.book_no,
-            payment_date: paymentStatus.transaction_time,
-            method_id: methodVal ? methodVal.id : null,
-            amount: '0',
-            promo_id: null,
-            round: null,
-            discount: null,
-            total: '0',
-            org_no: null,
-            branch_no: null,
-            settlement_id: paymentStatus.transaction_id,
-            payment_type: "down_payment",
-            note: null,
-            token_payment: findTokenSnap(),
-            cash_id: null
-          };
-          console.log('Processing status 201 payment', body);
-          await postPayment(body);
-        } else {
-          console.log('Payment with settlement_id already exists, skipping post');
+        const body = {
+          payment_no: null,
+          book_no: booking.book_no,
+          payment_date: paymentStatus.transaction_time,
+          method_id: methodVal ? methodVal.id : null,
+          amount: '0',
+          promo_id: null,
+          round: null,
+          discount: null,
+          total: '0',
+          org_no: null,
+          branch_no: null,
+          settlement_id: paymentStatus.transaction_id,
+          payment_type: "down_payment",
+          note: null,
+          token_payment: findTokenSnap(),
+          cash_id: null
         }
+        console.log('201', body)
+        await postPayment(body);
       } else if (booking && paymentStatus.status_code === '404') {
-        // Cek jika sudah ada pembayaran untuk booking ini
-        const existingPayment = payments.find((p: any) => p.book_no === booking.book_no);
-        
-        if (!existingPayment) {
-          let methodVal = null;
-          methodVal = paymentMethod.find((pm: any) => pm.category.toLowerCase() === 'cash');
-          const body = {
-            payment_no: null,
-            book_no: booking.book_no,
-            payment_date: booking.book_date,
-            method_id: methodVal ? methodVal.id : null,
-            amount: '0',
-            promo_id: null,
-            round: null,
-            discount: null,
-            total: '0',
-            org_no: null,
-            branch_no: null,
-            settlement_id: null,
-            payment_type: "down_payment",
-            note: null,
-            token_payment: null,
-            cash_id: null
-          };
-          console.log('Processing status 404 payment', body);
-          await postPayment(body);
-        } else {
-          console.log('Payment for this booking already exists, skipping post');
+        // if (hasPostedRef.current) return;
+        // hasPostedRef.current = true;
+        let methodVal = null;
+        methodVal = paymentMethod.find((pm: any) => pm.category.toLowerCase() === 'cash');
+        const body = {
+          payment_no: null,
+          book_no: booking.book_no,
+          payment_date: booking.book_date,
+          method_id: methodVal ? methodVal.id : null,
+          amount: '0',
+          promo_id: null,
+          round: null,
+          discount: null,
+          total: '0',
+          org_no: null,
+          branch_no: null,
+          settlement_id: null,
+          payment_type: "down_payment",
+          note: null,
+          token_payment: null,
+          cash_id: null
         }
+        console.log('404', body)
+        await postPayment(body);
       }
-      
-      // Tandai bahwa pembayaran sudah diproses
-      hasPostedRef.current = true;
     } catch (error) {
-      console.error('Error in handleAddpayment:', error);
+      hasPostedRef.current = false;
     } finally {
-      setIsProcessing(false);
+      setProcessPayment(false);
     }
   }
-  
   React.useEffect(() => {
-    if (paymentLinks.length > 0 && !hasPostedRef.current && !isProcessing) {
+    const shouldProcessPayment =
+      !processPayment &&
+      !hasPostedRef.current &&
+      paymentLinks.length > 0 &&
+      booking?.book_no &&
+      paymentStatus?.status_code;
+
+    if (shouldProcessPayment) {
       setTokenPay(findTokenSnap());
       handleAddpayment();
     }
-  }, [paymentLinks, isProcessing]);
-  
+  }, [paymentLinks, booking?.book_no, paymentStatus?.status_code, processPayment]);
+
   return (
     <Container className="mt-8">
       <Heading variant='base' className="text-muted-foreground">Order Detail</Heading>
@@ -293,12 +269,10 @@ function ConfirmationContent({
         <div className="flex flex-col items-center gap-4 w-auto">
           {paymentStatus.status_code === '201' &&
             <Link
-              href={ `${process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL}/${tokenPay}` || '#'}
+              href={`${process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL}/${tokenPay}` || '#'}
               target='_blank'
             >
-              <Button className="w-full bg-brand hover:bg-brand/90" disabled={isProcessing}>
-                {isProcessing ? 'Processing...' : 'Pay Now'}
-              </Button>
+              <Button className="w-full bg-brand hover:bg-brand/90">Pay Now</Button>
             </Link>
           }
           <Link

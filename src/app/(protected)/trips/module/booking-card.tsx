@@ -9,7 +9,7 @@ import moment from 'moment';
 import { useUiLayoutStore } from '@/store/ui-layout';
 import { useTripStore } from '@/providers/store-providers/trip-provider';
 import { usePaymentStore } from '@/providers/store-providers/payment-provider';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import axios from 'axios';
 import { bookingUrl } from '@/lib/data/endpoints';
 import { useRouter } from 'next/navigation';

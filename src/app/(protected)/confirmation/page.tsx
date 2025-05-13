@@ -70,7 +70,7 @@ async function Confirmation({
     return res;
   }
   const getPaymentList = async () => {
-    const startDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
+    const startDate = moment().subtract(2, 'days').format('YYYY-MM-DD')
     const endDate = moment().format('YYYY-MM-DD')
     const url = bookingUrl + '/book/payment' + '?begin=' + startDate + '&end=' + endDate;
     const res = axios.get(url, {
@@ -201,7 +201,7 @@ async function Confirmation({
     <div className="flex flex-col min-h-screen">
       <StatusCard />
       {booking &&
-        <ConfirmationContent
+        <ConfirmationContent2
           user={session?.user}
           product={productVal}
           booking={booking}
