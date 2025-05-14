@@ -13,12 +13,13 @@ import RiderFormModal from './rider-form-modal';
 import { useUiLayoutStore } from '@/store/ui-layout';
 import { useBookStore } from '@/providers/store-providers/book-provider';
 import { usePaymentStore } from '@/providers/store-providers/payment-provider';
+import { useProductStore } from '@/providers/store-providers/product-provider';
 import RiderDetailFormModal from './rider-detail-form-modal';
 import { useRouter } from 'next/navigation';
 import moment from 'moment';
 import ProductSummary from './product-summary';
 import axios from 'axios';
-import { bookingUrl, voucherUrl } from '@/lib/data/endpoints';
+import { bookingUrl, masterUrl, voucherUrl } from '@/lib/data/endpoints';
 import { z } from 'zod';
 import { CustomerFieldSchema, BookingFieldSchema } from '@/lib/schema';
 import { currency } from '@/lib/helper';
@@ -609,11 +610,11 @@ function ConfirmNPayClient({
         const unitQty = numberArray.reduce((acc, val) => {
           const qty = parseFloat(val.qty)
           return acc + qty
-        }, 1)
+        }, 0)
 
         updateBookingField({
           numbers: numberArray,
-          unit_qty: unitQty > 1 ? unitQty.toString() : '0',
+          unit_qty: unitQty > 0 ? unitQty : '0',
         })
       }
 

@@ -17,6 +17,7 @@ import { BookStoreProvider } from "@/providers/store-providers/book-provider";
 import { PaymentStoreProvider } from "@/providers/store-providers/payment-provider";
 import { FilterStoreProvider } from "@/providers/store-providers/filter-provider";
 import { TripStoreProvider } from "@/providers/store-providers/trip-provider";
+import { ProductStoreProvider } from "@/providers/store-providers/product-provider";
 import { LocationProvider } from "@/components/partial/location.context";
 
 export const metadata: Metadata = {
@@ -42,6 +43,7 @@ const AppProviders = combineProviders([
   PaymentStoreProvider,
   FilterStoreProvider,
   TripStoreProvider,
+  ProductStoreProvider,
 
   NuqsAdapter,
 ])
