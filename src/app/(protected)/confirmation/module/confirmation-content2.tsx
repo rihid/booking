@@ -6,12 +6,17 @@ import Container from '@/components/ui/container';
 import Heading from '@/components/ui/heading';
 import { usePaymentStore } from '@/providers/store-providers/payment-provider';
 import axios from 'axios';
-import { bookingUrl } from '@/lib/data/endpoints';
+import { authUrl, bookingUrl, masterUrl } from '@/lib/data/endpoints';
 import ActionComp from './action-comp';
 import { currency } from '@/lib/helper';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import moment from 'moment';
+import { toast } from 'sonner';
+import { useBookStore } from '@/providers/store-providers/book-provider';
+import { useBranchStore } from '@/providers/store-providers/branch-provider';
+import { useEmployeeStore } from '@/providers/store-providers/employee-provider';
 
 interface PaymentType {
   payment_no: string | null;
@@ -49,12 +54,54 @@ function ConfirmationContent({
 }) {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('order_id')
-  const { paymentLinks } = usePaymentStore((store) => store);
   const [tokenPay, setTokenPay] = React.useState<string | null>(null);
-  const [processPayment, setProcessPayment] = React.useState<boolean>(false)
+  const [processPayment, setProcessPayment] = React.useState<boolean>(false);
+  const [variants, setVariants] = React.useState<any>([]);
+
+  const { paymentLinks } = usePaymentStore((store) => store);
+  const { productBooked } = useBookStore((store) => store)
+  // const { branchList, getBranchList } = useBranchStore(store => store);
+  // const { employeehList, getEmployeeList } = useEmployeeStore(store => store);
 
   const hasPostedRef = React.useRef(false);
   // methods
+  const getBranchList = async () => {
+    try {
+      const response = await axios.get(authUrl + '/branch', {
+        headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token },
+        timeout: 50000
+      });
+      return response.data.data
+    } catch (error: any) {
+      console.log(error)
+      return []
+    }
+  }
+  const getEmployeeList = async () => {
+    try {
+      const response = await axios.get(bookingUrl + '/employee', {
+        headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token },
+        timeout: 50000
+      });
+      return response.data.data;
+    } catch (error: any) {
+      console.log(error)
+      return []
+    }
+  }
+  const getProductVarinatList = async () => {
+    try {
+      const response = await axios.post(masterUrl + '/product/variant/list', {}, {
+        headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token },
+        timeout: 50000
+      })
+      return response.data.data
+    } catch (error: any) {
+      console.log(error);
+      return []
+    }
+  }
+
   const findTokenSnap = () => {
     const formatBookNo = booking.book_no.replace(/\//g, '_')
     const plValue = paymentLinks.find((pl: any) => pl.order_id === formatBookNo)
@@ -77,6 +124,7 @@ function ConfirmationContent({
       }).then(response => {
         console.log(response.data);
         const data = response.data;
+        sendNotif()
         return data;
       }).catch(error => {
         console.log(error);
@@ -111,6 +159,7 @@ function ConfirmationContent({
       }).then(response => {
         console.log(response.data);
         const data = response.data;
+        // sendNotif()
         return data;
       }).catch(error => {
         console.log(error);
@@ -118,6 +167,120 @@ function ConfirmationContent({
       })
       return res;
     }
+  }
+  const sendNotif = async () => {
+    const branchList = await getBranchList();
+    const employeehList = await getEmployeeList();
+    // numbers
+    const numbers: any[] = []
+    const arrNumber = booking?.numbers
+    for (let i = 0; i < arrNumber.length; i++) {
+      let productNumber = null
+      if (variants.length > 0) {
+        productNumber = variants.find((d: any) => d.product_sku === arrNumber[i].product_sku)
+      }
+      numbers.push({
+        id: arrNumber[i].id,
+        book_no: arrNumber[i].book_no,
+        type: arrNumber[i].type,
+        qty: arrNumber[i].qty,
+        product_no: arrNumber[i].product_no,
+        product_sku: arrNumber[i].product_sku,
+        product: productNumber ? productNumber.product : null,
+        variant: productNumber ? productNumber.variant_name : null,
+        price: arrNumber[i].price,
+        subtotal: arrNumber[i].subtotal,
+        discount: arrNumber[i].discount,
+        tax: arrNumber[i].tax,
+        tax_id: arrNumber[i].tax_id,
+        total: arrNumber[i].total,
+        is_guided: arrNumber[i].is_guided,
+        ref_no: arrNumber[i].ref_no,
+        check: arrNumber[i].check,
+        uom_id: arrNumber[i].uom_id,
+        description: arrNumber[i].description
+      })
+    }
+    const branch = branchList?.find((d: any) => d.branch_no === booking.branch_no)
+    if (!branch) {
+      toast.error('Branch not selected!')
+    }
+    const pic = employeehList?.find((d: any) => d.employee_no === branch?.pic)
+    const body = {
+      template: 'booking-create',
+      data: booking,
+      numbers: numbers,
+      pic_number: pic?.phone,
+      org_number: user.org.phone
+    }
+    const body2 = {
+      template: 'booking-received',
+      data: booking,
+      numbers: numbers,
+      pic_number: pic?.phone,
+      org_number: user.org.phone
+    }
+    console.log(body)
+    await axios.post(masterUrl + '/notification', body, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + user.token
+      }
+    })
+      .then((response) => {
+        const bookId = response.data.data.id
+        console.log(bookId)
+        axios.post(masterUrl + '/notification/send', { id: bookId }, {
+          headers: {
+            Accept: 'application/json',
+            Authorization: 'Bearer ' + user.token
+          }
+        })
+          .then(response => {
+            // toast.success(response.data.message)
+            toast.success('Booking notification sent')
+          })
+          .catch(error => {
+            console.log(error)
+            console.log(error.message)
+            toast.error(error.message)
+          })
+      })
+      .catch(error => {
+        console.log(error)
+        console.log(error.message)
+        toast.error(error.message)
+      })
+    console.log(body2)
+    await axios.post(masterUrl + '/notification', body2, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + user.token
+      }
+    })
+      .then((response) => {
+        const bookId = response.data.data.id
+        console.log(bookId)
+        axios.post(masterUrl + '/notification/send', { id: bookId }, {
+          headers: {
+            Accept: 'application/json',
+            Authorization: 'Bearer ' + user.token
+          }
+        })
+          .then(response => {
+            // toast.success(response.data.message)
+          })
+          .catch(error => {
+            console.log(error)
+            console.log(error.message)
+            toast.error(error.message)
+          })
+      })
+      .catch(error => {
+        console.log(error)
+        console.log(error.message)
+        toast.error(error.message)
+      })
   }
   const handleAddpayment = async () => {
     if (hasPostedRef.current && paymentStatus.status_code !== '201') return;
@@ -212,6 +375,7 @@ function ConfirmationContent({
       setProcessPayment(false);
     }
   }
+
   React.useEffect(() => {
     const shouldProcessPayment =
       !processPayment &&
@@ -225,6 +389,9 @@ function ConfirmationContent({
       handleAddpayment();
     }
   }, [paymentLinks, booking?.book_no, paymentStatus?.status_code, processPayment]);
+  React.useEffect(() => {
+    setVariants(productBooked?.variants)
+  }, [])
 
   return (
     <Container className="mt-8">
@@ -282,6 +449,9 @@ function ConfirmationContent({
           </Link>
         </div>
       </div>
+      {/* <pre>{JSON.stringify(branchList, null, 2)}</pre>
+      <hr />
+      <pre>{JSON.stringify(employeehList, null, 2)}</pre> */}
     </Container>
   )
 }

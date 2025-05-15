@@ -5,6 +5,7 @@ import { cn } from "@/assets/styles/utils";
 import { fontSans } from "@/assets/styles/fonts";
 import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { getSession } from "@/lib/session";
 
 // style
 import "@/assets/styles/globals.css";
@@ -18,6 +19,8 @@ import { PaymentStoreProvider } from "@/providers/store-providers/payment-provid
 import { FilterStoreProvider } from "@/providers/store-providers/filter-provider";
 import { TripStoreProvider } from "@/providers/store-providers/trip-provider";
 import { ProductStoreProvider } from "@/providers/store-providers/product-provider";
+import { BranchStoreProvider } from "@/providers/store-providers/branch-provider";
+import { EmployeeStoreProvider } from "@/providers/store-providers/employee-provider";
 import { LocationProvider } from "@/components/partial/location.context";
 
 export const metadata: Metadata = {
@@ -44,6 +47,8 @@ const AppProviders = combineProviders([
   FilterStoreProvider,
   TripStoreProvider,
   ProductStoreProvider,
+  BranchStoreProvider,
+  EmployeeStoreProvider,
 
   NuqsAdapter,
 ])

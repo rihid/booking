@@ -5,6 +5,8 @@ import { getSession } from '@/lib/session';
 import ConfirmNPayClient from './module/confirm-n-pay-client';
 import { getCustomerByNo } from '@/lib/data';
 import { ConfirmPayLoader } from '@/components/partial/loader';
+import axios from 'axios';
+import { masterUrl } from '@/lib/data/endpoints';
 
 export const metadata: Metadata = {
   title: 'Confirm & Pay',
@@ -21,7 +23,9 @@ async function PageContent() {
     customerData = await getCustomerByNo(token, customer_no)
   }
   return (
-    <ConfirmNPayClient user={session?.user} customerData={customerData} />
+    <>
+      <ConfirmNPayClient user={session?.user} customerData={customerData} />
+    </>
   )
 }
 async function ConfirmNPay() {

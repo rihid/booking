@@ -57,7 +57,7 @@ function ConfirmationContent({
   const findTokenSnap = () => {
     const formatBookNo = booking.book_no.replace(/\//g, '_')
     const plValue = paymentLinks.find((pl: any) => pl.order_id === formatBookNo)
-    if(plValue) {
+    if (plValue) {
       return plValue.payment_token
     } else {
       return null
@@ -119,14 +119,14 @@ function ConfirmationContent({
     }
   }
   const handleAddpayment = async () => {
-    if(hasPostedRef.current) return;
+    if (hasPostedRef.current) return;
     hasPostedRef.current = true;
     if (paymentStatus.status_code === '200') {
       let methodVal;
       if (paymentStatus.payment_type === 'bank_transfer') {
         const midtransBankVal = paymentStatus.va_numbers[0].bank;
         methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === midtransBankVal);
-      } else if(paymentStatus.payment_type === 'qris') {
+      } else if (paymentStatus.payment_type === 'qris') {
         methodVal = paymentMethod.find((pm: any) => pm.name.toLowerCase() === 'qris');
       }
       const payment = booking.payment_dp;
@@ -209,7 +209,7 @@ function ConfirmationContent({
       handleAddpayment();
     }
   }, [paymentLinks, booking?.book_no]);
-  
+
   return (
     <Container className="mt-8">
       <Heading variant='base' className="text-muted-foreground">Order Detail</Heading>
@@ -253,7 +253,7 @@ function ConfirmationContent({
         <div className="flex flex-col items-center gap-4 w-auto">
           {paymentStatus.status_code === '201' &&
             <Link
-              href={ `${process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL}/${tokenPay}` || '#'}
+              href={`${process.env.NEXT_PUBLIC_MIDTRANS_REDIRECT_URL}/${tokenPay}` || '#'}
               target='_blank'
             >
               <Button className="w-full bg-brand hover:bg-brand/90">Pay Now</Button>

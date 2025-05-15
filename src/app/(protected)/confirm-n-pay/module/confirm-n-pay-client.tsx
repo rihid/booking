@@ -48,6 +48,7 @@ function ConfirmNPayClient({
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, customer, setCustomer, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
   const { setPaymentLink } = usePaymentStore((state) => state);
+  const { productVariantList, getProductVariantList } = useProductStore((state) => state);
   // local state
   const [isAddRider, setIsAddRider] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -678,6 +679,10 @@ function ConfirmNPayClient({
       addonsValue,
     ]
   );
+  // store
+  React.useEffect(() => {
+    getProductVariantList(user.token as string)
+  }, [getProductVariantList])
 
   const PriceDetailComp = () => {
     return (
