@@ -121,7 +121,7 @@ function ConfirmationContent({
       }).then(response => {
         console.log(response.data);
         const data = response.data;
-        // sendNotif()
+        sendNotif()
         return data;
       }).catch(error => {
         console.log(error);
@@ -156,7 +156,7 @@ function ConfirmationContent({
       }).then(response => {
         console.log(response.data);
         const data = response.data;
-        sendNotif()
+        // sendNotif()
         return data;
       }).catch(error => {
         console.log(error);
