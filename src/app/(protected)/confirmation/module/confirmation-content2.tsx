@@ -90,15 +90,12 @@ function ConfirmationContent({
     }
   }
   const getProductVarinatList = async () => {
-    try {
-      const response = await axios.post(masterUrl + '/product/variant/list', {}, {
-        headers: { Accept: 'application/json', Authorization: 'Bearer ' + user.token },
-        timeout: 50000
-      })
-      return response.data.data
-    } catch (error: any) {
-      console.log(error);
-      return []
+    if (variants && variants.length > 0) {
+      return variants;
+    }
+    if (productBooked?.variants && productBooked.variants.length > 0) {
+      setVariants(productBooked.variants);
+      return productBooked.variants;
     }
   }
 
@@ -124,7 +121,7 @@ function ConfirmationContent({
       }).then(response => {
         console.log(response.data);
         const data = response.data;
-        sendNotif()
+        // sendNotif()
         return data;
       }).catch(error => {
         console.log(error);
@@ -159,7 +156,7 @@ function ConfirmationContent({
       }).then(response => {
         console.log(response.data);
         const data = response.data;
-        // sendNotif()
+        sendNotif()
         return data;
       }).catch(error => {
         console.log(error);
@@ -169,16 +166,16 @@ function ConfirmationContent({
     }
   }
   const sendNotif = async () => {
+    const varinats = variants.length > 0 ? variants : await getProductVarinatList()
+    console.log(varinats)
     const branchList = await getBranchList();
     const employeehList = await getEmployeeList();
     // numbers
     const numbers: any[] = []
     const arrNumber = booking?.numbers
     for (let i = 0; i < arrNumber.length; i++) {
-      let productNumber = null
-      if (variants.length > 0) {
-        productNumber = variants.find((d: any) => d.product_sku === arrNumber[i].product_sku)
-      }
+      console.log(i, '=', varinats)
+      const productNumber = varinats.find((d: any) => d.product_sku === arrNumber[i].product_sku)
       numbers.push({
         id: arrNumber[i].id,
         book_no: arrNumber[i].book_no,
@@ -186,7 +183,7 @@ function ConfirmationContent({
         qty: arrNumber[i].qty,
         product_no: arrNumber[i].product_no,
         product_sku: arrNumber[i].product_sku,
-        product: productNumber ? productNumber.product : null,
+        product: product ? product?.product_name : null,
         variant: productNumber ? productNumber.variant_name : null,
         price: arrNumber[i].price,
         subtotal: arrNumber[i].subtotal,
@@ -210,14 +207,14 @@ function ConfirmationContent({
       template: 'booking-create',
       data: booking,
       numbers: numbers,
-      pic_number: pic?.phone,
+      pic_number: '085784169696',
       org_number: user.org.phone
     }
     const body2 = {
       template: 'booking-received',
       data: booking,
       numbers: numbers,
-      pic_number: pic?.phone,
+      pic_number: '085784169696',
       org_number: user.org.phone
     }
     console.log(body)
@@ -389,9 +386,9 @@ function ConfirmationContent({
       handleAddpayment();
     }
   }, [paymentLinks, booking?.book_no, paymentStatus?.status_code, processPayment]);
-  React.useEffect(() => {
-    setVariants(productBooked?.variants)
-  }, [])
+ React.useEffect(() => {
+    getProductVarinatList();
+  }, [productBooked])
 
   return (
     <Container className="mt-8">
