@@ -207,14 +207,14 @@ function ConfirmationContent({
       template: 'booking-create',
       data: booking,
       numbers: numbers,
-      pic_number: '085784169696',
+      pic_number: pic?.phone,
       org_number: user.org.phone
     }
     const body2 = {
       template: 'booking-received',
       data: booking,
       numbers: numbers,
-      pic_number: '085784169696',
+      pic_number: pic?.phone,
       org_number: user.org.phone
     }
     console.log(body)
