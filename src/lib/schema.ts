@@ -38,6 +38,7 @@ export const BookingFieldSchema = z.object({
   captain_no: z.string().nullable(),
   customer_service_no: z.string().nullable(),
   penalty: z.string().nullable(),
+  on_the_spot: z.boolean().optional(),
   numbers: z.array(z.any()),
   riders: z.array(z.any()),
   payments: z.array(z.any()),

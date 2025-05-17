@@ -57,7 +57,6 @@ function ConfirmNPayClient({
   const [selectedAddOns, setSelectedAddOns] = React.useState<string[]>([]);
   const [addonsValue, setAddonsValue] = React.useState<any>([])
 
-
   const [voucherCode, setVoucherCode] = React.useState<string>('');
   const [voucherData, setVoucherData] = React.useState<any>({});
   const [promoRes, setPromoRes] = React.useState<any>({ status: '', message: '' });
@@ -628,6 +627,7 @@ function ConfirmNPayClient({
         promo_id: (voucherData && voucherData.id) ? voucherData.id : null,
         tax_id: null,
         total: totalPrice.total.toString(),
+        on_the_spot: isOts,
       });
 
       // customer

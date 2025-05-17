@@ -58,6 +58,7 @@ export const defaultInitState: BookState = {
     captain_no: null,
     customer_service_no: null,
     penalty: null,
+    on_the_spot: false,
     numbers: [],
     riders: [{
       book_no: null,

@@ -57,6 +57,7 @@ function ConfirmationContent({
   const [tokenPay, setTokenPay] = React.useState<string | null>(null);
   const [processPayment, setProcessPayment] = React.useState<boolean>(false);
   const [variants, setVariants] = React.useState<any>([]);
+  const [notifSent, setNotifSent] = React.useState<boolean>(false)
 
   const { paymentLinks } = usePaymentStore((store) => store);
   const { productBooked } = useBookStore((store) => store)
@@ -64,6 +65,7 @@ function ConfirmationContent({
   // const { employeehList, getEmployeeList } = useEmployeeStore(store => store);
 
   const hasPostedRef = React.useRef(false);
+  const notifSentRef = React.useRef(false);
   // methods
   const getBranchList = async () => {
     try {
@@ -121,13 +123,13 @@ function ConfirmationContent({
       }).then(response => {
         console.log(response.data);
         const data = response.data;
-        sendNotif()
-        return data;
+        if (paymentStatus.status_code === '200') {
+          sendNotif()
+        }
       }).catch(error => {
         console.log(error);
         throw error;
       })
-      return res;
     } else {
       console.log('put')
       const obj = {
@@ -156,13 +158,17 @@ function ConfirmationContent({
       }).then(response => {
         console.log(response.data);
         const data = response.data;
-        // sendNotif()
-        return data;
+        // if (paymentStatus.status_code === '200' && obj.total === booking.total) {
+        //   const sent = checkNotifStatus(paymentVal.id);
+        //   if (!sent && !notifSentRef.current) {
+        //     sendNotif();
+        //     markNotifSent(paymentVal.id);
+        //   }
+        // }
       }).catch(error => {
         console.log(error);
         throw error;
       })
-      return res;
     }
   }
   const sendNotif = async () => {
@@ -174,7 +180,6 @@ function ConfirmationContent({
     const numbers: any[] = []
     const arrNumber = booking?.numbers
     for (let i = 0; i < arrNumber.length; i++) {
-      console.log(i, '=', varinats)
       const productNumber = varinats.find((d: any) => d.product_sku === arrNumber[i].product_sku)
       numbers.push({
         id: arrNumber[i].id,
@@ -218,66 +223,66 @@ function ConfirmationContent({
       org_number: user.org.phone
     }
     console.log(body)
-    await axios.post(masterUrl + '/notification', body, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + user.token
-      }
-    })
-      .then((response) => {
-        const bookId = response.data.data.id
-        console.log(bookId)
-        axios.post(masterUrl + '/notification/send', { id: bookId }, {
-          headers: {
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + user.token
-          }
-        })
-          .then(response => {
-            // toast.success(response.data.message)
-            toast.success('Booking notification sent')
-          })
-          .catch(error => {
-            console.log(error)
-            console.log(error.message)
-            toast.error(error.message)
-          })
-      })
-      .catch(error => {
-        console.log(error)
-        console.log(error.message)
-        toast.error(error.message)
-      })
+    // await axios.post(masterUrl + '/notification', body, {
+    //   headers: {
+    //     Accept: 'application/json',
+    //     Authorization: 'Bearer ' + user.token
+    //   }
+    // })
+    //   .then((response) => {
+    //     const bookId = response.data.data.id
+    //     console.log(bookId)
+    //     axios.post(masterUrl + '/notification/send', { id: bookId }, {
+    //       headers: {
+    //         Accept: 'application/json',
+    //         Authorization: 'Bearer ' + user.token
+    //       }
+    //     })
+    //       .then(response => {
+    //         // toast.success(response.data.message)
+    //         toast.success('Booking notification sent')
+    //       })
+    //       .catch(error => {
+    //         console.log(error)
+    //         console.log(error.message)
+    //         toast.error(error.message)
+    //       })
+    //   })
+    //   .catch(error => {
+    //     console.log(error)
+    //     console.log(error.message)
+    //     toast.error(error.message)
+    //   })
     console.log(body2)
-    await axios.post(masterUrl + '/notification', body2, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + user.token
-      }
-    })
-      .then((response) => {
-        const bookId = response.data.data.id
-        console.log(bookId)
-        axios.post(masterUrl + '/notification/send', { id: bookId }, {
-          headers: {
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + user.token
-          }
-        })
-          .then(response => {
-            // toast.success(response.data.message)
-          })
-          .catch(error => {
-            console.log(error)
-            console.log(error.message)
-            toast.error(error.message)
-          })
-      })
-      .catch(error => {
-        console.log(error)
-        console.log(error.message)
-        toast.error(error.message)
-      })
+    // await axios.post(masterUrl + '/notification', body2, {
+    //   headers: {
+    //     Accept: 'application/json',
+    //     Authorization: 'Bearer ' + user.token
+    //   }
+    // })
+    //   .then((response) => {
+    //     const bookId = response.data.data.id
+    //     console.log(bookId)
+    //     axios.post(masterUrl + '/notification/send', { id: bookId }, {
+    //       headers: {
+    //         Accept: 'application/json',
+    //         Authorization: 'Bearer ' + user.token
+    //       }
+    //     })
+    //       .then(response => {
+    //         // toast.success(response.data.message)
+    //       })
+    //       .catch(error => {
+    //         console.log(error)
+    //         console.log(error.message)
+    //         toast.error(error.message)
+    //       })
+    //   })
+    //   .catch(error => {
+    //     console.log(error)
+    //     console.log(error.message)
+    //     toast.error(error.message)
+    //   })
   }
   const handleAddpayment = async () => {
     if (hasPostedRef.current && paymentStatus.status_code !== '201') return;
@@ -372,7 +377,53 @@ function ConfirmationContent({
       setProcessPayment(false);
     }
   }
+  const markNotifSent = (id: string) => {
+    try {
+      let sentNotifications = [];
+      const existingData = sessionStorage.getItem('sent-notif');
 
+      if (existingData) {
+        sentNotifications = JSON.parse(existingData);
+      }
+
+      if (!sentNotifications.includes(id)) {
+        sentNotifications.push(id);
+        sessionStorage.setItem('sent-notif', JSON.stringify(sentNotifications));
+      }
+
+      notifSentRef.current = true;
+      setNotifSent(true);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const checkNotifStatus = async (id: string) => {
+    try {
+      const sentNotifications = sessionStorage.getItem('sent-notif');
+      if (sentNotifications) {
+        const notificationsArray = JSON.parse(sentNotifications);
+        return notificationsArray.includes(id);
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+  // React.useEffect(() => {
+  //   const initialNotif = async () => {
+  //     if (booking?.book_no && paymentStatus?.status_code === '200') {
+  //       const paymentVal = payments.find((p: any) => p.book_no === booking.book_no);
+  //       const sent = await checkNotifStatus(paymentVal.id);
+  //       if (sent) {
+  //         notifSentRef.current = true;
+  //         setNotifSent(true);
+  //       }
+  //     }
+  //   }
+  //   initialNotif()
+  // }, [booking?.book_no, paymentStatus?.status_code, payments])
   React.useEffect(() => {
     const shouldProcessPayment =
       !processPayment &&
@@ -385,8 +436,8 @@ function ConfirmationContent({
       setTokenPay(findTokenSnap());
       handleAddpayment();
     }
-  }, [paymentLinks, booking?.book_no, paymentStatus?.status_code, processPayment]);
- React.useEffect(() => {
+  }, [paymentLinks, booking?.book_no, paymentStatus?.status_code, processPayment])
+  React.useEffect(() => {
     getProductVarinatList();
   }, [productBooked])
 
