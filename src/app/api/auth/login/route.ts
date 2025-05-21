@@ -91,13 +91,13 @@ export async function POST(request: Request) {
         const userCustomer = await userStoreCustomer(token, user)
         console.log('UserCustomer:')
         console.log(userCustomer)
-        user.customers = [userCustomer.data]
+        // user.customers = [userCustomer.data]
       }
     } else {
       const customerData = await getCustomerByNo(token, user.customer_no)
       console.log('getCustomerByNo')
       console.log(customerData)
-      user.customer = customerData
+      // user.customer = customerData
     }
     
     await createSession(user)
