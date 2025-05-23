@@ -3,6 +3,7 @@ import axios from "axios";
 export const domain = process.env.NEXT_PUBLIC_API_URL;
 // auth service
 export const authUrl = domain + '/api/v1/auth-service';
+export const authUrl2 = domain + '/api/v2/auth-service';
 export const loginUrl = authUrl + '/user/auth';
 export const userUrl = authUrl + '/user';
 export const userTokenUrl = authUrl + '/user/token';

@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '@/assets/styles/utils';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { authUrl, userUrl } from '@/lib/data/endpoints';
+import { authUrl, authUrl2, userUrl } from '@/lib/data/endpoints';
 import { toast } from 'sonner';
 
 const RegisterFormSchema = z.object({
@@ -27,7 +27,7 @@ const RegisterFormSchema = z.object({
   username: z.string().nullable(),
   password: z.string()
     .min(8, { message: "At least 8 characters" })
-    .regex(new RegExp(/(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*+-])/), { message: " At least contains number & special expression" }),
+    .regex(new RegExp(/(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*+-])/), { message: "Must contains number & special expression" }),
   avatar: z.string().nullable(),
   active: z.boolean().nullable()
 })
@@ -53,7 +53,7 @@ function RegisterForm() {
   const onSubmit = async(values: z.infer<typeof RegisterFormSchema>) => {
     console.log('submit: ', values);
     setIsLoading(true)
-    await axios.post(authUrl + '/user', values)
+    await axios.post(authUrl2 + '/user', values)
       .then(response => {
         toast.success(response.data.message);
         setIsLoading(false)
