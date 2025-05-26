@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 async function EditInfoPage() {
   const session = await getSession();
   // @ts-ignore
-  const { user } = session;
+  const user: any = session?.user;
 
   const costumer = await getCustomerByNo(user.token, { customer_no: user.customer_no });
   console.log('costumer', costumer)
