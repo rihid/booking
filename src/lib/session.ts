@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { SignJWT, jwtVerify } from 'jose'
  
 const secretKey = process.env.SESSION_SECRET
+const env = process.env.APP_ENV
 const encodedKey = new TextEncoder().encode(secretKey)
  
 export async function encrypt(payload: any) {
@@ -28,7 +29,7 @@ export async function createSession(user: any) {
   const session = await encrypt({ user, expiresAt })
   cookies().set('session', session, {
     httpOnly: false,
-    secure: true,
+    secure: env === 'staging'? false : true,
     expires: expiresAt,
     sameSite: 'lax',
     path: '/',
@@ -50,7 +51,7 @@ export async function updateSession() {
   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   cookies().set('session', session, {
     httpOnly: false,
-    secure: true,
+    secure: env === 'staging'? false : true,
     expires: expires,
     sameSite: 'lax',
     path: '/',
