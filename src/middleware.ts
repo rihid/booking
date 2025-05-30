@@ -47,6 +47,17 @@ export default async function middleware(req: NextRequest) {
 
   if (isRouteWithGlobalParams && referrer) {
     const referrerUrl = new URL(referrer)
+
+    // Propagate 'foc' parameter only if it exists in referrer
+    const hasfocInRef = referrerUrl.searchParams.get('foc') === 'true'
+    if (hasfocInRef && !url.searchParams.has('foc')) {
+      url.searchParams.set('foc', 'true')
+      return NextResponse.redirect(url)
+    }
+  }
+
+  if (isRouteWithGlobalParams && referrer) {
+    const referrerUrl = new URL(referrer)
     const hasOtsInRef = referrerUrl.searchParams.get('ots') === 'true'
 
     if (hasOtsInRef && !url.searchParams.has('ots')) {
