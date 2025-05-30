@@ -44,7 +44,7 @@ function ConfirmNPayClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const ots = searchParams.get('ots');
-  const foc = searchParams.get('foc')
+  // const foc = searchParams.get('foc')
 
   const { modalView } = useUiLayoutStore();
   const { bookingField, productBooked, customers, customer, setCustomer, updateBookingField, addCustomer, editCustomer, updateCustomerList } = useBookStore((state) => state);
@@ -529,8 +529,14 @@ function ConfirmNPayClient({
   // onupdate
   React.useEffect(() => {
     if (ots === 'true') { setIsOts(true) } else { setIsOts(false) };
-    if(foc === 'true') { setIsFoc(true) } else { setIsFoc(false) };
+    // if(foc === 'true') { setIsFoc(true) } else { setIsFoc(false) };
     if (productBooked) {
+      const category = productBooked?.category.name
+      if (category == 'Off Road') {
+        setIsFoc(true)
+      } else {
+        setIsFoc(false)
+      }
       // riders
       let riderArr = [...bookingField.riders];
       const riderCount = bookingField.riders.length
@@ -667,7 +673,7 @@ function ConfirmNPayClient({
   },
     [
       ots,
-      foc,
+      // foc,
       productBooked,
       totalRiders,
       customers,
