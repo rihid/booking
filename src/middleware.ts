@@ -19,8 +19,21 @@ export default async function middleware(req: NextRequest) {
   const isRouteWithGlobalParams = routesWithGlobalParams.some(route => path.startsWith(route)) && path !== '/'
 
   // 3. get session
-  const cookie = cookies().get('session')?.value
-  const session = await decrypt(cookie as string)
+  // const cookie = cookies().get('session')?.value
+  // const session = await decrypt(cookie as string)
+
+  
+  // 3. get session (gabungkan semua chunk)
+  let sessionStr = ''
+  let idx = 0
+  while (true) {
+    const part = cookies().get(`session.${idx}`)?.value
+    if (!part) break
+    sessionStr += part
+    idx++
+  }
+  const session = sessionStr ? await decrypt(sessionStr) : null
+  // ...
 
   // 4. Redirect to /login if the user is not authenticated
   if (isProtectedRoute && !session) {

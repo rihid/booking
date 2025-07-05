@@ -8,13 +8,11 @@ import { getCustomerByNo, getUserToken } from "../data";
 export async function login(token: string) {
   let user;
   if (token) {
-    const userToken = await getUserToken(token);
-    const {permission, customers, ...rest} = userToken;
-    user = rest;
+    user = await getUserToken(token);
     user.token = token
-    // const userCustomer = await getCustomerByNo(token, user?.customer_no)
-    // console.log(userCustomer)
-    // user.customer = userCustomer
+    const userCustomer = await getCustomerByNo(token, user?.customer_no)
+    console.log(userCustomer)
+    user.customer = userCustomer
   }
   await createSession(user)
   redirect('/explore')
