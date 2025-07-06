@@ -14,6 +14,7 @@ import axios from 'axios';
 import { customerUrl } from '@/lib/data/endpoints';
 import LoadingOverlay from '@/components/partial/loading-overlay';
 import { getCustomerByNo } from '@/lib/data';
+import { ProfileCardLoader } from '@/components/partial/loader';
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -51,7 +52,7 @@ async function Profile() {
             <Heading variant='lg' className="text-foreground/75">Profile</Heading>
             <Bell className="w-6 h-6" />
           </div>
-          <Suspense fallback={null}>
+          <Suspense fallback={<ProfileCardLoader/>}>
             <ProfileContent user={session?.user} />
           </Suspense>
         </Container>

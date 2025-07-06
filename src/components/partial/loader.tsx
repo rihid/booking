@@ -172,26 +172,26 @@ export function ConfirmPayLoader() {
         </div>
       </Container>
       <Container className="border-t-4 border-slate-100 bg-background py-8">
-      <Skeleton className="h-5 w-32 mb-3" />
-      <div className="flex items-center justify-between mb-6">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-5 w-10 rounded-full" />
-      </div>
-      
-      <div className="space-y-6">
-        <div className="flex items-start justify-between w-full">
-          <div>
-            <Skeleton className="h-4 w-40 mb-2" />
-            <div className="flex items-center justify-start gap-2">
-              <Skeleton className="h-3 w-32" />
-              <Skeleton className="h-3 w-2" />
-              <Skeleton className="h-3 w-24" />
-            </div>
-          </div>
-          <Skeleton className="h-5 w-5" />
+        <Skeleton className="h-5 w-32 mb-3" />
+        <div className="flex items-center justify-between mb-6">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-5 w-10 rounded-full" />
         </div>
-      </div>
-    </Container>
+
+        <div className="space-y-6">
+          <div className="flex items-start justify-between w-full">
+            <div>
+              <Skeleton className="h-4 w-40 mb-2" />
+              <div className="flex items-center justify-start gap-2">
+                <Skeleton className="h-3 w-32" />
+                <Skeleton className="h-3 w-2" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+            </div>
+            <Skeleton className="h-5 w-5" />
+          </div>
+        </div>
+      </Container>
     </div>
   )
 }
@@ -364,6 +364,22 @@ export function BookingListLoader() {
       <BookingCardLoader />
       <BookingCardLoader />
     </Container>
+  )
+}
+export function ProfileCardLoader() {
+  return (
+    <div className="flex items-center justify-between h-full w-full py-3 border-b border-b-foreground/50">
+      <div className="flex items-center justify-start gap-x-4">
+        <Skeleton className="w-10 h-10 rounded-full" />
+        <div className="text-muted-foreground font-normal text-start text-sm m-0 p-0">
+          <Skeleton className="h-4 w-24 mb-1" />
+          <Skeleton className="h-3 w-16" />
+        </div>
+      </div>
+      <div className="block pl-8">
+        <Skeleton className="h-5 w-5" />
+      </div>
+    </div>
   )
 }
 export default function DashboardSkeleton() {

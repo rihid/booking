@@ -28,27 +28,29 @@ async function CustomerListPage() {
     const customerList = [];
     for (let j = 0; j < userCustomers.length; j++) {
       const dataCustomers = customers.find((c: any) => c.customer_no === userCustomers[j].customer_no);
-      customerList.push({
-        id: userCustomers[j].id,
-        user_id: userCustomers[j].user_id,
-        customer_no: userCustomers[j].customer_no,
-        type: userCustomers[j].type,
-
-        customer_id: dataCustomers.id,
-        name: dataCustomers.name,
-        address: dataCustomers.address,
-        phone: dataCustomers.phone,
-        email: dataCustomers.email,
-        identity_number: dataCustomers.identity_number,
-        vat: dataCustomers.vat,
-        org_no: dataCustomers.org_no,
-        rating: dataCustomers.rating,
-        birthday: dataCustomers.birthday,
-        age: dataCustomers.age,
-        sosmeds: dataCustomers.sosmeds,
-        prospects: dataCustomers.prospects,
-        books: dataCustomers.books,
-      })
+      if(dataCustomers) {
+        customerList.push({
+          id: userCustomers[j].id,
+          user_id: userCustomers[j].user_id,
+          customer_no: userCustomers[j].customer_no,
+          type: userCustomers[j].type,
+  
+          customer_id: dataCustomers.id,
+          name: dataCustomers.name,
+          address: dataCustomers.address,
+          phone: dataCustomers.phone,
+          email: dataCustomers.email,
+          identity_number: dataCustomers.identity_number,
+          vat: dataCustomers.vat,
+          org_no: dataCustomers.org_no,
+          rating: dataCustomers.rating,
+          birthday: dataCustomers.birthday,
+          age: dataCustomers.age,
+          sosmeds: dataCustomers.sosmeds,
+          prospects: dataCustomers.prospects,
+          books: dataCustomers.books,
+        })
+      }
     }
 
     return (
