@@ -37,7 +37,7 @@ export async function login(token: string) {
     console.error('Login error:', error);
     throw error;
   }
-  redirect('/explore');
+  redirect('/explore'); 
 }
 
 export async function logout() {
