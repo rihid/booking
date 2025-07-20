@@ -33,12 +33,11 @@ export async function login(token: string) {
     console.log('Login successful:', enrichedUser);
 
     await createSession(enrichedUser);
-    redirect('/explore');
-
   } catch (error: any) {
     console.error('Login error:', error);
     throw error;
   }
+  redirect('/explore');
 }
 
 export async function logout() {

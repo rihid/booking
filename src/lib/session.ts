@@ -24,27 +24,73 @@ export async function decrypt(session: string) {
     console.log('Failed to verify session')
   }
 }
+/*
+  const MAX_COOKIE_SIZE = 3800;
 
-const MAX_COOKIE_SIZE = 3800;
+  export async function createSession(user: any) {
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const session = await encrypt({ user, expiresAt });
+    // Chunking
+    const chunks = [];
+    for (let i = 0; i < session.length; i += MAX_COOKIE_SIZE) {
+      chunks.push(session.slice(i, i + MAX_COOKIE_SIZE));
+    }
 
+    chunks.forEach((chunk, idx) => {
+      cookies().set(`session.${idx}`, chunk, {
+        httpOnly: false,
+        secure: env === 'staging' ? false : true,
+        expires: expiresAt,
+        sameSite: 'lax',
+        path: '/',
+      });
+    });
+  }
+*/ 
+const MAX_COOKIE_SIZE = 3500;
 export async function createSession(user: any) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  const session = await encrypt({ user, expiresAt });
-  // Chunking
-  const chunks = [];
-  for (let i = 0; i < session.length; i += MAX_COOKIE_SIZE) {
-    chunks.push(session.slice(i, i + MAX_COOKIE_SIZE));
-  }
+  
+  try {
+    deleteSession();
+    
+    const session = await encrypt({ user, expiresAt });
+    console.log('Session size:', session.length);
+    
+    if (session.length > MAX_COOKIE_SIZE * 10) { // Max 10 chunks
+      console.warn('Session data is very large:', session.length, 'bytes');
+      throw new Error('Session data too large. Please contact support.');
+    }
+    
+    const chunks = [];
+    for (let i = 0; i < session.length; i += MAX_COOKIE_SIZE) {
+      chunks.push(session.slice(i, i + MAX_COOKIE_SIZE));
+    }
 
-  chunks.forEach((chunk, idx) => {
-    cookies().set(`session.${idx}`, chunk, {
-      httpOnly: false,
-      secure: env === 'staging' ? false : true,
-      expires: expiresAt,
-      sameSite: 'lax',
-      path: '/',
+    console.log('Creating', chunks.length, 'session chunks');
+
+    chunks.forEach((chunk, idx) => {
+      try {
+        cookies().set(`session.${idx}`, chunk, {
+          httpOnly: false,
+          secure: env === 'staging' ? false : true,
+          expires: expiresAt,
+          sameSite: 'lax',
+          path: '/',
+        });
+      } catch (error) {
+        console.error(`Failed to set session chunk ${idx}:`, error);
+        throw new Error(`Failed to create session chunk ${idx}`);
+      }
     });
-  });
+    
+    console.log('Session created successfully with', chunks.length, 'chunks');
+  } catch (error) {
+    console.error('Failed to create session:', error);
+    // Clean up any partial chunks on failure
+    deleteSession();
+    throw error;
+  }
 }
 
 export async function getSession() {
