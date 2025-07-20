@@ -11,21 +11,84 @@ import LoadingOverlay from '@/components/partial/loading-overlay';
 import { domain } from '@/lib/data/endpoints';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
-import { login } from '@/lib/action/auth';
+// import { login } from '@/lib/action/auth';
 import { toast } from 'sonner';
+import { getCustomerByNo, getUserToken, userStoreCustomer, validateCustomer } from '@/lib/data';
 
 function LoginPageClient({ token }: { token: string | string[] | null }) {
-  const [loadingOverlay, setLoadingOverlay] = React.useState<boolean>(false);
+  // Initialize loading state immediately if token exists
+  const [loadingOverlay, setLoadingOverlay] = React.useState<boolean>(!!token);
+  const router = useRouter();
+
+  // methods
+  const handleCustomerData = async (user: any) => {
+    if (user.customer_no === null) {
+      return await handleNewCustomer(user);
+    } else {
+      return await handleExistingCustomer(user);
+    }
+  };
+  
+  const handleNewCustomer = async (user: any) => {
+    try {
+      const validateUser = await validateCustomer(user.token, user);
+  
+      user.customer_no = validateUser.data.customer_no;
+      user.customer = validateUser.data;
+  
+      if (user.customer_no) {
+        const userCustomer = await userStoreCustomer(user.token, user);
+        user.customers = [userCustomer.data];
+      }
+  
+      return user;
+    } catch (error) {
+      console.error('Error handling new customer:', error);
+      throw new Error('Failed to process new customer data');
+    }
+  };
+  
+  const handleExistingCustomer = async (user: any) => {
+    try {
+      const customerData = await getCustomerByNo(user.token, user.customer_no);
+  
+      user.customer = customerData;
+      return user;
+    } catch (error) {
+      console.error('Error retrieving existing customer:', error);
+      throw new Error('Failed to retrieve customer data');
+    }
+  };
+  async function login(token: string) {
+    try {
+      const user = await getUserToken(token as string);
+      if (!user) {
+        throw new Error('Failed to retrieve user data');
+      }
+  
+      user.token = token;
+      const enrichedUser = await handleCustomerData(user);
+      const sessionResponse = await axios.post('/api/auth/session', {
+        user: enrichedUser
+      });
+      toast.success(sessionResponse.data.message);
+      router.push('/explore');
+      
+    } catch (error: any) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  }
 
   React.useEffect(() => {
     if (!token) return;
 
     const processLogin = async () => {
-      setLoadingOverlay(true);
       try {
         await login(token as string);
       } catch (error: any) {
         console.error('Login error:', error);
+        setLoadingOverlay(false)
         if (error.response?.data?.message) {
           console.error('Server error:', error.response.data.message);
           toast.error(error.response.data.message);
