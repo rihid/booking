@@ -3,8 +3,9 @@
 import { cookies } from "next/headers";
 import { createSession, deleteSession, getSession, encrypt } from "../session";
 import { redirect } from "next/navigation";
-import { getCustomerByNo, getUserToken } from "../data";
+import { getCustomerByNo, getUserToken, userStoreCustomer, validateCustomer } from "../data";
 
+/*
 export async function login(token: string) {
   let user;
   if (token) {
@@ -16,6 +17,28 @@ export async function login(token: string) {
   }
   await createSession(user)
   redirect('/explore')
+}
+
+*/
+export async function login(token: string) {
+  try {
+    const user = await getUserToken(token as string);
+    console.log('User data:', user);
+    if (!user) {
+      throw new Error('Failed to retrieve user data');
+    }
+
+    user.token = token;
+    const enrichedUser = await handleCustomerData(user);
+    console.log('Login successful:', enrichedUser);
+
+    await createSession(enrichedUser);
+    redirect('/explore');
+
+  } catch (error: any) {
+    console.error('Login error:', error);
+    throw error;
+  }
 }
 
 export async function logout() {
@@ -36,35 +59,44 @@ export async function getHeaders() {
   return headers;
 }
 
-// export async function extendSessionData(payload: Partial<any>) {
-//   const session = await getSession(); // Retrieve the current session
-//   if (!session) {
-//     return null;
-//   }
+const handleCustomerData = async (user: any) => {
+  if (user.customer_no === null) {
+    return await handleNewCustomer(user);
+  } else {
+    return await handleExistingCustomer(user);
+  }
+};
 
-//   // Update the user data inside the session
-//   const updatedUser = {
-//     // @ts-ignore
-//     ...session.user,   // Keep the existing user data
-//     ...payload         // Extend it with the new data (payload)
-//   };
+const handleNewCustomer = async (user: any) => {
+  try {
+    const validateUser = await validateCustomer(user.token, user);
+    console.log('Customer validation result:', validateUser);
 
-//   // Keep the original session structure, updating the user and expiration
-//   const updatedSession = {
-//     ...session,        // Keep other session data (like expiresAt)
-//     user: updatedUser  // Update the user data
-//   };
+    user.customer_no = validateUser.data.customer_no;
+    user.customer = validateUser.data;
 
-//   // Encrypt the updated session
-//   const newSession = await encrypt(updatedSession); // Await the encryption
+    if (user.customer_no) {
+      const userCustomer = await userStoreCustomer(user.token, user);
+      console.log('Customer stored:', userCustomer);
+      user.customers = [userCustomer.data];
+    }
 
-//   // Set the cookie with the new session and updated expiration time
-//   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days expiration
-//   cookies().set('session', newSession, {
-//     httpOnly: false,
-//     secure: true,
-//     expires: expires,
-//     sameSite: 'lax',
-//     path: '/',
-//   });
-// }
+    return user;
+  } catch (error) {
+    console.error('Error handling new customer:', error);
+    throw new Error('Failed to process new customer data');
+  }
+};
+
+const handleExistingCustomer = async (user: any) => {
+  try {
+    const customerData = await getCustomerByNo(user.token, user.customer_no);
+    console.log('Existing customer data:', customerData);
+
+    user.customer = customerData;
+    return user;
+  } catch (error) {
+    console.error('Error retrieving existing customer:', error);
+    throw new Error('Failed to retrieve customer data');
+  }
+};

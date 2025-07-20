@@ -11,34 +11,39 @@ import LoadingOverlay from '@/components/partial/loading-overlay';
 import { domain } from '@/lib/data/endpoints';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
+import { login } from '@/lib/action/auth';
+import { toast } from 'sonner';
 
 function LoginPageClient({ token }: { token: string | string[] | null }) {
-  const router = useRouter();
   const [loadingOverlay, setLoadingOverlay] = React.useState<boolean>(false);
-  React.useEffect(() => {
-    if (token) {
-      setLoadingOverlay(true);
 
-      const body = JSON.stringify({ token });
-      axios.post('/api/auth/login', body, {
-        headers: {
-          'Content-Type': 'application/json',
+  React.useEffect(() => {
+    if (!token) return;
+
+    const processLogin = async () => {
+      setLoadingOverlay(true);
+      try {
+        await login(token as string);
+      } catch (error: any) {
+        console.error('Login error:', error);
+        if (error.response?.data?.message) {
+          console.error('Server error:', error.response.data.message);
+          toast.error(error.response.data.message);
+        } else if (error.message) {
+          console.error('Error:', error.message);
+          toast.error(error.message);
+        } else {
+          console.error('Unexpected error occurred');
+          toast.error('An unexpected error occurred!');
         }
-      })
-        .then(response => {
-          console.log(response.data.message)
-          if (response.data.message === 'Login successful') {
-            router.push('/explore')
-          } else {
-            console.error(response.data.message);
-          }
-        })
-        .catch(error => {
-          console.log(error)
-          throw error
-        })
-    }
+      } finally {
+        setLoadingOverlay(false);
+      }
+    };
+
+    processLogin();
   }, [token]);
+
   return (
     <LoadingOverlay loading={loadingOverlay}>
       <div className="flex flex-col items-center justify-between w-full h-full min-h-screen">

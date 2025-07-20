@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import FormError from '@/components/ui/form-error';
 import { Loader2 } from 'lucide-react';
-import { postAuth } from '@/lib/data';
+import { getCustomerByNo, getUserToken, postAuth, userStoreCustomer, validateCustomer } from '@/lib/data';
 import { useRouter } from 'next/navigation';
 import { login } from '@/lib/action/auth';
 import axios from 'axios';
@@ -42,14 +42,14 @@ function LoginForm() {
       .then((response) => {
         console.log(response)
         const data = response.data;
-
+        // console.log('data', data)
         if (response.status === 200) {
           if(!data) {
             toast.warning('Email not verified');
             return
           }
           login(data.token);
-          toast.success('Success!');
+          toast.success('Login successfully!');
         }
       })
       .catch(error => {
@@ -59,20 +59,6 @@ function LoginForm() {
       .finally(() => {
         setIspending(false)
       })
-
-    // startTransition(() => {
-    //   postAuth(values)
-    //     .then(response => {
-    //       console.log(response)
-    //       if (response) {
-    //         login(response.token);
-    //       }
-    //     })
-    //     .catch(error => {
-    //       setError(error.message);
-    //       console.log(error)
-    //     });
-    // })
   }
 
   return (
