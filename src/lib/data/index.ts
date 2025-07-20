@@ -5,6 +5,7 @@ import { z } from "zod";
 import { masterUrl, productUrl, loginUrl, userTokenUrl, customerUrl, bookingUrl, customerListUrl, branchUrl, userUrl, authUrl } from "@/lib/data/endpoints";
 import { LoginFormSchema, ProductSchema, SingleProductSchema, AuthSchema, UserTokenSchema, BookingSchema, BookByCustomerSchema, InvoiceByCustomerSchema, SingleBookingSchema, branchSchema, CustomerFieldSchema } from "@/lib/schema";
 import { generateProductSlug, generateBasicToken } from '@/lib/helper';
+import { getHeaders } from "@/lib/action/auth";
 import moment from "moment";
 
 interface CustomerListBody {
@@ -64,6 +65,7 @@ export const getUserToken = async (token: any) => {
 }
 export const getOrganizations = async (token: any) => {
   try {
+    const headers = await getHeaders();
     const response = await axios.get(authUrl + '/organization', { headers: { Accept: 'application/json', Authorization: 'Bearer ' + token } })
     return response.data.data
   } catch (error: any) {
