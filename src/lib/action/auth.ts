@@ -31,8 +31,8 @@ export async function login(token: string) {
     user.token = token;
     const enrichedUser = await handleCustomerData(user);
     console.log('Login successful:', enrichedUser);
-
-    await createSession(enrichedUser);
+    const { permission, customers, ...rest } = enrichedUser;
+    await createSession(rest);
   } catch (error: any) {
     console.error('Login error:', error);
     throw error;
