@@ -11,7 +11,7 @@ import LoadingOverlay from '@/components/partial/loading-overlay';
 import { domain } from '@/lib/data/endpoints';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
-import { login } from '@/lib/action/auth';
+// import { login } from '@/lib/action/auth';
 import { toast } from 'sonner';
 import { getCustomerByNo, getUserToken, userStoreCustomer, validateCustomer } from '@/lib/data';
 
@@ -59,26 +59,27 @@ function LoginPageClient({ token }: { token: string | string[] | null }) {
       throw new Error('Failed to retrieve customer data');
     }
   };
-  // async function login(token: string) {
-  //   try {
-  //     const user = await getUserToken(token as string);
-  //     if (!user) {
-  //       throw new Error('Failed to retrieve user data');
-  //     }
+  async function login(token: string) {
+    try {
+      const user = await getUserToken(token as string);
+      if (!user) {
+        throw new Error('Failed to retrieve user data');
+      }
   
-  //     user.token = token;
-  //     const enrichedUser = await handleCustomerData(user);
-  //     const sessionResponse = await axios.post('/api/auth/session', {
-  //       user: enrichedUser
-  //     });
-  //     toast.success(sessionResponse.data.message);
-  //     router.push('/explore');
+      user.token = token;
+      const enrichedUser = await handleCustomerData(user);
+      const { permission, customers, ...rest } = enrichedUser;
+      const sessionResponse = await axios.post('/api/auth/session', {
+        user: rest
+      });
+      toast.success(sessionResponse.data.message);
+      router.push('/explore');
       
-  //   } catch (error: any) {
-  //     console.error('Login error:', error);
-  //     throw error;
-  //   }
-  // }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  }
 
   React.useEffect(() => {
     if (!token) return;
