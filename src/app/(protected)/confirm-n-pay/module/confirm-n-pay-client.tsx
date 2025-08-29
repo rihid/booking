@@ -528,6 +528,7 @@ function ConfirmNPayClient({
 
   // onupdate
   React.useEffect(() => {
+    if (!productBooked) return
     if (ots === 'true') { setIsOts(true) } else { setIsOts(false) };
     // if(foc === 'true') { setIsFoc(true) } else { setIsFoc(false) };
     if (productBooked) {
@@ -617,10 +618,16 @@ function ConfirmNPayClient({
           return acc + qty
         }, 0)
 
-        updateBookingField({
-          numbers: numberArray,
-          unit_qty: unitQty > 0 ? unitQty : '0',
-        })
+        // check if numbers have changed
+        const currentNumbers = JSON.stringify(bookingField.numbers);
+        const newNumbers = JSON.stringify(numberArray);
+
+        if (currentNumbers !== newNumbers) {
+          updateBookingField({
+            numbers: numberArray,
+            unit_qty: unitQty > 0 ? unitQty : '0',
+          })
+        }
       }
 
       updateBookingField({
@@ -677,9 +684,9 @@ function ConfirmNPayClient({
       productBooked,
       totalRiders,
       customers,
-      updateBookingField,
-      addCustomer,
-      updateCustomerList,
+      // updateBookingField,
+      // addCustomer,
+      // updateCustomerList,
       isAddRider,
       voucherData,
       addonsValue,
