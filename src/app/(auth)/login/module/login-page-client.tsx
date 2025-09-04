@@ -127,7 +127,13 @@ function LoginPageClient({ token }: { token: string | string[] | null }) {
         <div className="flex-1 w-full">
           <div className="mx-12 mt-10">
             <h3 className="font-extrabold text-base text-foreground/75 mb-5 text-center tracking-tight leading-none">Login to your account</h3>
-            <LoginForm />
+            {/* <LoginForm /> */}
+            <div className="mb-4 text-center text-sm text-muted-foreground">
+              <span>
+                Login with credentials is currently under maintenance.<br />
+                Please login using Google instead.
+              </span>
+            </div>
           </div>
           <div className="mx-12 mt-5">
             <div className="relative">
