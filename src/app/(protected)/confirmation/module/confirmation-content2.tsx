@@ -124,7 +124,7 @@ function ConfirmationContent({
         console.log(response.data);
         const data = response.data;
         if (paymentStatus.status_code === '200') {
-          sendNotif()
+          newSendNotif();
         }
       }).catch(error => {
         console.log(error);
@@ -171,6 +171,7 @@ function ConfirmationContent({
       })
     }
   }
+  // old send notif
   const sendNotif = async () => {
     const varinats = variants.length > 0 ? variants : await getProductVarinatList()
     console.log(varinats)
@@ -283,6 +284,26 @@ function ConfirmationContent({
     //     console.log(error.message)
     //     toast.error(error.message)
     //   })
+  }
+  // new send notif
+  const newSendNotif = async () => {
+    try {
+      const response = await axios.post(
+        masterUrl + '/notification/create-booking',
+        { id: booking.id },
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: 'Bearer ' + user.token,
+          },
+        }
+      );
+      console.log(response);
+    } catch (error: any) {
+      console.log(error);
+      const message = error?.response?.data?.message || error.message || 'Notification failed';
+      toast.error(message);
+    }
   }
   const handleAddpayment = async () => {
     if (hasPostedRef.current && paymentStatus.status_code !== '201') return;
