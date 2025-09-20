@@ -231,7 +231,7 @@ function DatesFormModal({
                     onValueChange={value => handleValueChange(value)}
                   >
                     {sumHour.map((item, idx) => {
-                      const isDisabled = isTimeDisabled(item.hour);
+                      const isDisabled = isTimeDisabled(item.hour) || item.hour === '17';
                       const isUnitEmpty = item.unit_rest < 2; // minimal sisa 2 unit
 
                       return (
